@@ -1,0 +1,26 @@
+{
+  "name": "planning-poker",
+  "version": "0.0.0",
+  "description": "Planning poker app",
+  "private": true,
+  "scripts": {
+    "build": "webpack",
+    "start": "electron ./dist/server.js"
+  },
+  "keywords": [
+    "planning",
+    "poker"
+  ],
+  "author": "Xapphire13",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^16.9.17",
+    "electron": "^7.1.7",
+    "html-webpack-plugin": "^3.2.0",
+    "react": "^16.12.0",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.4",
+    "webpack": "^4.41.4",
+    "webpack-cli": "^3.3.10"
+  }
+}
