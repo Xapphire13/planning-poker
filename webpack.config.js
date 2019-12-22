@@ -1,9 +1,11 @@
 const path = require("path");
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const nodeExternals = require("webpack-node-externals");
 
 const baseConfig = {
   devtool: "source-map",
+  mode: "development",
   module: {
     rules: [
       {
@@ -14,7 +16,7 @@ const baseConfig = {
     ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: ['.mjs', '.tsx', '.ts', '.js'],
   },
   plugins: [new webpack.ProgressPlugin()],
 }
@@ -44,6 +46,7 @@ const serverConfig = {
     filename: 'server.js',
     path: path.resolve(__dirname, 'dist')
   },
+  externals: [nodeExternals()]
 }
 
 module.exports = [clientConfig, serverConfig];
