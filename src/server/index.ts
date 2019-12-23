@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 
 function createWindow() {
   let win = new BrowserWindow({
-    width: 800,
+    width: 300,
     height: 600,
   })
 
