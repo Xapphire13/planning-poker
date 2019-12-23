@@ -16,7 +16,7 @@ const baseConfig = {
     ],
   },
   resolve: {
-    extensions: ['.mjs', '.tsx', '.ts', '.js'],
+    extensions: ['.tsx', '.ts', '.js'],
   },
   plugins: [new webpack.ProgressPlugin()],
 }
@@ -24,7 +24,7 @@ const baseConfig = {
 const clientConfig = {
   ...baseConfig,
 
-  entry: "./src/client/index.ts",
+  entry: "./src/client/index.tsx",
   target: "electron-renderer",
   output: {
     filename: 'client.js',
