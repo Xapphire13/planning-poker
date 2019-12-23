@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "build": "webpack",
+    "build:watch": "webpack --watch",
     "start": "electron ./dist/server.js"
   },
   "keywords": [
