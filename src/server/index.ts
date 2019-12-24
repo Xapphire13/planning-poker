@@ -14,6 +14,8 @@ function createWindow() {
   })
 
   win.loadFile('index.html')
+
+  return win;
 }
 
 const typeDefs = gql`
@@ -48,6 +50,13 @@ const resolvers = {
     return internalIp.v4();
   });
 
+  ipcMain.handle("get-connected-count", () => 10);
+
   await installExtension(REACT_DEVELOPER_TOOLS);
-  createWindow();
+  const window = createWindow();
+
+  // TODO, remove me
+  setInterval(() => {
+    window.webContents.send("vote-cast");
+  }, 2000);
 })();

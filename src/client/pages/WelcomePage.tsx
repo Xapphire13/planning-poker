@@ -34,6 +34,22 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
     });
   }, []);
 
+  useEffect(() => {
+    const personConnectedListener = () => setNumberOfPeopleConnected(prev => prev + 1);
+
+    (async () => {
+      const count: number = await ipcRenderer.invoke("get-connected-count");
+      setNumberOfPeopleConnected(prev => prev + count);
+
+      ipcRenderer.addListener("person-connected", personConnectedListener);
+    })();
+
+    // Cleanup
+    return () => {
+      ipcRenderer.removeListener("person-connected", personConnectedListener);
+    };
+  }, []);
+
   return <>
     {!isLoading && <div {...css(styles.container)}>
       <div {...css(styles.header)}>
@@ -46,7 +62,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
         <div>
           {numberOfPeopleConnected} people connected
       </div>
-        <PrimaryButton onClick={() => navigate?.("/results")}>Ready!</PrimaryButton>
+        <PrimaryButton disabled={numberOfPeopleConnected < 2} onClick={() => navigate?.("/vote", { state: { numberOfPeople: numberOfPeopleConnected } })}>Ready!</PrimaryButton>
       </Stack>
     </div>}
   </>

@@ -7,6 +7,7 @@ import {
 import VoteResultsPage from "./pages/VoteResultsPage";
 import { createStylesFn } from "./theme/createStylesFn";
 import WelcomePage from "./pages/WelcomePage";
+import VotePage from "./pages/VotePage";
 
 const stylesFn = createStylesFn(() => ({
   container: {
@@ -27,6 +28,7 @@ export default function App() {
 
   return <Router {...css(styles.container)}>
     <WelcomePage path="/" />
+    <VotePage path="/vote" />
     <VoteResultsPage path="/results" />
   </Router>;
 }
