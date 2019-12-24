@@ -2,6 +2,7 @@ import React from "react";
 import VoteDistributions from "./VoteDistributions";
 import { createStylesFn } from "../theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
+import { PrimaryButton } from "office-ui-fabric-react/lib/Button";
 
 const votes = {
   3: 2,
@@ -39,6 +40,6 @@ export default function VoteResultsPage() {
     <div {...css(styles.stretch)}>
       <VoteDistributions votes={votes} />
     </div>
-    <div>TODO -> New vote button</div>
+    <PrimaryButton>New vote</PrimaryButton>
   </div>
 }
