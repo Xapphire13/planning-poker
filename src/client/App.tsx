@@ -4,9 +4,9 @@ import {
   Router
 } from "@reach/router";
 
-import VoteResultsPage from "./components/VoteResultsPage";
+import VoteResultsPage from "./pages/VoteResultsPage";
 import { createStylesFn } from "./theme/createStylesFn";
-import WelcomePage from "./components/WelcomePage";
+import WelcomePage from "./pages/WelcomePage";
 
 const stylesFn = createStylesFn(() => ({
   container: {
