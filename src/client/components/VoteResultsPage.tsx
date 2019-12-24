@@ -10,13 +10,17 @@ const votes = {
   8: 1
 };
 
-const stylesFn = createStylesFn(() => ({
+const stylesFn = createStylesFn(({ unit }) => ({
   container: {
     display: "flex",
     flexDirection: "column",
     height: "100%",
     justifyContent: "space-between"
   },
+  averageVoteContainer: {
+    margin: `${unit}px 0`,
+    textAlign: "center"
+  }
 }));
 
 function averageOfVotes(votes: Record<number, number>) {
@@ -34,7 +38,7 @@ export default function VoteResultsPage() {
   const { css, styles } = useStyles({ stylesFn });
 
   return <div {...css(styles.container)}>
-    <div>Average: {averageOfVotes(votes).toPrecision(1)}</div>
+    <div {...css(styles.averageVoteContainer)}>Average: {averageOfVotes(votes).toPrecision(1)}</div>
     <div>
       <VoteDistributions votes={votes} />
     </div>
