@@ -2,6 +2,7 @@ import React from "react";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import { createStylesFn } from "../theme/createStylesFn";
 import { CSSProperties } from "react-with-styles";
+import { Persona } from "office-ui-fabric-react/lib/Persona";
 
 const STORYPOINT_BORDER_WIDTH = 2;
 
@@ -20,6 +21,7 @@ const stylesFn = createStylesFn(({ unit }) => ({
   storyPointsContainer: {
     position: "relative",
     width: 50,
+    flexShrink: 0,
     padding: `${unit * 2}px 0px`,
     borderTop: `${STORYPOINT_BORDER_WIDTH}px solid #fff`,
     borderRight: `${STORYPOINT_BORDER_WIDTH}px solid #fff`,
@@ -45,7 +47,16 @@ const stylesFn = createStylesFn(({ unit }) => ({
   },
   votesContainer: {
     flexGrow: 1,
-    marginLeft: unit
+    marginLeft: unit,
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginBottom: -unit,
+    marginRight: -unit
+  },
+  personaContainer: {
+    marginRight: unit,
+    marginBottom: unit
   }
 }))
 
@@ -64,6 +75,8 @@ export default function VoteDistributionRow({ storyPoints, votes, totalVotes, is
         {storyPoints}
       </div>
     </div>
-    <div {...css(styles.votesContainer)}>{votes}</div>
+    <div {...css(styles.votesContainer)}>
+      {[...new Array(votes).keys()].map((_, i) => <div key={i} {...css(styles.personaContainer)}><Persona imageInitials="SH" hidePersonaDetails /></div>)}
+    </div>
   </div>;
 }

@@ -14,11 +14,9 @@ const stylesFn = createStylesFn(() => ({
   container: {
     display: "flex",
     flexDirection: "column",
-    height: "100%"
+    height: "100%",
+    justifyContent: "space-between"
   },
-  stretch: {
-    flexGrow: 1
-  }
 }));
 
 function averageOfVotes(votes: Record<number, number>) {
@@ -37,7 +35,7 @@ export default function VoteResultsPage() {
 
   return <div {...css(styles.container)}>
     <div>Average: {averageOfVotes(votes).toPrecision(1)}</div>
-    <div {...css(styles.stretch)}>
+    <div>
       <VoteDistributions votes={votes} />
     </div>
     <PrimaryButton>New vote</PrimaryButton>
