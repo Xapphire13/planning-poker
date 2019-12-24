@@ -1,7 +1,12 @@
 import React from "react";
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
+import {
+  Router
+} from "@reach/router";
+
 import VoteResultsPage from "./components/VoteResultsPage";
 import { createStylesFn } from "./theme/createStylesFn";
+import WelcomePage from "./components/WelcomePage";
 
 const stylesFn = createStylesFn(() => ({
   container: {
@@ -20,5 +25,8 @@ const stylesFn = createStylesFn(() => ({
 export default function App() {
   const { css, styles } = useStyles({ stylesFn });
 
-  return <div {...css(styles.container)}><VoteResultsPage /></div>;
+  return <Router {...css(styles.container)}>
+    <WelcomePage path="/" />
+    <VoteResultsPage path="/results" />
+  </Router>;
 }

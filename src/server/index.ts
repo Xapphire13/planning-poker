@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import { ApolloServer } from "apollo-server";
 import gql from "graphql-tag";
+import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
 function createWindow() {
   let win = new BrowserWindow({
@@ -10,8 +11,6 @@ function createWindow() {
 
   win.loadFile('index.html')
 }
-
-app.on("ready", createWindow);
 
 const typeDefs = gql`
   type Test {
@@ -33,8 +32,14 @@ const resolvers = {
   }
 };
 
+(async () => {
+  const server = new ApolloServer({ typeDefs, resolvers });
+  server.listen().then(({ url }) => {
+    console.log(`Ready at ${url}`);
+  })
 
-const server = new ApolloServer({ typeDefs, resolvers });
-server.listen().then(({ url }) => {
-  console.log(`Ready at ${url}`);
-})
+  await installExtension(REACT_DEVELOPER_TOOLS);
+
+  await app.whenReady();
+  createWindow();
+})();

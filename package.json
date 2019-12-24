@@ -15,10 +15,13 @@
   "author": "Xapphire13",
   "license": "ISC",
   "devDependencies": {
+    "@types/electron-devtools-installer": "^2.2.0",
+    "@types/reach__router": "^1.2.6",
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
     "@types/react-with-styles": "^4.0.2",
     "electron": "^7.1.7",
+    "electron-devtools-installer": "^2.2.4",
     "html-webpack-plugin": "^3.2.0",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.4",
@@ -27,6 +30,7 @@
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
+    "@reach/router": "^1.2.1",
     "apollo-server": "^2.9.14",
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",

@@ -6,6 +6,11 @@ import WithStylesContext from 'react-with-styles/lib/WithStylesContext';
 // @ts-ignore
 import AphroditeInterface from 'react-with-styles-interface-aphrodite';
 import DefaultTheme from '../client/theme/DefaultTheme';
+import {
+  createMemorySource,
+  createHistory,
+  LocationProvider
+} from "@reach/router";
 
 import App from "./App";
 
@@ -21,14 +26,19 @@ document.body.style.position = "relative";
 const reactRoot = document.createElement("div");
 document.body.appendChild(reactRoot);
 
+const source = createMemorySource("/");
+const history = createHistory(source);
+
 function Bootstrap() {
-  return <WithStylesContext.Provider
-    value={{
-      stylesInterface: AphroditeInterface,
-      stylesTheme: DefaultTheme
-    }}>
-    <App />
-  </WithStylesContext.Provider>
+  return <LocationProvider history={history}>
+    <WithStylesContext.Provider
+      value={{
+        stylesInterface: AphroditeInterface,
+        stylesTheme: DefaultTheme
+      }}>
+      <App />
+    </WithStylesContext.Provider>
+  </LocationProvider>
 }
 
 ReactDom.render(<Bootstrap />, reactRoot);

@@ -3,12 +3,15 @@ import VoteDistributions from "./VoteDistributions";
 import { createStylesFn } from "../theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import { PrimaryButton } from "office-ui-fabric-react/lib/Button";
+import { RouteComponentProps } from "@reach/router";
 
 const votes = {
   3: 2,
   5: 5,
   8: 1
 };
+
+export type VoteResultsPageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
   container: {
@@ -34,7 +37,7 @@ function averageOfVotes(votes: Record<number, number>) {
   return total / count;
 }
 
-export default function VoteResultsPage() {
+export default function VoteResultsPage({ }: VoteResultsPageProps) {
   const { css, styles } = useStyles({ stylesFn });
 
   return <div {...css(styles.container)}>
