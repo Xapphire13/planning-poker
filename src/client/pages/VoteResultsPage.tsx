@@ -4,6 +4,7 @@ import { createStylesFn } from "../theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import { PrimaryButton } from "office-ui-fabric-react/lib/Button";
 import { RouteComponentProps } from "@reach/router";
+import { Stack, StackItem } from "office-ui-fabric-react/lib/Stack";
 
 const votes = {
   3: 2,
@@ -14,15 +15,8 @@ const votes = {
 export type VoteResultsPageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    justifyContent: "space-between"
-  },
-  averageVoteContainer: {
-    margin: `${unit}px 0`,
-    textAlign: "center"
+  contentContainer: {
+    padding: unit,
   }
 }));
 
@@ -37,14 +31,16 @@ function averageOfVotes(votes: Record<number, number>) {
   return total / count;
 }
 
-export default function VoteResultsPage({ }: VoteResultsPageProps) {
+export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
   const { css, styles } = useStyles({ stylesFn });
 
-  return <div {...css(styles.container)}>
-    <div {...css(styles.averageVoteContainer)}>Average: {averageOfVotes(votes).toPrecision(1)}</div>
+  return <Stack verticalFill verticalAlign="space-between">
+    <div {...css(styles.contentContainer)}>
+      <div>Average: {averageOfVotes(votes).toPrecision(1)}</div>
+    </div>
     <div>
       <VoteDistributions votes={votes} />
     </div>
-    <PrimaryButton>New vote</PrimaryButton>
-  </div>
+    <PrimaryButton onClick={() => navigate?.("/vote")}>New vote</PrimaryButton>
+  </Stack>;
 }

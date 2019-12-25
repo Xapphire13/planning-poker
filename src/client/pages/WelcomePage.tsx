@@ -3,7 +3,7 @@ import { RouteComponentProps } from "@reach/router";
 import { PrimaryButton } from "office-ui-fabric-react/lib/Button";
 import { createStylesFn } from "../theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
-import { Stack } from "office-ui-fabric-react/lib/Stack";
+import { Stack, StackItem } from "office-ui-fabric-react/lib/Stack";
 import Theme from "../theme/DefaultTheme";
 import IpcChannel from ":shared/IpcChannel";
 
@@ -12,13 +12,17 @@ const { ipcRenderer } = window.require("electron");
 export type WelcomePageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
-  container: {
-    padding: unit
+  contentContainer: {
+    padding: unit,
+    height: `calc(100% - ${2 * unit}px)`
   },
   header: {
     fontSize: 48,
     fontWeight: "bold",
     marginBottom: unit * 4
+  },
+  ipAddress: {
+    fontWeight: "bold"
   }
 }));
 
@@ -52,19 +56,23 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
   }, []);
 
   return <>
-    {!isLoading && <div {...css(styles.container)}>
-      <div {...css(styles.header)}>
-        Planning Poker
-      </div>
-      <Stack gap={Theme.unit}>
-        <div>
-          To join, go to: http://{ipAddress}
+    {!isLoading && <Stack verticalFill>
+      <StackItem grow>
+        <div {...css(styles.contentContainer)}>
+          <div {...css(styles.header)}>
+            Planning Poker
+          </div>
+          <Stack>
+            <div>
+              To join, go to: <span {...css(styles.ipAddress)}>http://{ipAddress}</span>
+            </div>
+            <div>
+              {numberOfPeopleConnected} people connected
+          </div>
+          </Stack>
         </div>
-        <div>
-          {numberOfPeopleConnected} people connected
-      </div>
-        <PrimaryButton disabled={numberOfPeopleConnected < 2} onClick={() => navigate?.("/vote", { state: { numberOfPeople: numberOfPeopleConnected } })}>Ready!</PrimaryButton>
-      </Stack>
-    </div>}
-  </>
+      </StackItem>
+      <PrimaryButton disabled={numberOfPeopleConnected < 2} onClick={() => navigate?.("/vote", { state: { numberOfPeople: numberOfPeopleConnected } })}>Ready!</PrimaryButton>
+    </Stack>}
+  </>;
 }
