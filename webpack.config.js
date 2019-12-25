@@ -17,6 +17,11 @@ const baseConfig = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
+    alias: {
+      ":client": path.resolve(__dirname, "./src/client"),
+      ":shared": path.resolve(__dirname, "./src/shared"),
+      ":server": path.resolve(__dirname, "./src/server")
+    }
   },
   plugins: [new webpack.ProgressPlugin()],
 }

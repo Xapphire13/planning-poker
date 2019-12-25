@@ -5,6 +5,7 @@ import { createStylesFn } from "../theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import { Stack } from "office-ui-fabric-react/lib/Stack";
 import Theme from "../theme/DefaultTheme";
+import IpcChannel from ":shared/IpcChannel";
 
 const { ipcRenderer } = window.require("electron");
 
@@ -28,7 +29,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
   const [numberOfPeopleConnected, setNumberOfPeopleConnected] = useState(0);
 
   useEffect(() => {
-    ipcRenderer.invoke("get-ip").then((ip: string) => {
+    ipcRenderer.invoke(IpcChannel.GetIp).then((ip: string) => {
       setIpAddress(ip);
       setIsLoading(false);
     });
@@ -38,15 +39,15 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
     const personConnectedListener = () => setNumberOfPeopleConnected(prev => prev + 1);
 
     (async () => {
-      const count: number = await ipcRenderer.invoke("get-connected-count");
+      const count: number = await ipcRenderer.invoke(IpcChannel.GetConnectedCount);
       setNumberOfPeopleConnected(prev => prev + count);
 
-      ipcRenderer.addListener("person-connected", personConnectedListener);
+      ipcRenderer.addListener(IpcChannel.PersonConnected, personConnectedListener);
     })();
 
     // Cleanup
     return () => {
-      ipcRenderer.removeListener("person-connected", personConnectedListener);
+      ipcRenderer.removeListener(IpcChannel.PersonConnected, personConnectedListener);
     };
   }, []);
 

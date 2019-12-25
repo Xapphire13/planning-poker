@@ -3,6 +3,7 @@ import { ApolloServer } from "apollo-server";
 import gql from "graphql-tag";
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import internalIp from "internal-ip";
+import IpcChannel from ":shared/IpcChannel";
 
 function createWindow() {
   let win = new BrowserWindow({
@@ -46,17 +47,13 @@ const resolvers = {
 
   await app.whenReady();
 
-  ipcMain.handle("get-ip", () => {
+  ipcMain.handle(IpcChannel.GetIp, () => {
     return internalIp.v4();
   });
 
-  ipcMain.handle("get-connected-count", () => 10);
+  // TODO
+  ipcMain.handle(IpcChannel.GetConnectedCount, () => 10);
 
   await installExtension(REACT_DEVELOPER_TOOLS);
   const window = createWindow();
-
-  // TODO, remove me
-  setInterval(() => {
-    window.webContents.send("vote-cast");
-  }, 2000);
 })();
