@@ -58,8 +58,9 @@ const resolvers = {
     })
   },
   Mutation: {
-    join: (_: any, user: User) => {
-      if (!joinedUsers.has(String(user.id))) {
+    join: (_: any, args: Record<string, any>) => {
+      const user: User = args.user;
+      if (!joinedUsers.has(user.id)) {
         joinedUsers.set(user.id, user);
 
         if (window) {

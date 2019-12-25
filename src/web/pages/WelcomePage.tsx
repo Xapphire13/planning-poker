@@ -8,6 +8,8 @@ import useStyles from "react-with-styles/lib/hooks/useStyles";
 import User from ":shared/User";
 import uuid from "uuid/v4";
 import LocalStorageUtils from ":web/LocalStorageUtils";
+import { useMutation } from "@apollo/react-hooks";
+import gql from "graphql-tag";
 
 export type WelcomePageProps = RouteComponentProps;
 
@@ -20,10 +22,19 @@ const stylesFn = createStylesFn(({ unit }) => ({
   }
 }));
 
+const JOIN_MUTATION = gql`
+mutation JoinSession($user: UserInput!){
+  join(user: $user) {
+    success
+  }
+}
+`;
+
 export default function WelcomePage({ }: WelcomePageProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [name, setName] = useState<string>();
   const [userId, setUserId] = useState<string>();
+  const [joinSession] = useMutation(JOIN_MUTATION);
 
   useEffect(() => {
     let user = LocalStorageUtils.getItem<User>("user");
@@ -47,6 +58,15 @@ export default function WelcomePage({ }: WelcomePageProps) {
       id: userId!,
       name: name!
     })
+
+    joinSession({
+      variables: {
+        user: {
+          id: userId,
+          name: name
+        }
+      }
+    }).then(() => console.log("joined"));
   }
 
   return <Stack verticalFill>

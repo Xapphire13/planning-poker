@@ -9,19 +9,24 @@ import {
   LocationProvider
 } from "@reach/router";
 import BoostrapReactRoot from ":shared/BootstrapReactRoot";
-
+import ApolloClient from "apollo-boost";
+import { ApolloProvider } from "@apollo/react-hooks"
 import App from "./App";
 
+const client = new ApolloClient();
+
 function Bootstrap() {
-  return <LocationProvider>
-    <WithStylesContext.Provider
-      value={{
-        stylesInterface: AphroditeInterface,
-        stylesTheme: DefaultTheme
-      }}>
-      <App />
-    </WithStylesContext.Provider>
-  </LocationProvider>
+  return <ApolloProvider client={client}>
+    <LocationProvider>
+      <WithStylesContext.Provider
+        value={{
+          stylesInterface: AphroditeInterface,
+          stylesTheme: DefaultTheme
+        }}>
+        <App />
+      </WithStylesContext.Provider>
+    </LocationProvider>
+  </ApolloProvider>;
 }
 
 BoostrapReactRoot(Bootstrap);
