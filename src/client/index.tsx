@@ -27,8 +27,6 @@ const reactRoot = document.createElement("div");
 document.body.appendChild(reactRoot);
 
 const source = createMemorySource("/");
-// HACKHACK: worksaround a bug in memory history
-source.history.replaceState(null, "", "/");
 const history = createHistory(source);
 
 function Bootstrap() {
