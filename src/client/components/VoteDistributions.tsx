@@ -1,6 +1,6 @@
 import React from "react";
 import VoteDistributionRow from "./VoteDistributionRow";
-import { createStylesFn } from "../theme/createStylesFn";
+import { createStylesFn } from "../../shared/theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 
 export type VoteDistributionsProps = {

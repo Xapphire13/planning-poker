@@ -1,6 +1,6 @@
 import React from "react";
 import VoteDistributions from "../components/VoteDistributions";
-import { createStylesFn } from "../theme/createStylesFn";
+import { createStylesFn } from "../../shared/theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import { PrimaryButton } from "office-ui-fabric-react/lib/Button";
 import { RouteComponentProps } from "@reach/router";

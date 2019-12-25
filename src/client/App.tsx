@@ -5,7 +5,7 @@ import {
 } from "@reach/router";
 
 import VoteResultsPage from "./pages/VoteResultsPage";
-import { createStylesFn } from "./theme/createStylesFn";
+import { createStylesFn } from "../shared/theme/createStylesFn";
 import WelcomePage from "./pages/WelcomePage";
 import VotePage from "./pages/VotePage";
 

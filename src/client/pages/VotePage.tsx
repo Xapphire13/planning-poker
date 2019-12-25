@@ -5,7 +5,7 @@ import IpcChannel from ":shared/IpcChannel";
 import { Stack, StackItem } from "office-ui-fabric-react/lib/Stack";
 import { DefaultButton } from "office-ui-fabric-react/lib/Button";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
-import { createStylesFn } from ":client/theme/createStylesFn";
+import { createStylesFn } from ":shared/theme/createStylesFn";
 
 const { ipcRenderer } = window.require("electron");
 

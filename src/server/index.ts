@@ -1,9 +1,13 @@
 import { app, BrowserWindow, ipcMain } from "electron";
-import { ApolloServer } from "apollo-server";
+import express from "express";
+import { ApolloServer, IResolvers } from "apollo-server-express";
 import gql from "graphql-tag";
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import internalIp from "internal-ip";
 import IpcChannel from ":shared/IpcChannel";
+import path from "path";
+
+const PORT = 4000;
 
 function createWindow() {
   let win = new BrowserWindow({
@@ -40,10 +44,14 @@ const resolvers = {
 };
 
 (async () => {
-  const server = new ApolloServer({ typeDefs, resolvers });
-  server.listen().then(({ url }) => {
-    console.log(`Ready at ${url}`);
-  })
+  const expressServer = express();
+  const apolloServer = new ApolloServer({ typeDefs, resolvers });
+
+  apolloServer.applyMiddleware({ app: expressServer });
+  expressServer.use(express.static(path.resolve(__dirname, "web")));
+
+  await new Promise((res) => expressServer.listen(PORT, res));
+  console.log(`Ready at http://localhost:${PORT}`);
 
   await app.whenReady();
 

@@ -20,7 +20,8 @@ const baseConfig = {
     alias: {
       ":client": path.resolve(__dirname, "./src/client"),
       ":shared": path.resolve(__dirname, "./src/shared"),
-      ":server": path.resolve(__dirname, "./src/server")
+      ":server": path.resolve(__dirname, "./src/server"),
+      ":web": path.resolve(__dirname, "./src/web")
     }
   },
   plugins: [new webpack.ProgressPlugin()],
@@ -34,13 +35,29 @@ const clientConfig = {
   output: {
     filename: 'client.js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: "./"
   },
   plugins: [
     ...baseConfig.plugins,
     new HtmlWebpackPlugin()
   ]
 };
+
+const webConfig = {
+  ...baseConfig,
+
+  entry: "./src/web/index.tsx",
+  target: "web",
+  output: {
+    filename: 'web.js',
+    path: path.resolve(__dirname, 'dist/web'),
+  },
+  plugins: [
+    ...baseConfig.plugins,
+    new HtmlWebpackPlugin({
+      title: "Planning Poker"
+    })
+  ]
+}
 
 const serverConfig = {
   ...baseConfig,
@@ -51,7 +68,10 @@ const serverConfig = {
     filename: 'server.js',
     path: path.resolve(__dirname, 'dist')
   },
-  externals: [nodeExternals()]
+  externals: [nodeExternals()],
+  node: {
+    __dirname: false
+  }
 }
 
-module.exports = [clientConfig, serverConfig];
+module.exports = [clientConfig, serverConfig, webConfig];

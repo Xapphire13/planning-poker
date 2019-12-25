@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "@reach/router";
 import { PrimaryButton } from "office-ui-fabric-react/lib/Button";
-import { createStylesFn } from "../theme/createStylesFn";
+import { createStylesFn } from "../../shared/theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import { Stack, StackItem } from "office-ui-fabric-react/lib/Stack";
-import Theme from "../theme/DefaultTheme";
+import Theme from "../../shared/theme/DefaultTheme";
 import IpcChannel from ":shared/IpcChannel";
 
 const { ipcRenderer } = window.require("electron");

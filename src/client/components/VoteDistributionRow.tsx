@@ -1,6 +1,6 @@
 import React from "react";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
-import { createStylesFn } from "../theme/createStylesFn";
+import { createStylesFn } from "../../shared/theme/createStylesFn";
 import { CSSProperties } from "react-with-styles";
 import { Persona } from "office-ui-fabric-react/lib/Persona";
 
