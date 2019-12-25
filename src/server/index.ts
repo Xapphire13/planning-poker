@@ -6,6 +6,7 @@ import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-insta
 import internalIp from "internal-ip";
 import IpcChannel from ":shared/IpcChannel";
 import path from "path";
+import User from ":shared/User";
 
 const PORT = 4000;
 
@@ -24,22 +25,53 @@ function createWindow() {
 }
 
 const typeDefs = gql`
-  type Test {
-    text: String
+  type User {
+    id: ID!
+    name: String!
+  }
+
+  type VoidResult {
+    success: Boolean!
   }
 
   type Query {
-    tests: [Test]
+    noop: VoidResult
+  }
+
+  input UserInput {
+    id: ID!
+    name: String!
+  }
+
+  type Mutation {
+    join(user: UserInput): VoidResult
   }
 `;
 
-const testData = [
-  { text: "foobar" }
-];
+let window: BrowserWindow | undefined;
+const joinedUsers: Map<string, User> = new Map();
 
 const resolvers = {
   Query: {
-    tests: () => Promise.resolve(testData)
+    noop: () => ({
+      success: true
+    })
+  },
+  Mutation: {
+    join: (_: any, user: User) => {
+      if (!joinedUsers.has(String(user.id))) {
+        joinedUsers.set(user.id, user);
+
+        if (window) {
+          window.webContents.send(IpcChannel.PersonConnected);
+        }
+      }
+
+
+      return {
+        success: true
+      }
+    }
   }
 };
 
@@ -59,9 +91,8 @@ const resolvers = {
     return internalIp.v4();
   });
 
-  // TODO
-  ipcMain.handle(IpcChannel.GetConnectedCount, () => 10);
+  ipcMain.handle(IpcChannel.GetConnectedCount, () => joinedUsers.size);
 
   await installExtension(REACT_DEVELOPER_TOOLS);
-  const window = createWindow();
+  window = createWindow();
 })();
