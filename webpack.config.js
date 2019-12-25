@@ -54,7 +54,10 @@ const webConfig = {
   plugins: [
     ...baseConfig.plugins,
     new HtmlWebpackPlugin({
-      title: "Planning Poker"
+      title: "Planning Poker",
+      meta: {
+        viewport: "width=device-width, initial-scale=1"
+      }
     })
   ]
 }

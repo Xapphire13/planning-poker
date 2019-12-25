@@ -9,7 +9,7 @@ import { createStylesFn } from "../shared/theme/createStylesFn";
 import WelcomePage from "./pages/WelcomePage";
 import VotePage from "./pages/VotePage";
 
-const stylesFn = createStylesFn(() => ({
+const stylesFn = createStylesFn(({ color, fontFamily }) => ({
   container: {
     "@import": "url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap')",
     position: "absolute",
@@ -17,9 +17,9 @@ const stylesFn = createStylesFn(() => ({
     bottom: 0,
     left: 0,
     right: 0,
-    background: "#242426",
-    color: "#ffffff",
-    fontFamily: ['Roboto', "sans-serif"]
+    background: color.background,
+    color: color.text.default,
+    fontFamily: fontFamily
   }
 }));
 
