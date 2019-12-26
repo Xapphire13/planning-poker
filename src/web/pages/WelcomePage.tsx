@@ -35,7 +35,7 @@ mutation JoinSession($user: UserInput!){
 }
 `;
 
-export default function WelcomePage({ }: WelcomePageProps) {
+export default function WelcomePage({ navigate }: WelcomePageProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [name, setName] = useState<string>();
   const [userId, setUserId] = useState<string>();
@@ -62,17 +62,21 @@ export default function WelcomePage({ }: WelcomePageProps) {
     LocalStorageUtils.setItem<User>("user", {
       id: userId!,
       name: name!
-    })
+    });
 
-    joinSession({
-      variables: {
-        user: {
-          id: userId,
-          name: name
+    (async () => {
+      await joinSession({
+        variables: {
+          user: {
+            id: userId,
+            name: name
+          }
         }
-      }
-    }).then(() => console.log("joined"));
-  }
+      });
+
+      navigate?.("/waiting");
+    })();
+  };
 
   return <>
     <AppBar position="static">

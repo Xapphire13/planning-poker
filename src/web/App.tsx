@@ -3,6 +3,7 @@ import { Router } from "@reach/router";
 import WelcomePage from ":web/pages/WelcomePage";
 import { createStylesFn } from ":shared/theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
+import WaitingPage from ":web/pages/WaitingPage";
 
 const stylesFn = createStylesFn(({ color, fontFamily }) => ({
   container: {
@@ -23,5 +24,6 @@ export default function App() {
 
   return <Router {...css(styles.container)}>
     <WelcomePage path="/" />
+    <WaitingPage path="/waiting" />
   </Router>
 }

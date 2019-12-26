@@ -82,6 +82,10 @@ const resolvers = {
 
   apolloServer.applyMiddleware({ app: expressServer });
   expressServer.use(express.static(path.resolve(__dirname, "web")));
+  // Redirect all other traffic to app entry point
+  expressServer.get(/\/.+/, (_, res) => {
+    res.redirect("/");
+  })
 
   await new Promise((res) => expressServer.listen(PORT, res));
   console.log(`Ready at http://localhost:${PORT}`);
