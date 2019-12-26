@@ -6,13 +6,13 @@ import User from ":shared/User";
 import uuid from "uuid/v4";
 import LocalStorageUtils from ":web/LocalStorageUtils";
 import { useMutation } from "@apollo/react-hooks";
-import gql from "graphql-tag";
 import Button from "@material-ui/core/Button";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typeography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
+import gql from "graphql-tag";
 export type WelcomePageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({

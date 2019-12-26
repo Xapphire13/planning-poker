@@ -6,6 +6,8 @@ import { RouteComponentProps } from "@reach/router";
 import { createStylesFn } from ":shared/theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import Button from "@material-ui/core/Button";
+import { useSubscription } from "@apollo/react-hooks";
+import gql from "graphql-tag";
 
 export type WaitingPageProps = RouteComponentProps;
 
@@ -26,8 +28,25 @@ const stylesFn = createStylesFn(() => ({
   }
 }));
 
-export default function WaitingPage({ }: WaitingPageProps) {
+const VOTING_STARTED_SUBSCRIPTION = gql`
+  subscription onVotingStarted {
+    votingStarted {
+      success
+    }
+  }
+`;
+
+export default function WaitingPage({ navigate }: WaitingPageProps) {
   const { css, styles } = useStyles({ stylesFn });
+  useSubscription(VOTING_STARTED_SUBSCRIPTION, {
+    shouldResubscribe: true,
+    onSubscriptionData: ({ subscriptionData }) => {
+      console.log(subscriptionData);
+      if (subscriptionData?.data?.votingStarted?.success) {
+        navigate?.("/vote");
+      }
+    }
+  });
 
   return <Container maxWidth="sm" {...css(styles.container)}>
     <Typography>Waiting for vote to start</Typography>

@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import express from "express";
-import { ApolloServer, IResolvers } from "apollo-server-express";
-import gql from "graphql-tag";
+import { createServer } from "http";
+import { ApolloServer, PubSub, IResolvers, gql } from "apollo-server-express";
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import internalIp from "internal-ip";
 import IpcChannel from ":shared/IpcChannel";
@@ -34,24 +34,33 @@ const typeDefs = gql`
     success: Boolean!
   }
 
-  type Query {
-    noop: VoidResult
-  }
-
   input UserInput {
     id: ID!
     name: String!
   }
 
+  type Query {
+    noop: VoidResult
+  }
+
   type Mutation {
     join(user: UserInput): VoidResult
   }
+
+  type Subscription {
+    votingStarted: VoidResult
+  }
 `;
+
+enum SubscriptionTrigger {
+  VotingStarted = "VOTING_STARTED"
+}
 
 let window: BrowserWindow | undefined;
 const joinedUsers: Map<string, User> = new Map();
+const pubsub = new PubSub();
 
-const resolvers = {
+const resolvers: IResolvers = {
   Query: {
     noop: () => ({
       success: true
@@ -73,22 +82,32 @@ const resolvers = {
         success: true
       }
     }
+  },
+  Subscription: {
+    votingStarted: {
+      subscribe: () => pubsub.asyncIterator([SubscriptionTrigger.VotingStarted])
+    }
   }
 };
 
 (async () => {
   const expressServer = express();
-  const apolloServer = new ApolloServer({ typeDefs, resolvers });
+  const apolloServer = new ApolloServer({
+    typeDefs, resolvers
+  });
+  const httpServer = createServer(expressServer);
 
   apolloServer.applyMiddleware({ app: expressServer });
+  apolloServer.installSubscriptionHandlers(httpServer);
   expressServer.use(express.static(path.resolve(__dirname, "web")));
   // Redirect all other traffic to app entry point
   expressServer.get(/\/.+/, (_, res) => {
     res.redirect("/");
   })
 
-  await new Promise((res) => expressServer.listen(PORT, res));
-  console.log(`Ready at http://localhost:${PORT}`);
+  await new Promise((res) => httpServer.listen(PORT, res));
+  console.log(`GraphQL ready at http://localhost:${PORT}${apolloServer.graphqlPath}`);
+  console.log(`GraphQL subscriptions ready at ws://localhost:${PORT}${apolloServer.subscriptionsPath}`);
 
   await app.whenReady();
 
@@ -100,4 +119,10 @@ const resolvers = {
 
   await installExtension(REACT_DEVELOPER_TOOLS);
   window = createWindow();
+
+  // TODO, remove
+  // Example of how to trigger a subscription
+  // setInterval(() => {
+  //   pubsub.publish(SubscriptionTrigger.VotingStarted, { votingStarted: { success: true } });
+  // }, 1000);
 })();
