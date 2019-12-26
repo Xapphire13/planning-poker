@@ -10,6 +10,10 @@ import User from ":shared/User";
 
 const PORT = 4000;
 
+interface Context {
+  userId?: string
+}
+
 function createWindow() {
   let win = new BrowserWindow({
     width: 300,
@@ -34,17 +38,13 @@ const typeDefs = gql`
     success: Boolean!
   }
 
-  input UserInput {
-    id: ID!
-    name: String!
-  }
-
   type Query {
     noop: VoidResult
   }
 
   type Mutation {
-    join(user: UserInput): VoidResult
+    join(name: String!): VoidResult
+    vote: VoidResult
   }
 
   type Subscription {
@@ -60,17 +60,19 @@ let window: BrowserWindow | undefined;
 const joinedUsers: Map<string, User> = new Map();
 const pubsub = new PubSub();
 
-const resolvers: IResolvers = {
+const resolvers: IResolvers<any, Context> = {
   Query: {
     noop: () => ({
       success: true
     })
   },
   Mutation: {
-    join: (_: any, args: Record<string, any>) => {
-      const user: User = args.user;
-      if (!joinedUsers.has(user.id)) {
-        joinedUsers.set(user.id, user);
+    join: (_: any, { name }: Record<string, any>, { userId }) => {
+      if (userId && !joinedUsers.has(userId)) {
+        joinedUsers.set(userId, {
+          id: userId,
+          name
+        });
 
         if (window) {
           window.webContents.send(IpcChannel.PersonConnected);
@@ -93,7 +95,22 @@ const resolvers: IResolvers = {
 (async () => {
   const expressServer = express();
   const apolloServer = new ApolloServer({
-    typeDefs, resolvers
+    typeDefs,
+    resolvers,
+    context: ({ req }): Context => {
+      const userId = req?.header("X-USER-ID");
+
+      return {
+        userId
+      };
+    },
+    subscriptions: {
+      onConnect: ({ userId }: any): Context => {
+        return {
+          userId
+        }
+      }
+    }
   });
   const httpServer = createServer(expressServer);
 

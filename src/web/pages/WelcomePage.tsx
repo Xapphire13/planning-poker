@@ -3,7 +3,6 @@ import { RouteComponentProps } from "@reach/router";
 import { createStylesFn } from ":shared/theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import User from ":shared/User";
-import uuid from "uuid/v4";
 import LocalStorageUtils from ":web/LocalStorageUtils";
 import { useMutation } from "@apollo/react-hooks";
 import Button from "@material-ui/core/Button";
@@ -28,8 +27,8 @@ const stylesFn = createStylesFn(({ unit }) => ({
 }));
 
 const JOIN_MUTATION = gql`
-mutation JoinSession($user: UserInput!){
-  join(user: $user) {
+mutation JoinSession($name: String!){
+  join(name: $name) {
     success
   }
 }
@@ -42,19 +41,9 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
   const [joinSession] = useMutation(JOIN_MUTATION);
 
   useEffect(() => {
-    let user = LocalStorageUtils.getItem<User>("user");
+    let user = LocalStorageUtils.getItem<User>("user")!;
 
-    if (user) {
-      setName(user.name);
-    } else {
-      user = {
-        id: uuid(),
-        name: ""
-      };
-
-      LocalStorageUtils.setItem("user", user);
-    }
-
+    setName(user.name);
     setUserId(user.id);
   }, []);
 
@@ -67,10 +56,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
     (async () => {
       await joinSession({
         variables: {
-          user: {
-            id: userId,
-            name: name
-          }
+          name
         }
       });
 

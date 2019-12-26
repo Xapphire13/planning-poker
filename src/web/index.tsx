@@ -16,11 +16,25 @@ import App from "./App";
 import { ThemeProvider } from "@material-ui/core";
 import { split, from } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
+import { setContext } from "apollo-link-context";
 import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
 import { onError } from "apollo-link-error";
+import LocalStorageUtils from "./LocalStorageUtils";
+import User from ":shared/User";
+import uuid from "uuid/v4";
 
 const HOST = window.location.host;
+
+// Create user if not-exists
+let user = LocalStorageUtils.getItem<User>("user");
+if (!user) {
+  user = {
+    id: uuid(),
+    name: ""
+  };
+}
+LocalStorageUtils.setItem("user", user);
 
 const httpLink = new HttpLink({
   uri: `http://${HOST}/graphql`
@@ -29,6 +43,9 @@ const httpLink = new HttpLink({
 const wsLink = new WebSocketLink({
   uri: `ws://${HOST}/graphql`,
   options: {
+    connectionParams: {
+      userId: user!.id
+    },
     reconnect: true,
     reconnectionAttempts: 10
   },
@@ -46,6 +63,15 @@ const apolloLink = split(
   httpLink,
 );
 
+const linkContext = setContext((_, { headers }) => {
+  return {
+    headers: {
+      ...headers,
+      "X-USER-ID": user!.id
+    }
+  }
+});
+
 const onErrorHandler = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
     graphQLErrors.forEach(({ message, locations, path }) =>
@@ -53,11 +79,11 @@ const onErrorHandler = onError(({ graphQLErrors, networkError }) => {
         `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
       )
     );
-  if (networkError) console.log(`[Network error]: ${networkError}`);
+  if (networkError) console.log(`[Network error]: ${JSON.stringify(networkError)}`);
 });
 
 const client = new ApolloClient({
-  link: from([onErrorHandler, apolloLink]),
+  link: linkContext.concat(from([onErrorHandler, apolloLink])),
   cache: new InMemoryCache()
 });
 
