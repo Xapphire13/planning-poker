@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "@reach/router";
 import UserDetailsInput from ":web/components/UserDetailsInput";
-import { PrimaryButton } from "office-ui-fabric-react/lib/Button";
-import { Stack, StackItem } from "office-ui-fabric-react/lib/Stack";
 import { createStylesFn } from ":shared/theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import User from ":shared/User";
@@ -10,12 +8,18 @@ import uuid from "uuid/v4";
 import LocalStorageUtils from ":web/LocalStorageUtils";
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
+import Button from "@material-ui/core/Button";
+import Grid from "@material-ui/core/Grid";
 
 export type WelcomePageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
+  container: {
+    height: "100%",
+  },
   contentContainer: {
-    padding: unit
+    padding: unit,
+    flexGrow: 1,
   },
   heading: {
     marginTop: 0
@@ -69,11 +73,11 @@ export default function WelcomePage({ }: WelcomePageProps) {
     }).then(() => console.log("joined"));
   }
 
-  return <Stack verticalFill>
-    <StackItem grow {...css(styles.contentContainer)}>
+  return <Grid container direction="column" {...css(styles.container)}>
+    <Grid child {...css(styles.contentContainer)}>
       <h1 {...css(styles.heading)}>Planning Poker</h1>
       <UserDetailsInput name={name} onNameChanged={setName} />
-    </StackItem>
-    <PrimaryButton disabled={!name || !userId} onClick={handleJoin}>Join</PrimaryButton>
-  </Stack>;
+    </Grid>
+    <Button variant="contained" color="primary" disabled={!name || !userId} onClick={handleJoin}>Join</Button>
+  </Grid>;
 }

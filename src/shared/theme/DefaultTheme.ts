@@ -1,4 +1,5 @@
 import { loadTheme } from "office-ui-fabric-react/lib/Styling"
+import { createMuiTheme } from "@material-ui/core";
 
 const theme = {
   unit: 8,
@@ -12,14 +13,10 @@ const theme = {
   }
 };
 
-export const officeTheme = loadTheme({
-  defaultFontStyle: {
-    fontFamily: theme.fontFamily.join((", "))
-  },
-  semanticColors: {
-    bodyBackground: theme.color.background,
-    bodyText: theme.color.text.default,
+export const muiTheme = createMuiTheme({
+  palette: {
+    type: "dark"
   }
-})
+});
 
 export default theme;

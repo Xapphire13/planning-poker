@@ -1,19 +1,7 @@
 import React from "react";
-import { Stack } from "office-ui-fabric-react/lib/Stack";
-import { TextField } from "office-ui-fabric-react/lib/TextField";
-import Theme, { officeTheme } from ":shared/theme/DefaultTheme";
-import { ITheme } from "office-ui-fabric-react/lib/Styling";
 import { createStylesFn } from ":shared/theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
-
-const inputTheme: ITheme = {
-  ...officeTheme,
-  semanticColors: {
-    ...officeTheme.semanticColors,
-    inputBackground: Theme.color.background,
-    inputText: Theme.color.text.default,
-  }
-};
+import TextField from "@material-ui/core/TextField";
 
 const stylesFn = createStylesFn(({ color, unit }) => ({
   headerContainer: {
@@ -34,7 +22,7 @@ export type UserDetailsInputProps = {
   onNameChanged: (newName: string | undefined) => void;
 }
 
-export default function UserDetailsInput({ name, onNameChanged }: UserDetailsInputProps) {
+export default function UserDetailsInput({ name = '', onNameChanged }: UserDetailsInputProps) {
   const { css, styles } = useStyles({ stylesFn });
 
   return <>
@@ -42,9 +30,7 @@ export default function UserDetailsInput({ name, onNameChanged }: UserDetailsInp
       <h2 {...css(styles.header)}>Please enter your information</h2>
     </div>
     <div {...css(styles.fieldContainer)}>
-      <Stack>
-        <TextField label="Name" required underlined theme={inputTheme} value={name} onChange={(_, newValue) => onNameChanged(newValue)} />
-      </Stack>
+      <TextField label="Name" required fullWidth value={name} onChange={(ev) => onNameChanged(ev.target.value)} />
     </div>
   </>;
 }
