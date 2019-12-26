@@ -1,21 +1,22 @@
-import { loadTheme } from "office-ui-fabric-react/lib/Styling"
 import { createMuiTheme } from "@material-ui/core";
+import deepPurple from "@material-ui/core/colors/deepPurple";
+import grey from "@material-ui/core/colors/grey";
 
 const theme = {
   unit: 8,
   fontFamily: ['Roboto', "sans-serif"],
   color: {
-    background: "#242426",
+    background: grey[900],
     text: {
       default: "#fff"
     },
-    rule: "#888"
   }
 };
 
 export const muiTheme = createMuiTheme({
   palette: {
-    type: "dark"
+    type: "dark",
+    primary: deepPurple
   }
 });
 

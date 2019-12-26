@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "@reach/router";
-import UserDetailsInput from ":web/components/UserDetailsInput";
 import { createStylesFn } from ":shared/theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import User from ":shared/User";
@@ -9,20 +8,22 @@ import LocalStorageUtils from ":web/LocalStorageUtils";
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typeography from "@material-ui/core/Typography";
+import Container from "@material-ui/core/Container";
+import TextField from "@material-ui/core/TextField";
 export type WelcomePageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
-  container: {
-    height: "100%",
+  marginTop: {
+    marginTop: unit
   },
-  contentContainer: {
-    padding: unit,
-    flexGrow: 1,
-  },
-  heading: {
-    marginTop: 0
+  button: {
+    marginTop: unit,
+    marginLeft: "auto",
+    marginRight: "auto",
+    display: "block"
   }
 }));
 
@@ -73,11 +74,15 @@ export default function WelcomePage({ }: WelcomePageProps) {
     }).then(() => console.log("joined"));
   }
 
-  return <Grid container direction="column" {...css(styles.container)}>
-    <Grid child {...css(styles.contentContainer)}>
-      <h1 {...css(styles.heading)}>Planning Poker</h1>
-      <UserDetailsInput name={name} onNameChanged={setName} />
-    </Grid>
-    <Button variant="contained" color="primary" disabled={!name || !userId} onClick={handleJoin}>Join</Button>
-  </Grid>;
+  return <>
+    <AppBar position="static">
+      <Toolbar variant="dense">
+        <Typeography variant="h6">Planning poker</Typeography>
+      </Toolbar>
+    </AppBar>
+    <Container maxWidth="sm" {...css(styles.marginTop)}>
+      <TextField label="Name" required fullWidth value={name ?? ''} onChange={(ev) => setName(ev.target.value)} />
+      <Button {...css(styles.button)} variant="contained" color="primary" disabled={!name || !userId} onClick={handleJoin}>Join</Button>
+    </Container>
+  </>;
 }
