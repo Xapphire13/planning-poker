@@ -2,19 +2,27 @@ import React, { useState, useEffect } from "react";
 import VoteDistributions from "../components/VoteDistributions";
 import { createStylesFn } from "../../shared/theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
-import { PrimaryButton } from "office-ui-fabric-react/lib/Button";
 import { RouteComponentProps } from "@reach/router";
-import { Stack } from "office-ui-fabric-react/lib/Stack";
 import IpcChannel from ":shared/IpcChannel";
 import User from ":shared/User";
+import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
 
 const { ipcRenderer } = window.require("electron");
 
 export type VoteResultsPageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
-  contentContainer: {
-    padding: unit,
+  container: {
+    margin: `${unit}px 0`,
+    height: `calc(100% - ${2 * unit}px)`
+  },
+  button: {
+    display: "block",
+    marginLeft: "auto",
+    marginRight: "auto"
   }
 }));
 
@@ -56,14 +64,20 @@ export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
   }, []);
 
   return <>
-    {votes && <Stack verticalFill verticalAlign="space-between">
-      <div {...css(styles.contentContainer)}>
-        <div>Average: {averageOfVotes(votes).toPrecision(1)}</div>
-      </div>
-      <div>
-        <VoteDistributions votes={votes} />
-      </div>
-      <PrimaryButton onClick={() => navigate?.("/vote", { state: { numberOfPeople: numberOfVotes(votes) } })}>New vote</PrimaryButton>
-    </Stack>}
+    {votes &&
+      <Grid container justify="space-between" direction="column" {...css(styles.container)}>
+        <Grid item>
+          <Container>
+            <Typography variant="h6">Average: {averageOfVotes(votes).toPrecision(1)}</Typography>
+          </Container>
+        </Grid>
+        <Grid item>
+          <VoteDistributions votes={votes} />
+        </Grid>
+        <Grid item>
+          <Button variant="contained" color="primary" onClick={() => navigate?.("/vote", { state: { numberOfPeople: numberOfVotes(votes) } })} {...css(styles.button)}>New vote</Button>
+        </Grid>
+      </Grid>
+    }
   </>;
 }
