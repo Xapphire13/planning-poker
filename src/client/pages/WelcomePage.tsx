@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "@reach/router";
-import { PrimaryButton } from "office-ui-fabric-react/lib/Button";
 import { createStylesFn } from "../../shared/theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
-import { Stack, StackItem } from "office-ui-fabric-react/lib/Stack";
 import IpcChannel from ":shared/IpcChannel";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import Container from "@material-ui/core/Container";
+import Button from "@material-ui/core/Button";
 
 const { ipcRenderer } = window.require("electron");
 
 export type WelcomePageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
-  contentContainer: {
-    padding: unit,
-    height: `calc(100% - ${2 * unit}px)`
-  },
-  header: {
-    fontSize: 48,
-    fontWeight: "bold",
-    marginBottom: unit * 4
+  container: {
+    margin: `${unit}px 0`,
   },
   ipAddress: {
     fontWeight: "bold"
+  },
+  readyButton: {
+    marginTop: unit,
+    display: "block",
+    marginLeft: "auto",
+    marginRight: "auto"
   }
 }));
 
@@ -62,23 +65,19 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
   }
 
   return <>
-    {!isLoading && <Stack verticalFill>
-      <StackItem grow>
-        <div {...css(styles.contentContainer)}>
-          <div {...css(styles.header)}>
-            Planning Poker
-          </div>
-          <Stack>
-            <div>
-              To join, go to: <span {...css(styles.ipAddress)}>http://{ipAddress}</span>
-            </div>
-            <div>
-              {numberOfPeopleConnected} people connected
-          </div>
-          </Stack>
-        </div>
-      </StackItem>
-      <PrimaryButton disabled={numberOfPeopleConnected < 2} onClick={handleStartVoteClicked}>Ready!</PrimaryButton>
-    </Stack>}
+    <AppBar position="static">
+      <Toolbar variant="dense">
+        <Typography variant="h6">Planning Poker</Typography>
+      </Toolbar>
+    </AppBar>
+    {!isLoading && <Container maxWidth="xs" {...css(styles.container)}>
+      <Typography>
+        To join, go to: <span {...css(styles.ipAddress)}>http://{ipAddress}:4000</span>
+      </Typography>
+      <Typography variant="body2">
+        {numberOfPeopleConnected} people connected
+      </Typography>
+      <Button variant="contained" color="primary" disabled={numberOfPeopleConnected < 2} onClick={handleStartVoteClicked} {...css(styles.readyButton)}>Ready!</Button>
+    </Container>}
   </>;
 }
