@@ -50,6 +50,6 @@ export default function WaitingPage({ navigate }: WaitingPageProps) {
   return <Container maxWidth="sm" {...css(styles.container)}>
     <Typography>Waiting for vote to start</Typography>
     <HourglassEmpty {...css(styles.icon)} />
-    <Button variant="text" {...css(styles.cancelButton)} onClick={() => window.history.back()}>Cancel</Button>
+    <Button variant="text" {...css(styles.cancelButton)} onClick={() => navigate?.("/")}>Cancel</Button>
   </Container>;
 }

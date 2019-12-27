@@ -146,7 +146,7 @@ const resolvers: IResolvers<any, Context> = {
 
   // TODO, remove
   // Example of how to trigger a subscription
-  // setInterval(() => {
-  //   pubsub.publish(SubscriptionTrigger.VotingStarted, { votingStarted: { success: true } });
-  // }, 1000);
+  setInterval(() => {
+    pubsub.publish(SubscriptionTrigger.VotingStarted, { votingStarted: { success: true } });
+  }, 5000);
 })();
