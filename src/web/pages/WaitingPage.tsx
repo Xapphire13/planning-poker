@@ -41,7 +41,6 @@ export default function WaitingPage({ navigate }: WaitingPageProps) {
   useSubscription(VOTING_STARTED_SUBSCRIPTION, {
     shouldResubscribe: true,
     onSubscriptionData: ({ subscriptionData }) => {
-      console.log(subscriptionData);
       if (subscriptionData?.data?.votingStarted?.success) {
         navigate?.("/vote");
       }

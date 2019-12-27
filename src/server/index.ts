@@ -44,7 +44,7 @@ const typeDefs = gql`
 
   type Mutation {
     join(name: String!): VoidResult
-    vote: VoidResult
+    vote(vote: Int!): VoidResult
   }
 
   type Subscription {
@@ -67,7 +67,7 @@ const resolvers: IResolvers<any, Context> = {
     })
   },
   Mutation: {
-    join: (_: any, { name }: Record<string, any>, { userId }) => {
+    join: (_: any, { name }, { userId }) => {
       if (userId && !joinedUsers.has(userId)) {
         joinedUsers.set(userId, {
           id: userId,
@@ -79,6 +79,13 @@ const resolvers: IResolvers<any, Context> = {
         }
       }
 
+
+      return {
+        success: true
+      }
+    },
+    vote: (_, { vote }, { userId }) => {
+      console.log(vote, userId);
 
       return {
         success: true
