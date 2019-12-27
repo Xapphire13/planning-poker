@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import ProgressCircle from "../components/ProgressCircle";
 import { RouteComponentProps } from "@reach/router";
 import IpcChannel from ":shared/IpcChannel";
-import { Stack, StackItem } from "office-ui-fabric-react/lib/Stack";
-import { DefaultButton } from "office-ui-fabric-react/lib/Button";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import { createStylesFn } from ":shared/theme/createStylesFn";
+import Container from "@material-ui/core/Container";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
 
 const { ipcRenderer } = window.require("electron");
 
@@ -13,14 +14,14 @@ export type VotePageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
   contentContainer: {
-    padding: unit,
-    height: `calc(100% - ${2 * unit}px)`,
+    position: "relative",
+    top: "50%",
+    transform: "translateY(-50%)",
+    textAlign: "center"
   },
-  header: {
-    fontSize: 3 * unit,
-    textAlign: "center",
-    marginBottom: unit
-  },
+  circleContainer: {
+    margin: `${2 * unit}px 0`
+  }
 }));
 
 export default function VotePage({ location, navigate }: VotePageProps) {
@@ -52,17 +53,11 @@ export default function VotePage({ location, navigate }: VotePageProps) {
     throw new Error("Can't vote without people");
   }
 
-  return <Stack verticalFill>
-    <StackItem grow>
-      <div {...css(styles.contentContainer)}>
-        <Stack verticalFill verticalAlign="center">
-          <div {...css(styles.header)}>Waiting for votes</div>
-          <div>
-            <ProgressCircle value={numberOfPeopleReady} max={numberOfPeople} />
-          </div>
-        </Stack>
-      </div>
-    </StackItem>
-    <DefaultButton onClick={() => navigate?.("/")}>Cancel</DefaultButton>
-  </Stack>;
+  return <Container maxWidth="xs" {...css(styles.contentContainer)}>
+    <Typography variant="h6">Waiting for votes</Typography>
+    <div {...css(styles.circleContainer)}>
+      <ProgressCircle value={numberOfPeopleReady} max={numberOfPeople} />
+    </div>
+    <Button variant="outlined" onClick={() => navigate?.("/")}>Cancel</Button>
+  </Container>;
 }
