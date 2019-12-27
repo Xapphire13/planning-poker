@@ -4,7 +4,6 @@ import { PrimaryButton } from "office-ui-fabric-react/lib/Button";
 import { createStylesFn } from "../../shared/theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import { Stack, StackItem } from "office-ui-fabric-react/lib/Stack";
-import Theme from "../../shared/theme/DefaultTheme";
 import IpcChannel from ":shared/IpcChannel";
 
 const { ipcRenderer } = window.require("electron");
@@ -55,6 +54,10 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
     };
   }, []);
 
+  const handleStartVoteClicked = () => {
+    navigate?.("/vote", { state: { numberOfPeople: numberOfPeopleConnected } });
+  }
+
   return <>
     {!isLoading && <Stack verticalFill>
       <StackItem grow>
@@ -72,7 +75,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
           </Stack>
         </div>
       </StackItem>
-      <PrimaryButton disabled={numberOfPeopleConnected < 2} onClick={() => navigate?.("/vote", { state: { numberOfPeople: numberOfPeopleConnected } })}>Ready!</PrimaryButton>
+      <PrimaryButton disabled={numberOfPeopleConnected < 2} onClick={handleStartVoteClicked}>Ready!</PrimaryButton>
     </Stack>}
   </>;
 }

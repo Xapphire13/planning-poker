@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import express from "express";
 import { createServer } from "http";
-import { ApolloServer, PubSub, IResolvers, gql } from "apollo-server-express";
+import { ApolloServer, PubSub, IResolvers, gql, AuthenticationError } from "apollo-server-express";
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import internalIp from "internal-ip";
 import IpcChannel from ":shared/IpcChannel";
@@ -11,7 +11,7 @@ import User from ":shared/User";
 const PORT = 4000;
 
 interface Context {
-  userId?: string
+  userId: string
 }
 
 function createWindow() {
@@ -19,7 +19,7 @@ function createWindow() {
     width: 300,
     height: 600,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
     }
   })
 
@@ -56,56 +56,69 @@ enum SubscriptionTrigger {
   VotingStarted = "VOTING_STARTED"
 }
 
-let window: BrowserWindow | undefined;
-const joinedUsers: Map<string, User> = new Map();
-const pubsub = new PubSub();
+(async () => {
+  let window: BrowserWindow | undefined;
+  const joinedUsers: Map<string, User> = new Map();
+  let voteResults: Map<string, number> = new Map();
+  const pubsub = new PubSub();
 
-const resolvers: IResolvers<any, Context> = {
-  Query: {
-    noop: () => ({
-      success: true
-    })
-  },
-  Mutation: {
-    join: (_: any, { name }, { userId }) => {
-      if (userId && !joinedUsers.has(userId)) {
-        joinedUsers.set(userId, {
-          id: userId,
-          name
-        });
+  const resolvers: IResolvers<any, Context> = {
+    Query: {
+      noop: () => ({
+        success: true
+      })
+    },
+    Mutation: {
+      join: (_: any, { name }, { userId }) => {
+        if (userId && !joinedUsers.has(userId)) {
+          joinedUsers.set(userId, {
+            id: userId,
+            name
+          });
 
-        if (window) {
-          window.webContents.send(IpcChannel.PersonConnected);
+          if (window) {
+            window.webContents.send(IpcChannel.PersonConnected);
+          }
+        }
+
+
+        return {
+          success: true
+        }
+      },
+      vote: (_, { vote }, { userId }) => {
+        voteResults.set(userId, vote);
+        window?.webContents.send(IpcChannel.VoteCast);
+
+        return {
+          success: true
         }
       }
-
-
-      return {
-        success: true
-      }
     },
-    vote: (_, { vote }, { userId }) => {
-      console.log(vote, userId);
-
-      return {
-        success: true
+    Subscription: {
+      votingStarted: {
+        subscribe: () => pubsub.asyncIterator([SubscriptionTrigger.VotingStarted])
       }
     }
-  },
-  Subscription: {
-    votingStarted: {
-      subscribe: () => pubsub.asyncIterator([SubscriptionTrigger.VotingStarted])
-    }
-  }
-};
+  };
 
-(async () => {
   const expressServer = express();
   const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
     context: ({ req }): Context => {
-      const userId = req?.header("X-USER-ID");
+      if (!req) {
+        // Happens during subscription connection
+        return {
+          userId: ''
+        }
+      }
+
+      const userId = req.header("X-USER-ID");
+
+      if (!userId) {
+        throw new AuthenticationError("You must have valid user ID to use this API");
+      }
 
       return {
         userId
@@ -113,6 +126,10 @@ const resolvers: IResolvers<any, Context> = {
     },
     subscriptions: {
       onConnect: ({ userId }: any): Context => {
+        if (!userId) {
+          throw new AuthenticationError("You must have valid user ID to use this API");
+        }
+
         return {
           userId
         }
@@ -141,12 +158,20 @@ const resolvers: IResolvers<any, Context> = {
 
   ipcMain.handle(IpcChannel.GetConnectedCount, () => joinedUsers.size);
 
+  ipcMain.handle(IpcChannel.GetResults, () => {
+    if (voteResults.size !== joinedUsers.size) {
+      throw new Error("Not all of the votes are in!");
+    }
+
+    return [...voteResults.entries()].map<[User, number]>(([userId, vote]) => [joinedUsers.get(userId)!, vote]);
+  });
+
+  ipcMain.on(IpcChannel.StartVoting, () => {
+    voteResults = new Map();
+    pubsub.publish(SubscriptionTrigger.VotingStarted, { votingStarted: { success: true } });
+  })
+
+
   await installExtension(REACT_DEVELOPER_TOOLS);
   window = createWindow();
-
-  // TODO, remove
-  // Example of how to trigger a subscription
-  setInterval(() => {
-    pubsub.publish(SubscriptionTrigger.VotingStarted, { votingStarted: { success: true } });
-  }, 5000);
 })();

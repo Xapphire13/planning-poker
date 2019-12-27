@@ -26,7 +26,7 @@ const stylesFn = createStylesFn(({ unit }) => ({
 export default function VotePage({ location, navigate }: VotePageProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [numberOfPeopleReady, setNumberOfPeopleReady] = useState(0);
-  const numberOfPeople: number = location?.state?.numberOfPeople ?? 100;
+  const numberOfPeople: number | undefined = location?.state?.numberOfPeople;
 
   useEffect(() => {
     const voteCastListener = () => setNumberOfPeopleReady(prev => prev + 1);
@@ -37,6 +37,20 @@ export default function VotePage({ location, navigate }: VotePageProps) {
       ipcRenderer.removeListener(IpcChannel.VoteCast, voteCastListener);
     }
   }, []);
+
+  useEffect(() => {
+    ipcRenderer.send(IpcChannel.StartVoting);
+  }, []);
+
+  useEffect(() => {
+    if (numberOfPeopleReady === numberOfPeople) {
+      navigate?.("/results");
+    }
+  }, [numberOfPeopleReady]);
+
+  if (!numberOfPeople) {
+    throw new Error("Can't vote without people");
+  }
 
   return <Stack verticalFill>
     <StackItem grow>
