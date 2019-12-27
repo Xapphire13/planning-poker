@@ -40,17 +40,20 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
 
   useEffect(() => {
     const personConnectedListener = () => setNumberOfPeopleConnected(prev => prev + 1);
+    const personDisconnectedListener = () => setNumberOfPeopleConnected(prev => prev - 1);
 
     (async () => {
       const count: number = await ipcRenderer.invoke(IpcChannel.GetConnectedCount);
       setNumberOfPeopleConnected(prev => prev + count);
 
       ipcRenderer.addListener(IpcChannel.PersonConnected, personConnectedListener);
+      ipcRenderer.addListener(IpcChannel.PersonDisconnected, personDisconnectedListener);
     })();
 
     // Cleanup
     return () => {
       ipcRenderer.removeListener(IpcChannel.PersonConnected, personConnectedListener);
+      ipcRenderer.removeListener(IpcChannel.PersonDisconnected, personDisconnectedListener);
     };
   }, []);
 

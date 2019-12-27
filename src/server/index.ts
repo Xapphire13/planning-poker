@@ -76,9 +76,7 @@ enum SubscriptionTrigger {
             name
           });
 
-          if (window) {
-            window.webContents.send(IpcChannel.PersonConnected);
-          }
+          window?.webContents.send(IpcChannel.PersonConnected);
         }
 
 
@@ -133,6 +131,18 @@ enum SubscriptionTrigger {
         return Promise.resolve({
           userId
         })
+      },
+      onDisconnect: (_, ctx) => {
+        if (ctx.initPromise) {
+          (async () => {
+            const context: Context = await ctx.initPromise;
+
+            const userHadJoined = joinedUsers.delete(context.userId);
+            if (userHadJoined) {
+              window?.webContents.send(IpcChannel.PersonDisconnected);
+            }
+          })()
+        }
       }
     }
   });
