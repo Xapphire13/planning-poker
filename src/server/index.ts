@@ -125,14 +125,14 @@ enum SubscriptionTrigger {
       };
     },
     subscriptions: {
-      onConnect: ({ userId }: any): Context => {
+      onConnect: ({ userId }: any): Promise<Context> => {
         if (!userId) {
           throw new AuthenticationError("You must have valid user ID to use this API");
         }
 
-        return {
+        return Promise.resolve({
           userId
-        }
+        })
       }
     }
   });
