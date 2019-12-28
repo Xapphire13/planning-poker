@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import ProgressBar from "progressbar.js";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import { createStylesFn } from "../../shared/theme/createStylesFn";
+import Theme from ":shared/theme/DefaultTheme";
 
 export type ProgressCircleProps = {
   value: number;
@@ -27,14 +28,14 @@ export default function ProgressCircle({ value, max }: ProgressCircleProps) {
   useEffect(() => {
     if (containerRef.current) {
       const circle = new ProgressBar.Circle(containerRef.current, {
-        color: "#9B06D6",
+        color: Theme.color.primary,
         trailWidth: 0.5,
         text: {
           value: progressText
         }
       });
       if (circle.text) {
-        circle.text.style.color = "#fff";
+        circle.text.style.color = Theme.color.text.default;
       }
       setCircle(circle);
     }

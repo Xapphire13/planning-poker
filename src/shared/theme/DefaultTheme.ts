@@ -6,6 +6,7 @@ const theme = {
   unit: 8,
   fontFamily: ['Roboto', "sans-serif"],
   color: {
+    primary: deepPurple[500],
     background: grey[900],
     text: {
       default: "#fff"
