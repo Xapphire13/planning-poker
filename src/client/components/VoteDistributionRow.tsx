@@ -2,7 +2,7 @@ import React from "react";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import { createStylesFn } from "../../shared/theme/createStylesFn";
 import { CSSProperties } from "react-with-styles";
-import { Persona } from "office-ui-fabric-react/lib/Persona";
+import Avatar from "@material-ui/core/Avatar";
 
 const STORYPOINT_BORDER_WIDTH = 2;
 
@@ -54,9 +54,13 @@ const stylesFn = createStylesFn(({ unit }) => ({
     marginBottom: -unit,
     marginRight: -unit
   },
-  personaContainer: {
+  avatarContainer: {
     marginRight: unit,
     marginBottom: unit
+  },
+  avatar: {
+    top: "50%",
+    transform: "translateY(-50%)"
   }
 }))
 
@@ -76,7 +80,7 @@ export default function VoteDistributionRow({ storyPoints, votes, totalVotes, is
       </div>
     </div>
     <div {...css(styles.votesContainer)}>
-      {[...new Array(votes).keys()].map((_, i) => <div key={i} {...css(styles.personaContainer)}><Persona imageInitials="SH" hidePersonaDetails /></div>)}
+      {[...new Array(votes).keys()].map((_, i) => <div key={i} {...css(styles.avatarContainer)}><Avatar {...css(styles.avatar)}>SH</Avatar></div>)}
     </div>
   </div>;
 }

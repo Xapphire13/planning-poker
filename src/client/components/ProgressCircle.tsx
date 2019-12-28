@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
 import ProgressBar from "progressbar.js";
-import { CSSProperties } from "react-with-styles";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import { createStylesFn } from "../../shared/theme/createStylesFn";
 
