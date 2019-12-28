@@ -3,6 +3,8 @@ import useStyles from "react-with-styles/lib/hooks/useStyles";
 import { createStylesFn } from "../../shared/theme/createStylesFn";
 import { CSSProperties } from "react-with-styles";
 import Avatar from "@material-ui/core/Avatar";
+import AvatarGroup from "@material-ui/lab/AvatarGroup";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const STORYPOINT_BORDER_WIDTH = 2;
 
@@ -45,22 +47,13 @@ const stylesFn = createStylesFn(({ unit }) => ({
     textAlign: "center",
     fontWeight: "bold"
   },
-  votesContainer: {
-    flexGrow: 1,
-    marginLeft: unit,
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginBottom: -unit,
-    marginRight: -unit
-  },
   avatarContainer: {
-    marginRight: unit,
-    marginBottom: unit
+    paddingLeft: 2 * unit
   },
-  avatar: {
+  avatarGroup: {
+    position: "relative",
     top: "50%",
-    transform: "translateY(-50%)"
+    transform: "translateY(-50%)",
   }
 }))
 
@@ -79,8 +72,10 @@ export default function VoteDistributionRow({ storyPoints, votes, totalVotes, is
         {storyPoints}
       </div>
     </div>
-    <div {...css(styles.votesContainer)}>
-      {[...new Array(votes).keys()].map((_, i) => <div key={i} {...css(styles.avatarContainer)}><Avatar {...css(styles.avatar)}>SH</Avatar></div>)}
+    <div {...css(styles.avatarContainer)}>
+      <AvatarGroup {...css(styles.avatarGroup)}>
+        {[...new Array(votes).keys()].map((_, i) => <Tooltip title="Steven H" key={i}><Avatar {...css(styles.avatar)}>SH</Avatar></Tooltip>)}
+      </AvatarGroup>
     </div>
   </div>;
 }
