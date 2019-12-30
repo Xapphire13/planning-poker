@@ -7,7 +7,9 @@
     "build": "webpack",
     "build:watch": "webpack --watch",
     "start": "electron ./dist/server.js",
-    "start:debug": "electron --inspect-brk ./dist/server.js"
+    "start:debug": "electron --inspect-brk ./dist/server.js",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "keywords": [
     "planning",
@@ -16,6 +18,10 @@
   "author": "Xapphire13",
   "license": "ISC",
   "devDependencies": {
+    "@storybook/addon-actions": "^5.2.8",
+    "@storybook/addon-links": "^5.2.8",
+    "@storybook/addons": "^5.2.8",
+    "@storybook/react": "^5.2.8",
     "@types/electron-devtools-installer": "^2.2.0",
     "@types/reach__router": "^1.2.6",
     "@types/react": "^16.9.17",
