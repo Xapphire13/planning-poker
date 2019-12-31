@@ -8,6 +8,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import Button from "@material-ui/core/Button";
+import ConnectionStepsCard from ":client/components/ConnectionStepsCard";
 
 const { ipcRenderer } = window.require("electron");
 
@@ -15,16 +16,17 @@ export type WelcomePageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
   container: {
-    margin: `${unit}px 0`,
-  },
-  ipAddress: {
-    fontWeight: "bold"
+    marginTop: unit,
+    marginBottom: unit
   },
   readyButton: {
     marginTop: unit,
     display: "block",
     marginLeft: "auto",
     marginRight: "auto"
+  },
+  connectedText: {
+    textAlign: "center"
   }
 }));
 
@@ -71,10 +73,8 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
       </Toolbar>
     </AppBar>
     {!isLoading && <Container maxWidth="xs" {...css(styles.container)}>
-      <Typography>
-        To join, go to: <span {...css(styles.ipAddress)}>http://{ipAddress}:4000</span>
-      </Typography>
-      <Typography variant="body2">
+      <ConnectionStepsCard localInfo={{ url: `http://${ipAddress}:4000` }} remoteInfo={{ url: "http://todo" }} />
+      <Typography variant="body2" {...css(styles.connectedText)}>
         {numberOfPeopleConnected} people connected
       </Typography>
       <Button variant="contained" color="primary" disabled={numberOfPeopleConnected < 2} onClick={handleStartVoteClicked} {...css(styles.readyButton)}>Ready!</Button>
