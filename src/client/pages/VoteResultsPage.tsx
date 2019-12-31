@@ -26,35 +26,35 @@ const stylesFn = createStylesFn(({ unit }) => ({
   }
 }));
 
-function averageOfVotes(votes: Record<number, number>) {
+function averageOfVotes(votes: Record<number, User[]>) {
   let count = 0;
   let total = 0;
   Object.keys(votes).forEach(key => {
-    count += votes[+key];
-    total += votes[+key] * +key;
+    count += votes[+key].length;
+    total += votes[+key].length * +key;
   });
 
   return total / count;
 }
 
-function numberOfVotes(votes: Record<number, number>) {
-  return Object.keys(votes).reduce((res, key) => res + votes[+key], 0);
+function numberOfVotes(votes: Record<number, User[]>) {
+  return Object.keys(votes).reduce((res, key) => res + votes[+key].length, 0);
 }
 
 export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const [votes, setVotes] = useState<Record<number, number>>();
+  const [votes, setVotes] = useState<Record<number, User[]>>();
 
   useEffect(() => {
     (async () => {
       const usersAndVote: [User, number][] = await ipcRenderer.invoke(IpcChannel.GetResults);
 
-      const results = usersAndVote.reduce<Record<number, number>>((result, [user, vote]) => {
+      const results = usersAndVote.reduce<Record<number, User[]>>((result, [user, vote]) => {
         if (!result[vote]) {
-          result[vote] = 0;
+          result[vote] = [];
         }
 
-        result[vote]++;
+        result[vote].push(user);
 
         return result;
       }, {});

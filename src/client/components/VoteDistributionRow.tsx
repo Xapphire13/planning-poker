@@ -5,12 +5,32 @@ import { CSSProperties } from "react-with-styles";
 import Avatar from "@material-ui/core/Avatar";
 import AvatarGroup from "@material-ui/lab/AvatarGroup";
 import Tooltip from "@material-ui/core/Tooltip";
+import { colors, Color } from "@material-ui/core";
+import { muiTheme } from ":shared/theme/DefaultTheme";
+import hashSum from "hash-sum";
+import User from ":shared/User";
 
 const STORYPOINT_BORDER_WIDTH = 2;
 
+function getColorsForUser(user: User) {
+  const colorKeys = Object.keys(colors).filter(key => key !== "common");
+  const index = Number.parseInt(`0x${hashSum(user.name)}`) % colorKeys.length;
+  const key = colorKeys[index];
+  const background = ((colors as any)[key] as Color)[500];
+  const foreground = muiTheme.palette.getContrastText(background);
+
+  return { background, foreground };
+}
+
+function getInitials(user: User) {
+  const parts = user.name.split(/\s+/);
+
+  return parts.slice(0, 2).map(part => part[0].toLocaleUpperCase()).join("");
+}
+
 export type VoteDistributionRowProps = {
   storyPoints: number;
-  votes: number;
+  voters: User[];
   totalVotes: number;
   isWinningVote?: boolean;
 }
@@ -57,10 +77,11 @@ const stylesFn = createStylesFn(({ unit }) => ({
   }
 }))
 
-export default function VoteDistributionRow({ storyPoints, votes, totalVotes, isWinningVote = false }: VoteDistributionRowProps) {
+export default function VoteDistributionRow({ storyPoints, voters, totalVotes, isWinningVote = false }: VoteDistributionRowProps) {
   const { css, styles } = useStyles({ stylesFn });
 
-  const percentage = Math.ceil(votes / totalVotes * 100);
+  const numberOfVotes = voters.length;
+  const percentage = Math.ceil(numberOfVotes / totalVotes * 100);
   const computedBackgroundStyle: CSSProperties = {
     width: `${percentage}%`
   }
@@ -74,7 +95,16 @@ export default function VoteDistributionRow({ storyPoints, votes, totalVotes, is
     </div>
     <div {...css(styles.avatarContainer)}>
       <AvatarGroup {...css(styles.avatarGroup)}>
-        {[...new Array(votes).keys()].map((_, i) => <Tooltip title="Steven H" key={i}><Avatar {...css(styles.avatar)}>SH</Avatar></Tooltip>)}
+        {voters.map((voter, i) => {
+          const colors = getColorsForUser(voter);
+
+          const computedStyles: CSSProperties = {
+            color: colors.foreground,
+            backgroundColor: colors.background
+          }
+
+          return <Tooltip title={voter.name} key={i} {...css(computedStyles)}><Avatar {...css(styles.avatar)}>{getInitials(voter)}</Avatar></Tooltip>
+        })}
       </AvatarGroup>
     </div>
   </div>;

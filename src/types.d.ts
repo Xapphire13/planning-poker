@@ -36,3 +36,15 @@ declare module "react-with-styles/lib/hooks/useStyles" {
 
   export default useStyles;
 }
+
+declare module "simpsons-names" {
+  interface SimpsonsNames {
+    all: string[];
+    random(): string;
+    random(number: number): string[];
+  };
+
+  const _: SimpsonsNames;
+
+  export default _;
+}
