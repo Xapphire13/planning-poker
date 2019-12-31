@@ -5,7 +5,6 @@ export default function BootstrapReactRoot(Bootstrap: React.ReactType) {
   // Root document styles
   document.documentElement.style.height = "100%";
   document.documentElement.style.width = "100%";
-  document.body.style.height = "100%";
   document.body.style.margin = "0";
   document.body.style.width = "100%";
   document.body.style.height = "100%";

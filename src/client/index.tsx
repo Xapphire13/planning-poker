@@ -10,7 +10,7 @@ import {
   createHistory,
   LocationProvider
 } from "@reach/router";
-import BoostrapReactRoot from ":shared/BootstrapReactRoot";
+import BoostrapReactRoot from ":client/BootstrapReactRoot";
 import { ThemeProvider } from "@material-ui/core";
 import App from ":client/App";
 

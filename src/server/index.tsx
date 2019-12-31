@@ -1,3 +1,4 @@
+import React from "react";
 import { app, BrowserWindow, ipcMain } from "electron";
 import express from "express";
 import { createServer } from "http";
@@ -7,6 +8,12 @@ import internalIp from "internal-ip";
 import IpcChannel from ":shared/IpcChannel";
 import path from "path";
 import User from ":shared/User";
+import { Bootstrap } from ":web/index";
+import ReactDomServer from "react-dom/server";
+import { webTemplate } from "./htmlTemplates";
+import { StyleSheetServer } from 'aphrodite';
+import { ServerLocation } from "@reach/router"
+import { ServerStyleSheets } from '@material-ui/core/styles';
 
 const PORT = 4000;
 
@@ -151,10 +158,26 @@ enum SubscriptionTrigger {
   apolloServer.applyMiddleware({ app: expressServer });
   apolloServer.installSubscriptionHandlers(httpServer);
   expressServer.use(express.static(path.resolve(__dirname, "web")));
-  // Redirect all other traffic to app entry point
-  expressServer.get(/\/.+/, (_, res) => {
-    res.redirect("/");
-  })
+  // Web entry point
+  expressServer.use(/\/.*/, (req, res) => {
+    const muiSheets = new ServerStyleSheets();
+
+    const { html, css } = StyleSheetServer.renderStatic(() => ReactDomServer.renderToString(
+      muiSheets.collect(
+        <ServerLocation url={req.originalUrl}>
+          <Bootstrap port={PORT} />
+        </ServerLocation>)
+    ));
+
+    const result = webTemplate(
+      html,
+      muiSheets.toString(),
+      css.content,
+      css.renderedClassNames,
+      "/web.js");
+
+    res.send(result);
+  });
 
   await new Promise((res) => httpServer.listen(PORT, res));
   console.log(`GraphQL ready at http://localhost:${PORT}${apolloServer.graphqlPath}`);

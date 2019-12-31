@@ -39,7 +39,11 @@ const clientConfig = {
   },
   plugins: [
     ...baseConfig.plugins,
-    new HtmlWebpackPlugin()
+    new HtmlWebpackPlugin({
+      meta: {
+        viewport: "width=device-width, initial-scale=1"
+      }
+    })
   ]
 };
 
@@ -53,23 +57,20 @@ const webConfig = {
     path: path.resolve(__dirname, 'dist/web'),
   },
   plugins: [
-    ...baseConfig.plugins,
-    new HtmlWebpackPlugin({
-      title: "Planning Poker",
-      meta: {
-        viewport: "width=device-width, initial-scale=1"
-      }
-    })
+    ...baseConfig.plugins
   ]
 }
 
 const serverConfig = {
   ...baseConfig,
 
-  entry: "./src/server/index.ts",
+  entry: {
+    server: "./src/server/index.tsx",
+    "ssr-web": "./src/web/index.tsx"
+  },
   target: "electron-main",
   output: {
-    filename: 'server.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist')
   },
   externals: [nodeExternals()],
