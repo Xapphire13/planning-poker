@@ -7,6 +7,7 @@ import { createStylesFn } from ":shared/theme/createStylesFn";
 import useStyles from "react-with-styles/lib/hooks/useStyles";
 import Switch from "@material-ui/core/Switch";
 import QRCode from "qrcode";
+import ConnectionInfo from ":shared/ConnectionInfo";
 
 const stylesFn = createStylesFn(({ unit }) => ({
   container: {
@@ -25,18 +26,13 @@ const stylesFn = createStylesFn(({ unit }) => ({
 }));
 
 export type ConnectionStepsCardProps = {
-  localInfo: {
-    url: string;
-  },
-  remoteInfo: {
-    url: string
-  }
+  connectionInfo: ConnectionInfo;
 }
 
-export default function ConnectionStepsCard({ localInfo, remoteInfo }: ConnectionStepsCardProps) {
+export default function ConnectionStepsCard({ connectionInfo }: ConnectionStepsCardProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [destination, setDestination] = useState<"local" | "remote">("local");
-  const url = destination === "local" ? localInfo.url : remoteInfo.url;
+  const url = destination === "local" ? connectionInfo.local : connectionInfo.remote;
   const [qrCodeSvg, setQrCodeSvg] = useState<string>();
 
   useEffect(() => {

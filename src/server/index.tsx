@@ -15,6 +15,7 @@ import { StyleSheetServer } from 'aphrodite';
 import { ServerLocation } from "@reach/router"
 import { ServerStyleSheets } from '@material-ui/core/styles';
 import ngrok from "ngrok";
+import ConnectionInfo from ":shared/ConnectionInfo";
 
 const PORT = 4000;
 
@@ -189,8 +190,17 @@ enum SubscriptionTrigger {
 
   await app.whenReady();
 
-  ipcMain.handle(IpcChannel.GetIp, () => {
-    return internalIp.v4();
+  ipcMain.handle(IpcChannel.GetConnectionInfo, async (): Promise<ConnectionInfo> => {
+    const localIp = await internalIp.v4();
+
+    if (!localIp) {
+      throw new Error("Can't get local address");
+    }
+
+    return {
+      local: `http://${localIp}:${PORT}`,
+      remote: ngrokUrl
+    };
   });
 
   ipcMain.handle(IpcChannel.GetConnectedCount, () => joinedUsers.size);

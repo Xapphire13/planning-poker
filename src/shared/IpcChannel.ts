@@ -1,7 +1,7 @@
 enum IpcChannel {
   VoteCast = "vote-cast",
   GetConnectedCount = "get-connected-count",
-  GetIp = "get-ip",
+  GetConnectionInfo = "get-connection-info",
   PersonConnected = "person-connected",
   PersonDisconnected = "person-disconnected",
   StartVoting = "start-voting",

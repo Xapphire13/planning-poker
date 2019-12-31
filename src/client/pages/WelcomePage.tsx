@@ -9,6 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import Button from "@material-ui/core/Button";
 import ConnectionStepsCard from ":client/components/ConnectionStepsCard";
+import ConnectionInfo from ":shared/ConnectionInfo";
 
 const { ipcRenderer } = window.require("electron");
 
@@ -32,14 +33,12 @@ const stylesFn = createStylesFn(({ unit }) => ({
 
 export default function WelcomePage({ navigate }: WelcomePageProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const [isLoading, setIsLoading] = useState(true);
-  const [ipAddress, setIpAddress] = useState<string>();
+  const [connectionInfo, setConnectionInfo] = useState<ConnectionInfo>();
   const [numberOfPeopleConnected, setNumberOfPeopleConnected] = useState(0);
 
   useEffect(() => {
-    ipcRenderer.invoke(IpcChannel.GetIp).then((ip: string) => {
-      setIpAddress(ip);
-      setIsLoading(false);
+    ipcRenderer.invoke(IpcChannel.GetConnectionInfo).then((connInfo: ConnectionInfo) => {
+      setConnectionInfo(connInfo);
     });
   }, []);
 
@@ -72,8 +71,8 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
         <Typography variant="h6">Planning Poker</Typography>
       </Toolbar>
     </AppBar>
-    {!isLoading && <Container maxWidth="xs" {...css(styles.container)}>
-      <ConnectionStepsCard localInfo={{ url: `http://${ipAddress}:4000` }} remoteInfo={{ url: "http://todo" }} />
+    {connectionInfo && <Container maxWidth="xs" {...css(styles.container)}>
+      <ConnectionStepsCard connectionInfo={connectionInfo} />
       <Typography variant="body2" {...css(styles.connectedText)}>
         {numberOfPeopleConnected} people connected
       </Typography>

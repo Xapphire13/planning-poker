@@ -7,5 +7,5 @@ export default {
 }
 
 export const Default = CreateStory(() => <div style={{ width: 300 }}>
-  <ConnectionStepsCard localInfo={{ url: "http://localhost:4000" }} remoteInfo={{ url: "http://abcd.ngrok.io" }} />
+  <ConnectionStepsCard connectionInfo={{ local: "http://localhost:4000", remote: "http://SomeRemote.com" }} />
 </div>);
