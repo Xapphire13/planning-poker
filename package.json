@@ -3,13 +3,17 @@
   "version": "0.0.0",
   "description": "Planning poker app",
   "private": true,
+  "main": "./dist/server.js",
   "scripts": {
     "build": "webpack",
     "build:watch": "webpack --watch",
-    "start": "electron ./dist/server.js",
-    "start:debug": "electron --inspect-brk ./dist/server.js",
+    "start": "NODE_ENV=development electron ./dist/server.js",
+    "start:debug": "NODE_ENV=development electron --inspect-brk ./dist/server.js",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "pack": "NODE_ENV=production npm run build && electron-builder --dir",
+    "dist": "NODE_ENV=production npm run build && electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
   "keywords": [
     "planning",
@@ -17,6 +21,16 @@
   ],
   "author": "Xapphire13",
   "license": "ISC",
+  "build": {
+    "asar": false,
+    "appId": "xapphire13.planning-poker",
+    "directories": {
+      "output": "dist-packages"
+    },
+    "mac": {
+      "category": "public.app-category.business"
+    }
+  },
   "devDependencies": {
     "@storybook/addon-actions": "^5.2.8",
     "@storybook/addon-links": "^5.2.8",
@@ -32,6 +46,7 @@
     "@types/react-with-styles": "^4.0.2",
     "@types/uuid": "^3.4.6",
     "electron": "^7.1.7",
+    "electron-builder": "^21.2.0",
     "electron-devtools-installer": "^2.2.4",
     "html-webpack-plugin": "^3.2.0",
     "simpsons-names": "^2.0.0",

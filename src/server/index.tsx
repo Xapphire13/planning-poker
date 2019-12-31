@@ -3,7 +3,6 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import express from "express";
 import { createServer } from "http";
 import { ApolloServer, PubSub, IResolvers, gql, AuthenticationError } from "apollo-server-express";
-import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import internalIp from "internal-ip";
 import IpcChannel from ":shared/IpcChannel";
 import path from "path";
@@ -16,6 +15,9 @@ import { ServerLocation } from "@reach/router"
 import { ServerStyleSheets } from '@material-ui/core/styles';
 import ngrok from "ngrok";
 import ConnectionInfo from ":shared/ConnectionInfo";
+import isDevelopment from "./isDevelopment";
+import * as electronDevtoolsInstaller from "electron-devtools-installer";
+import { format as formatUrl } from "url";
 
 const PORT = 4000;
 
@@ -32,7 +34,11 @@ function createWindow() {
     }
   })
 
-  win.loadFile('index.html')
+  win.loadURL(formatUrl({
+    pathname: path.join(__dirname, 'index.html'),
+    protocol: 'file',
+    slashes: true
+  }))
 
   return win;
 }
@@ -218,7 +224,9 @@ enum SubscriptionTrigger {
     pubsub.publish(SubscriptionTrigger.VotingStarted, { votingStarted: { success: true } });
   })
 
-
-  await installExtension(REACT_DEVELOPER_TOOLS);
+  if (isDevelopment()) {
+    const { default: installExtension, REACT_DEVELOPER_TOOLS } = require("electron-devtools-installer") as typeof electronDevtoolsInstaller;
+    await installExtension(REACT_DEVELOPER_TOOLS);
+  }
   window = createWindow();
 })();
