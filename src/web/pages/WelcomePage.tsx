@@ -12,6 +12,7 @@ import Typeography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
 import gql from "graphql-tag";
+import isServer from ":shared/isServer";
 export type WelcomePageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
@@ -36,14 +37,24 @@ mutation JoinSession($name: String!){
 
 export default function WelcomePage({ navigate }: WelcomePageProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const [name, setName] = useState<string>();
+  const [name, setName] = useState(() => {
+    if (isServer()) {
+      return undefined;
+    }
+
+    const nameInput = document.getElementById("name-input") as HTMLInputElement | null;
+
+    return nameInput?.value;
+  });
   const [userId, setUserId] = useState<string>();
   const [joinSession] = useMutation(JOIN_MUTATION);
 
   useEffect(() => {
     let user = LocalStorageUtils.getItem<User>("user")!;
 
-    setName(user.name);
+    if (user.name) {
+      setName(user.name);
+    }
     setUserId(user.id);
   }, []);
 
@@ -71,7 +82,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
       </Toolbar>
     </AppBar>
     <Container maxWidth="sm" {...css(styles.marginTop)}>
-      <TextField label="Name" required fullWidth value={name ?? ''} onChange={(ev) => setName(ev.target.value)} />
+      <TextField id="name-input" label="Name" required fullWidth value={name ?? ''} onChange={(ev) => setName(ev.target.value)} />
       <Button {...css(styles.button)} variant="contained" color="primary" disabled={!name || !userId} onClick={handleJoin}>Join</Button>
     </Container>
   </>;

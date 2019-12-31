@@ -61,6 +61,7 @@
     "graphql-tag": "^2.10.1",
     "hash-sum": "^2.0.0",
     "internal-ip": "^5.0.0",
+    "ngrok": "^3.2.7",
     "node-fetch": "^2.6.0",
     "progressbar.js": "^1.1.0",
     "qrcode": "^1.4.4",

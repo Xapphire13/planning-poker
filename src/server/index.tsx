@@ -14,6 +14,7 @@ import { webTemplate } from "./htmlTemplates";
 import { StyleSheetServer } from 'aphrodite';
 import { ServerLocation } from "@reach/router"
 import { ServerStyleSheets } from '@material-ui/core/styles';
+import ngrok from "ngrok";
 
 const PORT = 4000;
 
@@ -180,8 +181,11 @@ enum SubscriptionTrigger {
   });
 
   await new Promise((res) => httpServer.listen(PORT, res));
+  const ngrokUrl = (await ngrok.connect(PORT)).replace("https://", "http://");
   console.log(`GraphQL ready at http://localhost:${PORT}${apolloServer.graphqlPath}`);
   console.log(`GraphQL subscriptions ready at ws://localhost:${PORT}${apolloServer.subscriptionsPath}`);
+  console.log(`Local URL: http://localhost:${PORT}`)
+  console.log(`Remote URL: ${ngrokUrl}`);
 
   await app.whenReady();
 
