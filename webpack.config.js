@@ -1,7 +1,10 @@
 const path = require("path");
 const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const nodeExternals = require("webpack-node-externals");
+const CopyPlugin = require('copy-webpack-plugin');
+
+const SRC_DIR = path.resolve(__dirname, "./src");
+const DIST_DIR = path.resolve(__dirname, "./dist");
 
 const baseConfig = {
   devtool: "source-map",
@@ -18,11 +21,11 @@ const baseConfig = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
     alias: {
-      ":client": path.resolve(__dirname, "./src/client"),
-      ":shared": path.resolve(__dirname, "./src/shared"),
-      ":server": path.resolve(__dirname, "./src/server"),
-      ":web": path.resolve(__dirname, "./src/web"),
-      ":storybook": path.resolve(__dirname, "./src/storybook")
+      ":client": path.join(SRC_DIR, "./client"),
+      ":shared": path.join(SRC_DIR, "./shared"),
+      ":server": path.join(SRC_DIR, "./server"),
+      ":web": path.join(SRC_DIR, "./web"),
+      ":storybook": path.join(SRC_DIR, "./storybook")
     }
   },
   plugins: [new webpack.ProgressPlugin()],
@@ -35,15 +38,16 @@ const clientConfig = {
   target: "electron-renderer",
   output: {
     filename: 'client.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: DIST_DIR,
   },
   plugins: [
     ...baseConfig.plugins,
-    new HtmlWebpackPlugin({
-      meta: {
-        viewport: "width=device-width, initial-scale=1"
+    new CopyPlugin([
+      {
+        from: path.join(SRC_DIR, "./client/index.html"),
+        to: DIST_DIR
       }
-    })
+    ])
   ]
 };
 
@@ -54,7 +58,7 @@ const webConfig = {
   target: "web",
   output: {
     filename: 'web.js',
-    path: path.resolve(__dirname, 'dist/web'),
+    path: path.join(DIST_DIR, './web'),
   },
   plugins: [
     ...baseConfig.plugins
@@ -71,7 +75,7 @@ const serverConfig = {
   target: "electron-main",
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, 'dist')
+    path: DIST_DIR
   },
   externals: [nodeExternals()],
   node: {

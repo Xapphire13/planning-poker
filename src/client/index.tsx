@@ -1,5 +1,6 @@
 
 import React from "react";
+import ReactDOM from "react-dom";
 import "../shared/webpack-global-fix";
 import WithStylesContext from 'react-with-styles/lib/WithStylesContext';
 // @ts-ignore
@@ -10,7 +11,6 @@ import {
   createHistory,
   LocationProvider
 } from "@reach/router";
-import BoostrapReactRoot from ":client/BootstrapReactRoot";
 import { ThemeProvider } from "@material-ui/core";
 import App from ":client/App";
 
@@ -31,4 +31,4 @@ function Bootstrap() {
   </LocationProvider>
 }
 
-BoostrapReactRoot(Bootstrap);
+ReactDOM.render(<Bootstrap />, document.getElementById("react-root"));
