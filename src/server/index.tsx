@@ -188,11 +188,22 @@ enum SubscriptionTrigger {
   });
 
   await new Promise((res) => httpServer.listen(PORT, res));
-  const ngrokUrl = (await ngrok.connect(PORT)).replace("https://", "http://");
+  const ngrokUrl = await (async () => {
+    try {
+      const url = await ngrok.connect(PORT)
+      return url.replace("https://", "http://");
+    } catch (err) {
+      console.error("Couldn't connect to ngrok", err);
+    }
+
+    return undefined;
+  })();
   console.log(`GraphQL ready at http://localhost:${PORT}${apolloServer.graphqlPath}`);
   console.log(`GraphQL subscriptions ready at ws://localhost:${PORT}${apolloServer.subscriptionsPath}`);
   console.log(`Local URL: http://localhost:${PORT}`)
-  console.log(`Remote URL: ${ngrokUrl}`);
+  if (ngrokUrl) {
+    console.log(`Remote URL: ${ngrokUrl}`);
+  }
 
   await app.whenReady();
 

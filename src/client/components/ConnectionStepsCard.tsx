@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "@material-ui/core/Card";
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
@@ -32,7 +32,7 @@ export type ConnectionStepsCardProps = {
 export default function ConnectionStepsCard({ connectionInfo }: ConnectionStepsCardProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [destination, setDestination] = useState<"local" | "remote">("local");
-  const url = destination === "local" ? connectionInfo.local : connectionInfo.remote;
+  const url = (destination === "local" || !connectionInfo.remote) ? connectionInfo.local : connectionInfo.remote;
   const [qrCodeSvg, setQrCodeSvg] = useState<string>();
 
   useEffect(() => {
@@ -61,10 +61,10 @@ export default function ConnectionStepsCard({ connectionInfo }: ConnectionStepsC
       Scan the QR Code below:
     </Typography>
     {qrCodeSvg && <div dangerouslySetInnerHTML={{ __html: qrCodeSvg }} />}
-    <Grid container wrap="nowrap" justify="center" alignItems="center">
+    {connectionInfo.remote && <Grid container wrap="nowrap" justify="center" alignItems="center">
       <Grid item><Typography>Local</Typography></Grid>
       <Grid item><Switch color="default" onChange={handleSwitchToggled} /></Grid>
       <Grid item><Typography>Remote</Typography></Grid>
-    </Grid>
+    </Grid>}
   </Card>;
 }
