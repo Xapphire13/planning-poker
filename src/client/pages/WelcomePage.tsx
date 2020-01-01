@@ -10,13 +10,26 @@ import Container from "@material-ui/core/Container";
 import Button from "@material-ui/core/Button";
 import ConnectionStepsCard from ":client/components/ConnectionStepsCard";
 import ConnectionInfo from ":shared/ConnectionInfo";
+import Drawer from "@material-ui/core/Drawer";
+import List from "@material-ui/core/List";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import GitHubIcon from "@material-ui/icons/GitHub";
+import { shell } from "electron";
+import Divider from "@material-ui/core/Divider";
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from '@material-ui/icons/Menu';
 
 const { ipcRenderer } = window.require("electron");
+
+const DRAWER_WIDTH = 240;
 
 export type WelcomePageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
-  container: {
+  contentContainer: {
     marginTop: unit,
     marginBottom: unit
   },
@@ -28,6 +41,25 @@ const stylesFn = createStylesFn(({ unit }) => ({
   },
   connectedText: {
     textAlign: "center"
+  },
+  closeMenuButton: {
+    position: "absolute",
+    right: 0
+  },
+  drawer: {
+    width: DRAWER_WIDTH,
+    flexShrink: 0
+  },
+  container: {
+    height: "100%",
+    overflowX: "hidden"
+  },
+  slideContainer: {
+    position: "relative",
+    height: "100%"
+  },
+  slideContainerMenuOpen: {
+    left: DRAWER_WIDTH
   }
 }));
 
@@ -35,6 +67,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [connectionInfo, setConnectionInfo] = useState<ConnectionInfo>();
   const [numberOfPeopleConnected, setNumberOfPeopleConnected] = useState(0);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     ipcRenderer.invoke(IpcChannel.GetConnectionInfo).then((connInfo: ConnectionInfo) => {
@@ -65,18 +98,44 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
     navigate?.("/vote", { state: { numberOfPeople: numberOfPeopleConnected } });
   }
 
-  return <>
-    <AppBar position="static">
-      <Toolbar variant="dense">
-        <Typography variant="h6">Planning Poker</Typography>
-      </Toolbar>
-    </AppBar>
-    {connectionInfo && <Container maxWidth="xs" {...css(styles.container)}>
-      <ConnectionStepsCard connectionInfo={connectionInfo} />
-      <Typography variant="body2" {...css(styles.connectedText)}>
-        {numberOfPeopleConnected} people connected
-      </Typography>
-      <Button variant="contained" color="primary" disabled={numberOfPeopleConnected < 2} onClick={handleStartVoteClicked} {...css(styles.readyButton)}>Ready!</Button>
-    </Container>}
-  </>;
+  return <div {...css(styles.container)}>
+    <div {...css(styles.slideContainer, drawerOpen && styles.slideContainerMenuOpen)}>
+      <AppBar position="static">
+        <Toolbar variant="dense">
+          {!drawerOpen && <IconButton onClick={() => setDrawerOpen(true)} edge="start">
+            <MenuIcon />
+          </IconButton>}
+          <Typography variant="h6">Planning Poker</Typography>
+        </Toolbar>
+      </AppBar>
+      <div>
+        {
+          connectionInfo && <Container maxWidth="xs" {...css(styles.contentContainer)}>
+            <ConnectionStepsCard connectionInfo={connectionInfo} />
+            <Typography variant="body2" {...css(styles.connectedText)}>
+              {numberOfPeopleConnected} people connected
+          </Typography>
+            <Button variant="contained" color="primary" disabled={numberOfPeopleConnected < 2} onClick={handleStartVoteClicked} {...css(styles.readyButton)}>Ready!</Button>
+          </Container>
+        }
+      </div>
+
+      <Drawer anchor="left" variant="persistent" open={drawerOpen} PaperProps={...css(styles.drawer)}>
+        <Toolbar variant="dense">
+          <IconButton {...css(styles.closeMenuButton)} onClick={() => setDrawerOpen(false)}>
+            <ChevronLeftIcon />
+          </IconButton>
+        </Toolbar>
+        <Divider />
+        <List>
+          <ListItem button onClick={() => shell.openExternal("https://github.com/Xapphire13/planning-poker")}>
+            <ListItemIcon>
+              <GitHubIcon />
+            </ListItemIcon>
+            <ListItemText primary="Source Code" />
+          </ListItem>
+        </List>
+      </Drawer>
+    </div>
+  </div>;
 }
