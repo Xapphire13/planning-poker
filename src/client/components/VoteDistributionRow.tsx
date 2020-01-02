@@ -27,10 +27,11 @@ function getColorsForUser(user: User) {
 }
 
 function getInitials(user: User) {
-  const parts = user.name.split(/\s+/);
+  const parts = user.name.trim().split(/\s+/);
 
   return parts
     .slice(0, 2)
+    .filter(part => part[0] != null)
     .map(part => part[0].toLocaleUpperCase())
     .join('');
 }
