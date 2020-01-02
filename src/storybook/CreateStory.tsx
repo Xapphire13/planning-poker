@@ -5,7 +5,7 @@ import WithStylesContext from 'react-with-styles/lib/WithStylesContext';
 import AphroditeInterface from 'react-with-styles-interface-aphrodite';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import DefaultTheme, { muiTheme } from ':shared/theme/DefaultTheme';
-import { createStylesFn } from ':shared/theme/createStylesFn';
+import createStylesFn from ':shared/theme/createStylesFn';
 
 const stylesFn = createStylesFn(({ color, fontFamily }) => ({
   container: {

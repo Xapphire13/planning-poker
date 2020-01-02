@@ -9,7 +9,7 @@ import hashSum from 'hash-sum';
 import Grid from '@material-ui/core/Grid';
 import Theme, { muiTheme } from ':shared/theme/DefaultTheme';
 import User from ':shared/User';
-import { createStylesFn } from '../../shared/theme/createStylesFn';
+import createStylesFn from '../../shared/theme/createStylesFn';
 
 
 const STORYPOINT_BORDER_WIDTH = 2;
@@ -17,7 +17,7 @@ const AVATAR_SIZE = 5 * Theme.unit;
 
 function getColorsForUser(user: User) {
   const colorKeys = Object.keys(colors).filter((key) => key !== 'common');
-  const index = Number.parseInt(`0x${hashSum(user.name)}`) % colorKeys.length;
+  const index = Number.parseInt(`0x${hashSum(user.name)}`, 16) % colorKeys.length;
   const key = colorKeys[index];
   const background = ((colors as any)[key] as Color)[500];
   const foreground = muiTheme.palette.getContrastText(background);
@@ -36,7 +36,7 @@ export type VoteDistributionRowProps = {
   voters: User[];
   totalVotes: number;
   isWinningVote?: boolean;
-}
+};
 
 const stylesFn = createStylesFn(({ unit, color }) => ({
   container: {
@@ -130,11 +130,11 @@ export default function VoteDistributionRow({ storyPoints, voters, isWinningVote
         <Grid item {...css(styles.avatarContainer)} ref={avatarContainerRef}>
           <AvatarGroup {...css(styles.avatarGroup)}>
             {[...avatarsToDisplay.map((voter) => {
-              const colors = getColorsForUser(voter);
+              const { background, foreground } = getColorsForUser(voter);
 
               const computedStyles: CSSProperties = {
-                color: colors.foreground,
-                backgroundColor: colors.background,
+                color: foreground,
+                backgroundColor: background,
               };
 
               return <Tooltip title={voter.name} key={voter.id} {...css(computedStyles)}><Avatar {...css(styles.avatar)}>{getInitials(voter)}</Avatar></Tooltip>;

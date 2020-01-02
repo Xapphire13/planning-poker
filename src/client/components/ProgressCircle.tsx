@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ProgressBar from 'progressbar.js';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
-import { createStylesFn } from '../../shared/theme/createStylesFn';
+import createStylesFn from '../../shared/theme/createStylesFn';
 import Theme from ':shared/theme/DefaultTheme';
 
 export type ProgressCircleProps = {

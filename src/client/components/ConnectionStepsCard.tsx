@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import Switch from '@material-ui/core/Switch';
 import QRCode from 'qrcode';
-import { createStylesFn } from ':shared/theme/createStylesFn';
+import createStylesFn from ':shared/theme/createStylesFn';
 import ConnectionInfo from ':shared/ConnectionInfo';
 
 const stylesFn = createStylesFn(({ unit }) => ({
@@ -27,7 +27,7 @@ const stylesFn = createStylesFn(({ unit }) => ({
 
 export type ConnectionStepsCardProps = {
   connectionInfo: ConnectionInfo;
-}
+};
 
 export default function ConnectionStepsCard({ connectionInfo }: ConnectionStepsCardProps) {
   const { css, styles } = useStyles({ stylesFn });

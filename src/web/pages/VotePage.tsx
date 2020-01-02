@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { RouteComponentProps } from '@reach/router';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
@@ -6,7 +6,7 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import VoteButton from ':web/components/VoteButton';
-import { createStylesFn } from ':shared/theme/createStylesFn';
+import createStylesFn from ':shared/theme/createStylesFn';
 
 const FIBONACCI_NUMBERS = [1, 2, 3, 5, 8, 13, 21];
 

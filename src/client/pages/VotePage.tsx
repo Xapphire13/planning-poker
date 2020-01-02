@@ -4,7 +4,7 @@ import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { createStylesFn } from ':shared/theme/createStylesFn';
+import createStylesFn from ':shared/theme/createStylesFn';
 import IpcChannel from ':shared/IpcChannel';
 import ProgressCircle from '../components/ProgressCircle';
 

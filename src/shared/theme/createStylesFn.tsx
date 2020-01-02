@@ -3,6 +3,6 @@ import DefaultTheme from './DefaultTheme';
 
 type StylesFn = (theme: typeof DefaultTheme) => Styles;
 
-export function createStylesFn(stylesFn: StylesFn): StylesFn {
+export default function createStylesFn(stylesFn: StylesFn): StylesFn {
   return stylesFn;
 }

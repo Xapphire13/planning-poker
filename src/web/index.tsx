@@ -87,6 +87,7 @@ function createClientLink() {
 }
 
 function createServerLink(port: number = 4000) {
+  // eslint-disable-next-line global-require
   const fetch = require('node-fetch');
 
   return createHttpLink({
@@ -97,7 +98,7 @@ function createServerLink(port: number = 4000) {
 
 export type BootstrapProps = {
   port?: number;
-}
+};
 
 export function Bootstrap({ port }: BootstrapProps) {
   // Remove SSR MUI-Styles

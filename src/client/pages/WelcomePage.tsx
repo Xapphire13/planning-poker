@@ -12,6 +12,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import GitHubIcon from '@material-ui/icons/GitHub';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { shell } from 'electron';
 import Divider from '@material-ui/core/Divider';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -20,7 +21,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ConnectionInfo from ':shared/ConnectionInfo';
 import ConnectionStepsCard from ':client/components/ConnectionStepsCard';
 import IpcChannel from ':shared/IpcChannel';
-import { createStylesFn } from '../../shared/theme/createStylesFn';
+import createStylesFn from '../../shared/theme/createStylesFn';
 
 const { ipcRenderer } = window.require('electron');
 

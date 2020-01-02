@@ -1,4 +1,5 @@
 import React from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { app, BrowserWindow, ipcMain } from 'electron';
 import express from 'express';
 import { createServer } from 'http';
@@ -12,11 +13,12 @@ import { StyleSheetServer } from 'aphrodite';
 import { ServerLocation } from '@reach/router';
 import { ServerStyleSheets } from '@material-ui/core/styles';
 import ngrok from 'ngrok';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import * as electronDevtoolsInstaller from 'electron-devtools-installer';
 import { format as formatUrl } from 'url';
 import ConnectionInfo from ':shared/ConnectionInfo';
 import isDevelopment from './isDevelopment';
-import { webTemplate } from './htmlTemplates';
+import webTemplate from './webTemplate';
 import { Bootstrap } from ':web/index';
 import User from ':shared/User';
 import IpcChannel from ':shared/IpcChannel';
@@ -240,6 +242,7 @@ enum SubscriptionTrigger {
   });
 
   if (isDevelopment()) {
+    // eslint-disable-next-line import/no-extraneous-dependencies, global-require
     const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer') as typeof electronDevtoolsInstaller;
     await installExtension(REACT_DEVELOPER_TOOLS);
   }

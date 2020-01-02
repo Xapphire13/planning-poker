@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import VoteDistributionRow from './VoteDistributionRow';
 import User from ':shared/User';
-import { createStylesFn } from ':shared/theme/createStylesFn';
+import createStylesFn from ':shared/theme/createStylesFn';
 
 export type VoteDistributionsProps = {
   votes: Record<number, User[]>;

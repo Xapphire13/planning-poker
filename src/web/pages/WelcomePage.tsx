@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { RouteComponentProps } from '@reach/router';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import { useMutation } from '@apollo/react-hooks';
 import Button from '@material-ui/core/Button';
@@ -10,8 +9,7 @@ import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 import gql from 'graphql-tag';
 import LocalStorageUtils from ':web/LocalStorageUtils';
-import User from ':shared/User';
-import { createStylesFn } from ':shared/theme/createStylesFn';
+import createStylesFn from ':shared/theme/createStylesFn';
 import isServer from ':shared/isServer';
 
 export type WelcomePageProps = RouteComponentProps;

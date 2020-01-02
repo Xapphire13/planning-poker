@@ -3,12 +3,12 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import grey from '@material-ui/core/colors/grey';
-import { createStylesFn } from ':shared/theme/createStylesFn';
+import createStylesFn from ':shared/theme/createStylesFn';
 
 export type VoteButtonProps = {
   value: number;
   onPress: () => void;
-}
+};
 
 const stylesFn = createStylesFn(() => ({
   container: {

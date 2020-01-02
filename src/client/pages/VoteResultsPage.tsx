@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import User from ':shared/User';
 import IpcChannel from ':shared/IpcChannel';
-import { createStylesFn } from '../../shared/theme/createStylesFn';
+import createStylesFn from '../../shared/theme/createStylesFn';
 import VoteDistributions from '../components/VoteDistributions';
 
 const { ipcRenderer } = window.require('electron');
@@ -51,6 +51,7 @@ export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
 
       const results = usersAndVote.reduce<Record<number, User[]>>((result, [user, vote]) => {
         if (!result[vote]) {
+          // eslint-disable-next-line no-param-reassign
           result[vote] = [];
         }
 
