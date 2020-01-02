@@ -9,13 +9,9 @@ import VotePage from './pages/VotePage';
 
 const stylesFn = createStylesFn(({ color, fontFamily }) => ({
   container: {
-    '@import':
-      "url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap')",
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
+    position: 'relative',
+    width: '100%',
+    height: '100%',
     background: color.background,
     color: color.text.default,
     fontFamily
