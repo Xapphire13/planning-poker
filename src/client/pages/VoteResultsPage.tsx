@@ -9,6 +9,7 @@ import User from ':shared/User';
 import IpcChannel from ':shared/IpcChannel';
 import createStylesFn from '../../shared/theme/createStylesFn';
 import VoteDistributions from '../components/VoteDistributions';
+import { Vote } from ':shared/Vote';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -26,39 +27,47 @@ const stylesFn = createStylesFn(({ unit }) => ({
   }
 }));
 
-function averageOfVotes(votes: Record<number, User[]>) {
+function averageOfVotes(votes: Partial<Record<Vote, User[]>>) {
   let count = 0;
   let total = 0;
   Object.keys(votes).forEach(key => {
-    count += votes[+key].length;
-    total += votes[+key].length * +key;
+    const vote = key === 'Infinity' ? 'Infinity' : (+key as Vote);
+    if (vote === 'Infinity') {
+      return;
+    }
+
+    count += votes[vote]!.length;
+    total += votes[vote]!.length * vote;
   });
 
-  return total / count;
+  return Math.round(total / count);
 }
 
-function numberOfVotes(votes: Record<number, User[]>) {
-  return Object.keys(votes).reduce((res, key) => res + votes[+key].length, 0);
+function numberOfVotes(votes: Partial<Record<Vote, User[]>>) {
+  return Object.keys(votes).reduce((res, key) => {
+    const vote = key === 'Infinity' ? 'Infinity' : (+key as Vote);
+    return res + votes[vote]!.length;
+  }, 0);
 }
 
 export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const [votes, setVotes] = useState<Record<number, User[]>>();
+  const [votes, setVotes] = useState<Partial<Record<Vote, User[]>>>();
 
   useEffect(() => {
     (async () => {
-      const usersAndVote: [User, number][] = await ipcRenderer.invoke(
+      const usersAndVote: [User, Vote][] = await ipcRenderer.invoke(
         IpcChannel.GetResults
       );
 
-      const results = usersAndVote.reduce<Record<number, User[]>>(
+      const results = usersAndVote.reduce<Partial<Record<Vote, User[]>>>(
         (result, [user, vote]) => {
           if (!result[vote]) {
             // eslint-disable-next-line no-param-reassign
             result[vote] = [];
           }
 
-          result[vote].push(user);
+          result[vote]!.push(user);
 
           return result;
         },
@@ -81,8 +90,7 @@ export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
           <Grid item>
             <Container>
               <Typography variant="h6">
-                Average:
-                {averageOfVotes(votes).toPrecision(1)}
+                Average: {averageOfVotes(votes)}
               </Typography>
             </Container>
           </Grid>

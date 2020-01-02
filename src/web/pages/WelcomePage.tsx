@@ -8,9 +8,11 @@ import Typeography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 import gql from 'graphql-tag';
+import { RouteComponentProps } from '@reach/router';
 import LocalStorageUtils from ':web/LocalStorageUtils';
 import createStylesFn from ':shared/theme/createStylesFn';
 import isServer from ':shared/isServer';
+import User from ':shared/User';
 
 export type WelcomePageProps = RouteComponentProps;
 

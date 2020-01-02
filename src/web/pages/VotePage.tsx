@@ -7,13 +7,12 @@ import Grid from '@material-ui/core/Grid';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import VoteButton from ':web/components/VoteButton';
 import createStylesFn from ':shared/theme/createStylesFn';
-
-const FIBONACCI_NUMBERS = [1, 2, 3, 5, 8, 13, 21];
+import { VoteValues, Vote } from ':shared/Vote';
 
 export type VotePageProps = RouteComponentProps;
 
 const VOTE_MUTATION = gql`
-  mutation CastVote($vote: Int!) {
+  mutation CastVote($vote: String!) {
     vote(vote: $vote) {
       success
     }
@@ -31,11 +30,11 @@ export default function VotePage({ navigate }: VotePageProps) {
   const [castVote] = useMutation(VOTE_MUTATION);
   const { css, styles } = useStyles({ stylesFn });
 
-  const handleVoteButtonPressed = (vote: number) => {
+  const handleVoteButtonPressed = (vote: Vote) => {
     (async () => {
       await castVote({
         variables: {
-          vote
+          vote: String(vote)
         }
       });
 
@@ -48,7 +47,7 @@ export default function VotePage({ navigate }: VotePageProps) {
   return (
     <Container maxWidth="sm" {...css(styles.container)}>
       <Grid container spacing={1} justify="center">
-        {FIBONACCI_NUMBERS.map(val => (
+        {VoteValues.map(val => (
           <Grid key={val} item>
             <VoteButton
               value={val}

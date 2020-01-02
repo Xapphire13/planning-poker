@@ -26,6 +26,7 @@ import webTemplate from './webTemplate';
 import { Bootstrap } from ':web/index';
 import User from ':shared/User';
 import IpcChannel from ':shared/IpcChannel';
+import { Vote } from ':shared/Vote';
 
 const PORT = 4000;
 
@@ -69,7 +70,7 @@ const typeDefs = gql`
 
   type Mutation {
     join(name: String!): VoidResult
-    vote(vote: Int!): VoidResult
+    vote(vote: String!): VoidResult
   }
 
   type Subscription {
@@ -84,7 +85,7 @@ enum SubscriptionTrigger {
 (async () => {
   let window: BrowserWindow | undefined;
   const joinedUsers: Map<string, User> = new Map();
-  let voteResults: Map<string, number> = new Map();
+  let voteResults: Map<string, Vote> = new Map();
   const pubsub = new PubSub();
 
   const resolvers: IResolvers<any, Context> = {
@@ -252,7 +253,7 @@ enum SubscriptionTrigger {
       throw new Error('Not all of the votes are in!');
     }
 
-    return [...voteResults.entries()].map<[User, number]>(([userId, vote]) => [
+    return [...voteResults.entries()].map<[User, Vote]>(([userId, vote]) => [
       joinedUsers.get(userId)!,
       vote
     ]);

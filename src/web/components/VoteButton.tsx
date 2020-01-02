@@ -4,9 +4,10 @@ import Typography from '@material-ui/core/Typography';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import grey from '@material-ui/core/colors/grey';
 import createStylesFn from ':shared/theme/createStylesFn';
+import { Vote } from ':shared/Vote';
 
 export type VoteButtonProps = {
-  value: number;
+  value: Vote;
   onPress: () => void;
 };
 
@@ -29,11 +30,12 @@ const stylesFn = createStylesFn(() => ({
 
 export default function VoteButton({ value, onPress }: VoteButtonProps) {
   const { css, styles } = useStyles({ stylesFn });
+  const valueText = value === 'Infinity' ? '∞' : value;
 
   return (
     <Paper {...css(styles.container)} onClick={onPress}>
       <div {...css(styles.textContainer)}>
-        <Typography variant="h5">{value}</Typography>
+        <Typography variant="h5">{valueText}</Typography>
       </div>
     </Paper>
   );

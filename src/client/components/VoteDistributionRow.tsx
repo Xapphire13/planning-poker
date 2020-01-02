@@ -10,6 +10,7 @@ import Grid from '@material-ui/core/Grid';
 import Theme, { muiTheme } from ':shared/theme/DefaultTheme';
 import User from ':shared/User';
 import createStylesFn from '../../shared/theme/createStylesFn';
+import { Vote } from ':shared/Vote';
 
 const STORYPOINT_BORDER_WIDTH = 2;
 const AVATAR_SIZE = 5 * Theme.unit;
@@ -35,9 +36,8 @@ function getInitials(user: User) {
 }
 
 export type VoteDistributionRowProps = {
-  storyPoints: number;
+  storyPoints: Vote;
   voters: User[];
-  totalVotes: number;
   isWinningVote?: boolean;
 };
 
@@ -52,7 +52,8 @@ const stylesFn = createStylesFn(({ unit, color }) => ({
     borderTopRightRadius: unit / 2,
     borderBottomRightRadius: unit / 2,
     overflow: 'hidden',
-    flexShrink: 0
+    flexShrink: 0,
+    width: 7 * unit
   },
   storyPointsText: {
     textAlign: 'center',
@@ -138,7 +139,9 @@ export default function VoteDistributionRow({
             isWinningVote && styles.winningVoteContainer
           )}
         >
-          <div {...css(styles.storyPointsText)}>{storyPoints}</div>
+          <div {...css(styles.storyPointsText)}>
+            {storyPoints === 'Infinity' ? '∞' : storyPoints}
+          </div>
         </Grid>
         <Grid item {...css(styles.avatarContainer)} ref={avatarContainerRef}>
           <AvatarGroup {...css(styles.avatarGroup)}>
