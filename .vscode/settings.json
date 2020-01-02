@@ -9,5 +9,23 @@
     "node_modules/": true,
     "dist-packages/": true
   },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "[javascript]": {
+    "editor.formatOnSave": false
+  },
+  "[javascriptreact]": {
+    "editor.formatOnSave": false
+  },
+  "[typescript]": {
+    "editor.formatOnSave": false
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": false
+  },
+  "eslint.validate": [
+    "typescript",
+    "typescriptreact",
+    "javascript",
+    "javascriptreact"
+  ],
 }
