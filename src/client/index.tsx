@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import '../shared/webpack-global-fix';
@@ -8,7 +7,7 @@ import AphroditeInterface from 'react-with-styles-interface-aphrodite';
 import {
   createMemorySource,
   createHistory,
-  LocationProvider,
+  LocationProvider
 } from '@reach/router';
 import { ThemeProvider } from '@material-ui/core';
 import DefaultTheme, { muiTheme } from '../shared/theme/DefaultTheme';
@@ -24,7 +23,7 @@ function Bootstrap() {
         <WithStylesContext.Provider
           value={{
             stylesInterface: AphroditeInterface,
-            stylesTheme: DefaultTheme,
+            stylesTheme: DefaultTheme
           }}
         >
           <App />

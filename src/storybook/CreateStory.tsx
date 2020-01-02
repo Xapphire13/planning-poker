@@ -9,11 +9,12 @@ import createStylesFn from ':shared/theme/createStylesFn';
 
 const stylesFn = createStylesFn(({ color, fontFamily }) => ({
   container: {
-    '@import': "url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap')",
+    '@import':
+      "url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap')",
     background: color.background,
     color: color.text.default,
-    fontFamily,
-  },
+    fontFamily
+  }
 }));
 
 function Bootstrap({ children }: React.PropsWithChildren<{}>) {
@@ -22,7 +23,7 @@ function Bootstrap({ children }: React.PropsWithChildren<{}>) {
       <WithStylesContext.Provider
         value={{
           stylesInterface: AphroditeInterface,
-          stylesTheme: DefaultTheme,
+          stylesTheme: DefaultTheme
         }}
       >
         {children}
@@ -34,11 +35,7 @@ function Bootstrap({ children }: React.PropsWithChildren<{}>) {
 function Container({ children }: React.PropsWithChildren<{}>) {
   const { css, styles } = useStyles({ stylesFn });
 
-  return (
-    <div {...css(styles.container)}>
-      {children}
-    </div>
-  );
+  return <div {...css(styles.container)}>{children}</div>;
 }
 
 export default function CreateStory(Story: React.ReactType) {

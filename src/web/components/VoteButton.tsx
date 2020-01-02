@@ -16,15 +16,15 @@ const stylesFn = createStylesFn(() => ({
     height: 100,
     cursor: 'pointer',
     ':hover': {
-      backgroundColor: grey[500],
-    },
+      backgroundColor: grey[500]
+    }
   },
   textContainer: {
     textAlign: 'center',
     position: 'relative',
     top: '50%',
-    transform: 'translateY(-50%)',
-  },
+    transform: 'translateY(-50%)'
+  }
 }));
 
 export default function VoteButton({ value, onPress }: VoteButtonProps) {

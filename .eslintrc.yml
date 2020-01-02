@@ -38,3 +38,5 @@ rules:
         - "**/*.spec.tsx"
         - "**/*.stories.ts"
         - "**/*.stories.tsx"
+  react/jsx-one-expression-per-line: off
+  react/jsx-curly-newline: off

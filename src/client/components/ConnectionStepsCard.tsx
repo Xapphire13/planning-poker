@@ -11,28 +11,33 @@ import ConnectionInfo from ':shared/ConnectionInfo';
 
 const stylesFn = createStylesFn(({ unit }) => ({
   container: {
-    padding: unit,
+    padding: unit
   },
   url: {
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   grow: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   orText: {
     paddingLeft: unit,
-    paddingRight: unit,
-  },
+    paddingRight: unit
+  }
 }));
 
 export type ConnectionStepsCardProps = {
   connectionInfo: ConnectionInfo;
 };
 
-export default function ConnectionStepsCard({ connectionInfo }: ConnectionStepsCardProps) {
+export default function ConnectionStepsCard({
+  connectionInfo
+}: ConnectionStepsCardProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [destination, setDestination] = useState<'local' | 'remote'>('local');
-  const url = (destination === 'local' || !connectionInfo.remote) ? connectionInfo.local : connectionInfo.remote;
+  const url =
+    destination === 'local' || !connectionInfo.remote
+      ? connectionInfo.local
+      : connectionInfo.remote;
   const [qrCodeSvg, setQrCodeSvg] = useState<string>();
 
   useEffect(() => {
@@ -46,30 +51,39 @@ export default function ConnectionStepsCard({ connectionInfo }: ConnectionStepsC
     });
   }, [url]);
 
-  const handleSwitchToggled = () => setDestination((prev) => (prev === 'local' ? 'remote' : 'local'));
+  const handleSwitchToggled = () =>
+    setDestination(prev => (prev === 'local' ? 'remote' : 'local'));
 
   return (
     <Card {...css(styles.container)}>
       <Typography>
-      To join, go to:
-        {' '}
-        <span {...css(styles.url)}>{url}</span>
+        To join, go to: <span {...css(styles.url)}>{url}</span>
       </Typography>
       <Grid container wrap="nowrap" alignItems="center">
-        <Grid item {...css(styles.grow)}><Divider /></Grid>
-        <Grid item {...css(styles.orText)}><Typography>OR</Typography></Grid>
-        <Grid item {...css(styles.grow)}><Divider /></Grid>
+        <Grid item {...css(styles.grow)}>
+          <Divider />
+        </Grid>
+        <Grid item {...css(styles.orText)}>
+          <Typography>OR</Typography>
+        </Grid>
+        <Grid item {...css(styles.grow)}>
+          <Divider />
+        </Grid>
       </Grid>
-      <Typography>
-      Scan the QR Code below:
-      </Typography>
+      <Typography>Scan the QR Code below:</Typography>
       {qrCodeSvg && <div dangerouslySetInnerHTML={{ __html: qrCodeSvg }} />}
       {connectionInfo.remote && (
-      <Grid container wrap="nowrap" justify="center" alignItems="center">
-        <Grid item><Typography>Local</Typography></Grid>
-        <Grid item><Switch color="default" onChange={handleSwitchToggled} /></Grid>
-        <Grid item><Typography>Remote</Typography></Grid>
-      </Grid>
+        <Grid container wrap="nowrap" justify="center" alignItems="center">
+          <Grid item>
+            <Typography>Local</Typography>
+          </Grid>
+          <Grid item>
+            <Switch color="default" onChange={handleSwitchToggled} />
+          </Grid>
+          <Grid item>
+            <Typography>Remote</Typography>
+          </Grid>
+        </Grid>
       )}
     </Card>
   );

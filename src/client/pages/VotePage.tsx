@@ -17,11 +17,11 @@ const stylesFn = createStylesFn(({ unit }) => ({
     position: 'relative',
     top: '50%',
     transform: 'translateY(-50%)',
-    textAlign: 'center',
+    textAlign: 'center'
   },
   circleContainer: {
-    margin: `${2 * unit}px 0`,
-  },
+    margin: `${2 * unit}px 0`
+  }
 }));
 
 export default function VotePage({ location, navigate }: VotePageProps) {
@@ -30,7 +30,7 @@ export default function VotePage({ location, navigate }: VotePageProps) {
   const numberOfPeople: number | undefined = location?.state?.numberOfPeople;
 
   useEffect(() => {
-    const voteCastListener = () => setNumberOfPeopleReady((prev) => prev + 1);
+    const voteCastListener = () => setNumberOfPeopleReady(prev => prev + 1);
     ipcRenderer.on(IpcChannel.VoteCast, voteCastListener);
 
     // Cleanup
@@ -59,7 +59,9 @@ export default function VotePage({ location, navigate }: VotePageProps) {
       <div {...css(styles.circleContainer)}>
         <ProgressCircle value={numberOfPeopleReady} max={numberOfPeople} />
       </div>
-      <Button variant="outlined" onClick={() => navigate?.('/')}>Cancel</Button>
+      <Button variant="outlined" onClick={() => navigate?.('/')}>
+        Cancel
+      </Button>
     </Container>
   );
 }

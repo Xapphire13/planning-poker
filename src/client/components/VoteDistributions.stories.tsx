@@ -6,31 +6,33 @@ import CreateStory from ':storybook/CreateStory';
 import User from ':shared/User';
 
 export default {
-  title: 'Vote Distributions',
+  title: 'Vote Distributions'
 };
 
 function generateVoters(number: number) {
-  return SimpsonsNames.random(number).map<User>((name) => ({
+  return SimpsonsNames.random(number).map<User>(name => ({
     id: uuid(),
-    name,
+    name
   }));
 }
 
 export const Default = CreateStory(() => (
-  <VoteDistributions votes={{
-    1: generateVoters(1),
-    2: generateVoters(3),
-    3: generateVoters(2),
-    5: generateVoters(6),
-    8: generateVoters(2),
-  }}
+  <VoteDistributions
+    votes={{
+      1: generateVoters(1),
+      2: generateVoters(3),
+      3: generateVoters(2),
+      5: generateVoters(6),
+      8: generateVoters(2)
+    }}
   />
 ));
 
 export const Overflowing = CreateStory(() => (
-  <VoteDistributions votes={{
-    3: generateVoters(1),
-    5: generateVoters(50),
-  }}
+  <VoteDistributions
+    votes={{
+      3: generateVoters(1),
+      5: generateVoters(50)
+    }}
   />
 ));

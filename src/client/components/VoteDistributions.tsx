@@ -11,26 +11,39 @@ export type VoteDistributionsProps = {
 
 const stylesFn = createStylesFn(() => ({
   row: {
-    width: '100%',
-  },
+    width: '100%'
+  }
 }));
 
 export default function VoteDistributions({ votes }: VoteDistributionsProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const totalVotes = Object.keys(votes).reduce((total, key) => total + votes[+key].length, 0);
-  const winningVoteCount = Math.max(...Object.keys(votes).map((key) => votes[+key].length));
+  const totalVotes = Object.keys(votes).reduce(
+    (total, key) => total + votes[+key].length,
+    0
+  );
+  const winningVoteCount = Math.max(
+    ...Object.keys(votes).map(key => votes[+key].length)
+  );
 
   return (
     <Grid container direction="column" spacing={1}>
-      {Object.keys(votes).map((key) => +key).sort((a, b) => b - a).map((storyPoints) => {
-        const numberOfVotes = votes[storyPoints].length;
+      {Object.keys(votes)
+        .map(key => +key)
+        .sort((a, b) => b - a)
+        .map(storyPoints => {
+          const numberOfVotes = votes[storyPoints].length;
 
-        return (
-          <Grid item key={storyPoints} {...css(styles.row)}>
-            <VoteDistributionRow storyPoints={storyPoints} voters={votes[storyPoints]} totalVotes={totalVotes} isWinningVote={numberOfVotes === winningVoteCount} />
-          </Grid>
-        );
-      })}
+          return (
+            <Grid item key={storyPoints} {...css(styles.row)}>
+              <VoteDistributionRow
+                storyPoints={storyPoints}
+                voters={votes[storyPoints]}
+                totalVotes={totalVotes}
+                isWinningVote={numberOfVotes === winningVoteCount}
+              />
+            </Grid>
+          );
+        })}
     </Grid>
   );
 }

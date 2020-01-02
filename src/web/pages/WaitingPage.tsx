@@ -16,16 +16,16 @@ const stylesFn = createStylesFn(() => ({
     textAlign: 'center',
     position: 'relative',
     top: '50%',
-    transform: 'translateY(-50%)',
+    transform: 'translateY(-50%)'
   },
   icon: {
-    fontSize: 100,
+    fontSize: 100
   },
   cancelButton: {
     display: 'block',
     marginLeft: 'auto',
-    marginRight: 'auto',
-  },
+    marginRight: 'auto'
+  }
 }));
 
 const VOTING_STARTED_SUBSCRIPTION = gql`
@@ -44,14 +44,20 @@ export default function WaitingPage({ navigate }: WaitingPageProps) {
       if (subscriptionData?.data?.votingStarted?.success) {
         navigate?.('/vote');
       }
-    },
+    }
   });
 
   return (
     <Container maxWidth="sm" {...css(styles.container)}>
       <Typography>Waiting for vote to start</Typography>
       <HourglassEmpty {...css(styles.icon)} />
-      <Button variant="outlined" {...css(styles.cancelButton)} onClick={() => navigate?.('/')}>Cancel</Button>
+      <Button
+        variant="outlined"
+        {...css(styles.cancelButton)}
+        onClick={() => navigate?.('/')}
+      >
+        Cancel
+      </Button>
     </Container>
   );
 }

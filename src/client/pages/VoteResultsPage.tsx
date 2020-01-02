@@ -17,19 +17,19 @@ export type VoteResultsPageProps = RouteComponentProps;
 const stylesFn = createStylesFn(({ unit }) => ({
   container: {
     margin: `${unit}px 0`,
-    height: `calc(100% - ${2 * unit}px)`,
+    height: `calc(100% - ${2 * unit}px)`
   },
   button: {
     display: 'block',
     marginLeft: 'auto',
-    marginRight: 'auto',
-  },
+    marginRight: 'auto'
+  }
 }));
 
 function averageOfVotes(votes: Record<number, User[]>) {
   let count = 0;
   let total = 0;
-  Object.keys(votes).forEach((key) => {
+  Object.keys(votes).forEach(key => {
     count += votes[+key].length;
     total += votes[+key].length * +key;
   });
@@ -47,18 +47,23 @@ export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
 
   useEffect(() => {
     (async () => {
-      const usersAndVote: [User, number][] = await ipcRenderer.invoke(IpcChannel.GetResults);
+      const usersAndVote: [User, number][] = await ipcRenderer.invoke(
+        IpcChannel.GetResults
+      );
 
-      const results = usersAndVote.reduce<Record<number, User[]>>((result, [user, vote]) => {
-        if (!result[vote]) {
-          // eslint-disable-next-line no-param-reassign
-          result[vote] = [];
-        }
+      const results = usersAndVote.reduce<Record<number, User[]>>(
+        (result, [user, vote]) => {
+          if (!result[vote]) {
+            // eslint-disable-next-line no-param-reassign
+            result[vote] = [];
+          }
 
-        result[vote].push(user);
+          result[vote].push(user);
 
-        return result;
-      }, {});
+          return result;
+        },
+        {}
+      );
 
       setVotes(results);
     })();
@@ -66,24 +71,39 @@ export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
 
   return (
     <>
-      {votes
-      && (
-      <Grid container justify="space-between" direction="column" {...css(styles.container)}>
-        <Grid item>
-          <Container>
-            <Typography variant="h6">
-Average:
-              {averageOfVotes(votes).toPrecision(1)}
-            </Typography>
-          </Container>
+      {votes && (
+        <Grid
+          container
+          justify="space-between"
+          direction="column"
+          {...css(styles.container)}
+        >
+          <Grid item>
+            <Container>
+              <Typography variant="h6">
+                Average:
+                {averageOfVotes(votes).toPrecision(1)}
+              </Typography>
+            </Container>
+          </Grid>
+          <Grid item>
+            <VoteDistributions votes={votes} />
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() =>
+                navigate?.('/vote', {
+                  state: { numberOfPeople: numberOfVotes(votes) }
+                })
+              }
+              {...css(styles.button)}
+            >
+              New vote
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item>
-          <VoteDistributions votes={votes} />
-        </Grid>
-        <Grid item>
-          <Button variant="contained" color="primary" onClick={() => navigate?.('/vote', { state: { numberOfPeople: numberOfVotes(votes) } })} {...css(styles.button)}>New vote</Button>
-        </Grid>
-      </Grid>
       )}
     </>
   );

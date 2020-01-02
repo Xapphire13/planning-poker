@@ -13,8 +13,8 @@ const stylesFn = createStylesFn(() => ({
   container: {
     position: 'relative',
     width: '100%',
-    height: '100%',
-  },
+    height: '100%'
+  }
 }));
 
 export default function ProgressCircle({ value, max }: ProgressCircleProps) {
@@ -31,8 +31,8 @@ export default function ProgressCircle({ value, max }: ProgressCircleProps) {
         color: Theme.color.primary,
         trailWidth: 0.5,
         text: {
-          value: progressText,
-        },
+          value: progressText
+        }
       });
       if (circle.text) {
         circle.text.style.color = Theme.color.text.default;

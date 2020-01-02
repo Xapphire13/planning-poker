@@ -23,8 +23,8 @@ const VOTE_MUTATION = gql`
 const stylesFn = createStylesFn(({ unit }) => ({
   container: {
     marginTop: unit,
-    marginBottom: unit,
-  },
+    marginBottom: unit
+  }
 }));
 
 export default function VotePage({ navigate }: VotePageProps) {
@@ -35,12 +35,12 @@ export default function VotePage({ navigate }: VotePageProps) {
     (async () => {
       await castVote({
         variables: {
-          vote,
-        },
+          vote
+        }
       });
 
       navigate?.('/waiting', {
-        replace: true,
+        replace: true
       });
     })();
   };
@@ -48,9 +48,12 @@ export default function VotePage({ navigate }: VotePageProps) {
   return (
     <Container maxWidth="sm" {...css(styles.container)}>
       <Grid container spacing={1} justify="center">
-        {FIBONACCI_NUMBERS.map((val) => (
+        {FIBONACCI_NUMBERS.map(val => (
           <Grid key={val} item>
-            <VoteButton value={val} onPress={() => handleVoteButtonPressed(val)} />
+            <VoteButton
+              value={val}
+              onPress={() => handleVoteButtonPressed(val)}
+            />
           </Grid>
         ))}
       </Grid>

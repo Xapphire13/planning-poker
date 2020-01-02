@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import ':shared/webpack-global-fix';
@@ -31,7 +30,7 @@ if (!isServer()) {
   if (!user) {
     user = {
       id: uuid(),
-      name: '',
+      name: ''
     };
   }
   LocalStorageUtils.setItem('user', user);
@@ -41,46 +40,49 @@ function createClientLink() {
   const HOST = window.location.host;
 
   const httpLink = new HttpLink({
-    uri: `http://${HOST}/graphql`,
+    uri: `http://${HOST}/graphql`
   });
 
   const wsLink = new WebSocketLink({
     uri: `ws://${HOST}/graphql`,
     options: {
       connectionParams: {
-        userId: user!.id,
+        userId: user!.id
       },
       reconnect: true,
-      reconnectionAttempts: 10,
-    },
+      reconnectionAttempts: 10
+    }
   });
 
   const apolloLink = split(
     ({ query }) => {
       const definition = getMainDefinition(query);
       return (
-        definition.kind === 'OperationDefinition'
-        && definition.operation === 'subscription'
+        definition.kind === 'OperationDefinition' &&
+        definition.operation === 'subscription'
       );
     },
     wsLink,
-    httpLink,
+    httpLink
   );
 
   const linkContext = setContext((_, { headers }) => ({
     headers: {
       ...headers,
-      'X-USER-ID': user!.id,
-    },
+      'X-USER-ID': user!.id
+    }
   }));
 
   const onErrorHandler = onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors) {
-      graphQLErrors.forEach(({ message, locations, path }) => console.log(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
-      ));
+      graphQLErrors.forEach(({ message, locations, path }) =>
+        console.log(
+          `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+        )
+      );
     }
-    if (networkError) console.log(`[Network error]: ${JSON.stringify(networkError)}`);
+    if (networkError)
+      console.log(`[Network error]: ${JSON.stringify(networkError)}`);
   });
 
   return linkContext.concat(from([onErrorHandler, apolloLink]));
@@ -92,7 +94,7 @@ function createServerLink(port: number = 4000) {
 
   return createHttpLink({
     uri: `http://localhost:${port}/graphql`,
-    fetch,
+    fetch
   });
 }
 
@@ -109,7 +111,7 @@ export function Bootstrap({ port }: BootstrapProps) {
 
   const client = new ApolloClient({
     link: isServer() ? createServerLink(port) : createClientLink(),
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache()
   });
 
   return (
@@ -118,7 +120,7 @@ export function Bootstrap({ port }: BootstrapProps) {
         <WithStylesContext.Provider
           value={{
             stylesInterface: AphroditeInterface,
-            stylesTheme: DefaultTheme,
+            stylesTheme: DefaultTheme
           }}
         >
           <App />
@@ -129,9 +131,13 @@ export function Bootstrap({ port }: BootstrapProps) {
 }
 
 if (!isServer()) {
-  const entryPointScript = document.getElementById('entry-point-script') as HTMLScriptElement;
+  const entryPointScript = document.getElementById(
+    'entry-point-script'
+  ) as HTMLScriptElement;
 
-  const renderedClassNames = entryPointScript.getAttribute('data-renderedClassNames')!.split(',');
+  const renderedClassNames = entryPointScript
+    .getAttribute('data-renderedClassNames')!
+    .split(',');
   if (renderedClassNames) {
     StyleSheet.rehydrate(renderedClassNames);
   }

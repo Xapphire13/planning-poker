@@ -14,8 +14,8 @@ const stylesFn = createStylesFn(({ color, fontFamily }) => ({
     background: color.background,
     color: color.text.default,
     fontFamily,
-    overflowY: 'auto',
-  },
+    overflowY: 'auto'
+  }
 }));
 
 export default function App() {

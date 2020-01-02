@@ -1,4 +1,10 @@
-export default (ssrHtml: string, muiCss: string, aphroditeCss: string, renderedClassNames: string[], entryPoint: string) => `
+export default (
+  ssrHtml: string,
+  muiCss: string,
+  aphroditeCss: string,
+  renderedClassNames: string[],
+  entryPoint: string
+) => `
 <!DOCTYPE html>
 <html>
 

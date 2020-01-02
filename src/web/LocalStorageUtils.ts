@@ -6,5 +6,5 @@ export default {
 
   setItem<T>(key: string, item: T): void {
     localStorage.setItem(key, JSON.stringify(item));
-  },
+  }
 };

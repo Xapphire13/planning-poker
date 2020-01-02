@@ -1,8 +1,6 @@
 import React from 'react';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
-import {
-  Router,
-} from '@reach/router';
+import { Router } from '@reach/router';
 
 import VoteResultsPage from './pages/VoteResultsPage';
 import createStylesFn from '../shared/theme/createStylesFn';
@@ -11,7 +9,8 @@ import VotePage from './pages/VotePage';
 
 const stylesFn = createStylesFn(({ color, fontFamily }) => ({
   container: {
-    '@import': "url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap')",
+    '@import':
+      "url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap')",
     position: 'absolute',
     top: 0,
     bottom: 0,
@@ -19,8 +18,8 @@ const stylesFn = createStylesFn(({ color, fontFamily }) => ({
     right: 0,
     background: color.background,
     color: color.text.default,
-    fontFamily,
-  },
+    fontFamily
+  }
 }));
 
 export default function App() {

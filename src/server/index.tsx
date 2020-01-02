@@ -4,7 +4,11 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import express from 'express';
 import { createServer } from 'http';
 import {
-  ApolloServer, PubSub, IResolvers, gql, AuthenticationError,
+  ApolloServer,
+  PubSub,
+  IResolvers,
+  gql,
+  AuthenticationError
 } from 'apollo-server-express';
 import internalIp from 'internal-ip';
 import path from 'path';
@@ -26,7 +30,7 @@ import IpcChannel from ':shared/IpcChannel';
 const PORT = 4000;
 
 interface Context {
-  userId: string
+  userId: string;
 }
 
 function createWindow() {
@@ -34,15 +38,17 @@ function createWindow() {
     width: 300,
     height: 600,
     webPreferences: {
-      nodeIntegration: true,
-    },
+      nodeIntegration: true
+    }
   });
 
-  win.loadURL(formatUrl({
-    pathname: path.join(__dirname, 'index.html'),
-    protocol: 'file',
-    slashes: true,
-  }));
+  win.loadURL(
+    formatUrl({
+      pathname: path.join(__dirname, 'index.html'),
+      protocol: 'file',
+      slashes: true
+    })
+  );
 
   return win;
 }
@@ -84,23 +90,22 @@ enum SubscriptionTrigger {
   const resolvers: IResolvers<any, Context> = {
     Query: {
       noop: () => ({
-        success: true,
-      }),
+        success: true
+      })
     },
     Mutation: {
       join: (_: any, { name }, { userId }) => {
         if (userId && !joinedUsers.has(userId)) {
           joinedUsers.set(userId, {
             id: userId,
-            name,
+            name
           });
 
           window?.webContents.send(IpcChannel.PersonConnected);
         }
 
-
         return {
-          success: true,
+          success: true
         };
       },
       vote: (_, { vote }, { userId }) => {
@@ -108,15 +113,16 @@ enum SubscriptionTrigger {
         window?.webContents.send(IpcChannel.VoteCast);
 
         return {
-          success: true,
+          success: true
         };
-      },
+      }
     },
     Subscription: {
       votingStarted: {
-        subscribe: () => pubsub.asyncIterator([SubscriptionTrigger.VotingStarted]),
-      },
-    },
+        subscribe: () =>
+          pubsub.asyncIterator([SubscriptionTrigger.VotingStarted])
+      }
+    }
   };
 
   const expressServer = express();
@@ -127,28 +133,32 @@ enum SubscriptionTrigger {
       if (!req) {
         // Happens during subscription connection
         return {
-          userId: '',
+          userId: ''
         };
       }
 
       const userId = req.header('X-USER-ID');
 
       if (!userId) {
-        throw new AuthenticationError('You must have valid user ID to use this API');
+        throw new AuthenticationError(
+          'You must have valid user ID to use this API'
+        );
       }
 
       return {
-        userId,
+        userId
       };
     },
     subscriptions: {
       onConnect: ({ userId }: any): Promise<Context> => {
         if (!userId) {
-          throw new AuthenticationError('You must have valid user ID to use this API');
+          throw new AuthenticationError(
+            'You must have valid user ID to use this API'
+          );
         }
 
         return Promise.resolve({
-          userId,
+          userId
         });
       },
       onDisconnect: (_, ctx) => {
@@ -162,8 +172,8 @@ enum SubscriptionTrigger {
             }
           })();
         }
-      },
-    },
+      }
+    }
   });
   const httpServer = createServer(expressServer);
 
@@ -174,26 +184,28 @@ enum SubscriptionTrigger {
   expressServer.use(/\/.*/, (req, res) => {
     const muiSheets = new ServerStyleSheets();
 
-    const { html, css } = StyleSheetServer.renderStatic(() => ReactDomServer.renderToString(
-      muiSheets.collect(
-        <ServerLocation url={req.originalUrl}>
-          <Bootstrap port={PORT} />
-        </ServerLocation>,
-      ),
-    ));
+    const { html, css } = StyleSheetServer.renderStatic(() =>
+      ReactDomServer.renderToString(
+        muiSheets.collect(
+          <ServerLocation url={req.originalUrl}>
+            <Bootstrap port={PORT} />
+          </ServerLocation>
+        )
+      )
+    );
 
     const result = webTemplate(
       html,
       muiSheets.toString(),
       css.content,
       css.renderedClassNames,
-      '/web.js',
+      '/web.js'
     );
 
     res.send(result);
   });
 
-  await new Promise((res) => httpServer.listen(PORT, res));
+  await new Promise(res => httpServer.listen(PORT, res));
   const ngrokUrl = await (async () => {
     try {
       const url = await ngrok.connect(PORT);
@@ -204,8 +216,12 @@ enum SubscriptionTrigger {
 
     return undefined;
   })();
-  console.log(`GraphQL ready at http://localhost:${PORT}${apolloServer.graphqlPath}`);
-  console.log(`GraphQL subscriptions ready at ws://localhost:${PORT}${apolloServer.subscriptionsPath}`);
+  console.log(
+    `GraphQL ready at http://localhost:${PORT}${apolloServer.graphqlPath}`
+  );
+  console.log(
+    `GraphQL subscriptions ready at ws://localhost:${PORT}${apolloServer.subscriptionsPath}`
+  );
   console.log(`Local URL: http://localhost:${PORT}`);
   if (ngrokUrl) {
     console.log(`Remote URL: ${ngrokUrl}`);
@@ -213,18 +229,21 @@ enum SubscriptionTrigger {
 
   await app.whenReady();
 
-  ipcMain.handle(IpcChannel.GetConnectionInfo, async (): Promise<ConnectionInfo> => {
-    const localIp = await internalIp.v4();
+  ipcMain.handle(
+    IpcChannel.GetConnectionInfo,
+    async (): Promise<ConnectionInfo> => {
+      const localIp = await internalIp.v4();
 
-    if (!localIp) {
-      throw new Error("Can't get local address");
+      if (!localIp) {
+        throw new Error("Can't get local address");
+      }
+
+      return {
+        local: `http://${localIp}:${PORT}`,
+        remote: ngrokUrl
+      };
     }
-
-    return {
-      local: `http://${localIp}:${PORT}`,
-      remote: ngrokUrl,
-    };
-  });
+  );
 
   ipcMain.handle(IpcChannel.GetConnectedCount, () => joinedUsers.size);
 
@@ -233,17 +252,27 @@ enum SubscriptionTrigger {
       throw new Error('Not all of the votes are in!');
     }
 
-    return [...voteResults.entries()].map<[User, number]>(([userId, vote]) => [joinedUsers.get(userId)!, vote]);
+    return [...voteResults.entries()].map<[User, number]>(([userId, vote]) => [
+      joinedUsers.get(userId)!,
+      vote
+    ]);
   });
 
   ipcMain.on(IpcChannel.StartVoting, () => {
     voteResults = new Map();
-    pubsub.publish(SubscriptionTrigger.VotingStarted, { votingStarted: { success: true } });
+    pubsub.publish(SubscriptionTrigger.VotingStarted, {
+      votingStarted: { success: true }
+    });
   });
 
   if (isDevelopment()) {
-    // eslint-disable-next-line import/no-extraneous-dependencies, global-require
-    const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer') as typeof electronDevtoolsInstaller;
+    /* eslint-disable import/no-extraneous-dependencies, global-require */
+    const {
+      default: installExtension,
+      REACT_DEVELOPER_TOOLS
+    } = require('electron-devtools-installer') as typeof electronDevtoolsInstaller;
+    /* eslint-enable import/no-extraneous-dependencies, global-require */
+
     await installExtension(REACT_DEVELOPER_TOOLS);
   }
   window = createWindow();

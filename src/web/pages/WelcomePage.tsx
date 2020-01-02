@@ -16,22 +16,22 @@ export type WelcomePageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
   marginTop: {
-    marginTop: unit,
+    marginTop: unit
   },
   button: {
     marginTop: unit,
     marginLeft: 'auto',
     marginRight: 'auto',
-    display: 'block',
-  },
+    display: 'block'
+  }
 }));
 
 const JOIN_MUTATION = gql`
-mutation JoinSession($name: String!){
-  join(name: $name) {
-    success
+  mutation JoinSession($name: String!) {
+    join(name: $name) {
+      success
+    }
   }
-}
 `;
 
 export default function WelcomePage({ navigate }: WelcomePageProps) {
@@ -41,7 +41,9 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
       return undefined;
     }
 
-    const nameInput = document.getElementById('name-input') as HTMLInputElement | null;
+    const nameInput = document.getElementById(
+      'name-input'
+    ) as HTMLInputElement | null;
 
     return nameInput?.value;
   });
@@ -60,14 +62,14 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
   const handleJoin = () => {
     LocalStorageUtils.setItem<User>('user', {
       id: userId!,
-      name: name!,
+      name: name!
     });
 
     (async () => {
       await joinSession({
         variables: {
-          name,
-        },
+          name
+        }
       });
 
       navigate?.('/waiting');
@@ -82,8 +84,23 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
         </Toolbar>
       </AppBar>
       <Container maxWidth="sm" {...css(styles.marginTop)}>
-        <TextField id="name-input" label="Name" required fullWidth value={name ?? ''} onChange={(ev) => setName(ev.target.value)} />
-        <Button {...css(styles.button)} variant="contained" color="primary" disabled={!name || !userId} onClick={handleJoin}>Join</Button>
+        <TextField
+          id="name-input"
+          label="Name"
+          required
+          fullWidth
+          value={name ?? ''}
+          onChange={ev => setName(ev.target.value)}
+        />
+        <Button
+          {...css(styles.button)}
+          variant="contained"
+          color="primary"
+          disabled={!name || !userId}
+          onClick={handleJoin}
+        >
+          Join
+        </Button>
       </Container>
     </>
   );
