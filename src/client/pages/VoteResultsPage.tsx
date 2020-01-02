@@ -5,6 +5,9 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Confetti from 'react-confetti';
+import useWindowSize from 'react-use/lib/useWindowSize';
+import Snackbar from '@material-ui/core/Snackbar';
 import User from ':shared/User';
 import IpcChannel from ':shared/IpcChannel';
 import createStylesFn from '../../shared/theme/createStylesFn';
@@ -17,8 +20,8 @@ export type VoteResultsPageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
   container: {
-    margin: `${unit}px 0`,
-    height: `calc(100% - ${2 * unit}px)`
+    padding: `${unit}px 0`,
+    height: '100%'
   },
   button: {
     display: 'block',
@@ -53,6 +56,15 @@ function numberOfVotes(votes: Partial<Record<Vote, User[]>>) {
 export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [votes, setVotes] = useState<Partial<Record<Vote, User[]>>>();
+  const [showUnanimousNotification, setShowUnanimousNotification] = useState(
+    false
+  );
+  const { width, height } = useWindowSize();
+  const isUnanimous = votes ? Object.keys(votes).length === 1 : false;
+
+  useEffect(() => {
+    setShowUnanimousNotification(isUnanimous);
+  }, [isUnanimous]);
 
   useEffect(() => {
     (async () => {
@@ -112,6 +124,21 @@ export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
             </Button>
           </Grid>
         </Grid>
+      )}
+      {isUnanimous && (
+        <>
+          <Confetti width={width} height={height} />
+          <Snackbar
+            open={showUnanimousNotification}
+            onClose={() => setShowUnanimousNotification(false)}
+            autoHideDuration={5000}
+            message="Unanimous vote! 🎉"
+            anchorOrigin={{
+              horizontal: 'center',
+              vertical: 'bottom'
+            }}
+          />
+        </>
       )}
     </>
   );
