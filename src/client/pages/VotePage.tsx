@@ -1,27 +1,27 @@
-import React, { useState, useEffect } from "react";
-import ProgressCircle from "../components/ProgressCircle";
-import { RouteComponentProps } from "@reach/router";
-import IpcChannel from ":shared/IpcChannel";
-import useStyles from "react-with-styles/lib/hooks/useStyles";
-import { createStylesFn } from ":shared/theme/createStylesFn";
-import Container from "@material-ui/core/Container";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
+import React, { useState, useEffect } from 'react';
+import { RouteComponentProps } from '@reach/router';
+import useStyles from 'react-with-styles/lib/hooks/useStyles';
+import Container from '@material-ui/core/Container';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import { createStylesFn } from ':shared/theme/createStylesFn';
+import IpcChannel from ':shared/IpcChannel';
+import ProgressCircle from '../components/ProgressCircle';
 
-const { ipcRenderer } = window.require("electron");
+const { ipcRenderer } = window.require('electron');
 
 export type VotePageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
   contentContainer: {
-    position: "relative",
-    top: "50%",
-    transform: "translateY(-50%)",
-    textAlign: "center"
+    position: 'relative',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    textAlign: 'center',
   },
   circleContainer: {
-    margin: `${2 * unit}px 0`
-  }
+    margin: `${2 * unit}px 0`,
+  },
 }));
 
 export default function VotePage({ location, navigate }: VotePageProps) {
@@ -30,13 +30,13 @@ export default function VotePage({ location, navigate }: VotePageProps) {
   const numberOfPeople: number | undefined = location?.state?.numberOfPeople;
 
   useEffect(() => {
-    const voteCastListener = () => setNumberOfPeopleReady(prev => prev + 1);
+    const voteCastListener = () => setNumberOfPeopleReady((prev) => prev + 1);
     ipcRenderer.on(IpcChannel.VoteCast, voteCastListener);
 
     // Cleanup
     return () => {
       ipcRenderer.removeListener(IpcChannel.VoteCast, voteCastListener);
-    }
+    };
   }, []);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function VotePage({ location, navigate }: VotePageProps) {
 
   useEffect(() => {
     if (numberOfPeopleReady === numberOfPeople) {
-      navigate?.("/results");
+      navigate?.('/results');
     }
   }, [numberOfPeopleReady]);
 
@@ -53,11 +53,13 @@ export default function VotePage({ location, navigate }: VotePageProps) {
     throw new Error("Can't vote without people");
   }
 
-  return <Container maxWidth="xs" {...css(styles.contentContainer)}>
-    <Typography variant="h6">Waiting for votes</Typography>
-    <div {...css(styles.circleContainer)}>
-      <ProgressCircle value={numberOfPeopleReady} max={numberOfPeople} />
-    </div>
-    <Button variant="outlined" onClick={() => navigate?.("/")}>Cancel</Button>
-  </Container>;
+  return (
+    <Container maxWidth="xs" {...css(styles.contentContainer)}>
+      <Typography variant="h6">Waiting for votes</Typography>
+      <div {...css(styles.circleContainer)}>
+        <ProgressCircle value={numberOfPeopleReady} max={numberOfPeople} />
+      </div>
+      <Button variant="outlined" onClick={() => navigate?.('/')}>Cancel</Button>
+    </Container>
+  );
 }

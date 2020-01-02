@@ -1,5 +1,5 @@
-import { Styles } from "react-with-styles";
-import DefaultTheme from "./DefaultTheme";
+import { Styles } from 'react-with-styles';
+import DefaultTheme from './DefaultTheme';
 
 type StylesFn = (theme: typeof DefaultTheme) => Styles;
 

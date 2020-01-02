@@ -1,8 +1,8 @@
-import React, { useRef, useEffect, useState } from "react";
-import ProgressBar from "progressbar.js";
-import useStyles from "react-with-styles/lib/hooks/useStyles";
-import { createStylesFn } from "../../shared/theme/createStylesFn";
-import Theme from ":shared/theme/DefaultTheme";
+import React, { useRef, useEffect, useState } from 'react';
+import ProgressBar from 'progressbar.js';
+import useStyles from 'react-with-styles/lib/hooks/useStyles';
+import { createStylesFn } from '../../shared/theme/createStylesFn';
+import Theme from ':shared/theme/DefaultTheme';
 
 export type ProgressCircleProps = {
   value: number;
@@ -11,10 +11,10 @@ export type ProgressCircleProps = {
 
 const stylesFn = createStylesFn(() => ({
   container: {
-    position: "relative",
-    width: "100%",
-    height: "100%"
-  }
+    position: 'relative',
+    width: '100%',
+    height: '100%',
+  },
 }));
 
 export default function ProgressCircle({ value, max }: ProgressCircleProps) {
@@ -31,8 +31,8 @@ export default function ProgressCircle({ value, max }: ProgressCircleProps) {
         color: Theme.color.primary,
         trailWidth: 0.5,
         text: {
-          value: progressText
-        }
+          value: progressText,
+        },
       });
       if (circle.text) {
         circle.text.style.color = Theme.color.text.default;

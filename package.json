@@ -14,7 +14,8 @@
     "pack": "NODE_ENV=production npm run build && electron-builder --dir",
     "dist": "NODE_ENV=production npm run build && electron-builder",
     "postinstall": "electron-builder install-app-deps",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src"
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src",
+    "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src"
   },
   "keywords": [
     "planning",

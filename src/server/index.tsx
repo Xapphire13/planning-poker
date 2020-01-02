@@ -1,23 +1,25 @@
-import React from "react";
-import { app, BrowserWindow, ipcMain } from "electron";
-import express from "express";
-import { createServer } from "http";
-import { ApolloServer, PubSub, IResolvers, gql, AuthenticationError } from "apollo-server-express";
-import internalIp from "internal-ip";
-import IpcChannel from ":shared/IpcChannel";
-import path from "path";
-import User from ":shared/User";
-import { Bootstrap } from ":web/index";
-import ReactDomServer from "react-dom/server";
-import { webTemplate } from "./htmlTemplates";
+import React from 'react';
+import { app, BrowserWindow, ipcMain } from 'electron';
+import express from 'express';
+import { createServer } from 'http';
+import {
+  ApolloServer, PubSub, IResolvers, gql, AuthenticationError,
+} from 'apollo-server-express';
+import internalIp from 'internal-ip';
+import path from 'path';
+import ReactDomServer from 'react-dom/server';
 import { StyleSheetServer } from 'aphrodite';
-import { ServerLocation } from "@reach/router"
+import { ServerLocation } from '@reach/router';
 import { ServerStyleSheets } from '@material-ui/core/styles';
-import ngrok from "ngrok";
-import ConnectionInfo from ":shared/ConnectionInfo";
-import isDevelopment from "./isDevelopment";
-import * as electronDevtoolsInstaller from "electron-devtools-installer";
-import { format as formatUrl } from "url";
+import ngrok from 'ngrok';
+import * as electronDevtoolsInstaller from 'electron-devtools-installer';
+import { format as formatUrl } from 'url';
+import ConnectionInfo from ':shared/ConnectionInfo';
+import isDevelopment from './isDevelopment';
+import { webTemplate } from './htmlTemplates';
+import { Bootstrap } from ':web/index';
+import User from ':shared/User';
+import IpcChannel from ':shared/IpcChannel';
 
 const PORT = 4000;
 
@@ -26,19 +28,19 @@ interface Context {
 }
 
 function createWindow() {
-  let win = new BrowserWindow({
+  const win = new BrowserWindow({
     width: 300,
     height: 600,
     webPreferences: {
       nodeIntegration: true,
-    }
-  })
+    },
+  });
 
   win.loadURL(formatUrl({
     pathname: path.join(__dirname, 'index.html'),
     protocol: 'file',
-    slashes: true
-  }))
+    slashes: true,
+  }));
 
   return win;
 }
@@ -68,7 +70,7 @@ const typeDefs = gql`
 `;
 
 enum SubscriptionTrigger {
-  VotingStarted = "VOTING_STARTED"
+  VotingStarted = 'VOTING_STARTED'
 }
 
 (async () => {
@@ -80,15 +82,15 @@ enum SubscriptionTrigger {
   const resolvers: IResolvers<any, Context> = {
     Query: {
       noop: () => ({
-        success: true
-      })
+        success: true,
+      }),
     },
     Mutation: {
       join: (_: any, { name }, { userId }) => {
         if (userId && !joinedUsers.has(userId)) {
           joinedUsers.set(userId, {
             id: userId,
-            name
+            name,
           });
 
           window?.webContents.send(IpcChannel.PersonConnected);
@@ -96,23 +98,23 @@ enum SubscriptionTrigger {
 
 
         return {
-          success: true
-        }
+          success: true,
+        };
       },
       vote: (_, { vote }, { userId }) => {
         voteResults.set(userId, vote);
         window?.webContents.send(IpcChannel.VoteCast);
 
         return {
-          success: true
-        }
-      }
+          success: true,
+        };
+      },
     },
     Subscription: {
       votingStarted: {
-        subscribe: () => pubsub.asyncIterator([SubscriptionTrigger.VotingStarted])
-      }
-    }
+        subscribe: () => pubsub.asyncIterator([SubscriptionTrigger.VotingStarted]),
+      },
+    },
   };
 
   const expressServer = express();
@@ -123,29 +125,29 @@ enum SubscriptionTrigger {
       if (!req) {
         // Happens during subscription connection
         return {
-          userId: ''
-        }
+          userId: '',
+        };
       }
 
-      const userId = req.header("X-USER-ID");
+      const userId = req.header('X-USER-ID');
 
       if (!userId) {
-        throw new AuthenticationError("You must have valid user ID to use this API");
+        throw new AuthenticationError('You must have valid user ID to use this API');
       }
 
       return {
-        userId
+        userId,
       };
     },
     subscriptions: {
       onConnect: ({ userId }: any): Promise<Context> => {
         if (!userId) {
-          throw new AuthenticationError("You must have valid user ID to use this API");
+          throw new AuthenticationError('You must have valid user ID to use this API');
         }
 
         return Promise.resolve({
-          userId
-        })
+          userId,
+        });
       },
       onDisconnect: (_, ctx) => {
         if (ctx.initPromise) {
@@ -156,16 +158,16 @@ enum SubscriptionTrigger {
             if (userHadJoined) {
               window?.webContents.send(IpcChannel.PersonDisconnected);
             }
-          })()
+          })();
         }
-      }
-    }
+      },
+    },
   });
   const httpServer = createServer(expressServer);
 
   apolloServer.applyMiddleware({ app: expressServer });
   apolloServer.installSubscriptionHandlers(httpServer);
-  expressServer.use(express.static(path.resolve(__dirname, "web")));
+  expressServer.use(express.static(path.resolve(__dirname, 'web')));
   // Web entry point
   expressServer.use(/\/.*/, (req, res) => {
     const muiSheets = new ServerStyleSheets();
@@ -174,7 +176,8 @@ enum SubscriptionTrigger {
       muiSheets.collect(
         <ServerLocation url={req.originalUrl}>
           <Bootstrap port={PORT} />
-        </ServerLocation>)
+        </ServerLocation>,
+      ),
     ));
 
     const result = webTemplate(
@@ -182,7 +185,8 @@ enum SubscriptionTrigger {
       muiSheets.toString(),
       css.content,
       css.renderedClassNames,
-      "/web.js");
+      '/web.js',
+    );
 
     res.send(result);
   });
@@ -190,8 +194,8 @@ enum SubscriptionTrigger {
   await new Promise((res) => httpServer.listen(PORT, res));
   const ngrokUrl = await (async () => {
     try {
-      const url = await ngrok.connect(PORT)
-      return url.replace("https://", "http://");
+      const url = await ngrok.connect(PORT);
+      return url.replace('https://', 'http://');
     } catch (err) {
       console.error("Couldn't connect to ngrok", err);
     }
@@ -200,7 +204,7 @@ enum SubscriptionTrigger {
   })();
   console.log(`GraphQL ready at http://localhost:${PORT}${apolloServer.graphqlPath}`);
   console.log(`GraphQL subscriptions ready at ws://localhost:${PORT}${apolloServer.subscriptionsPath}`);
-  console.log(`Local URL: http://localhost:${PORT}`)
+  console.log(`Local URL: http://localhost:${PORT}`);
   if (ngrokUrl) {
     console.log(`Remote URL: ${ngrokUrl}`);
   }
@@ -216,7 +220,7 @@ enum SubscriptionTrigger {
 
     return {
       local: `http://${localIp}:${PORT}`,
-      remote: ngrokUrl
+      remote: ngrokUrl,
     };
   });
 
@@ -224,7 +228,7 @@ enum SubscriptionTrigger {
 
   ipcMain.handle(IpcChannel.GetResults, () => {
     if (voteResults.size !== joinedUsers.size) {
-      throw new Error("Not all of the votes are in!");
+      throw new Error('Not all of the votes are in!');
     }
 
     return [...voteResults.entries()].map<[User, number]>(([userId, vote]) => [joinedUsers.get(userId)!, vote]);
@@ -233,10 +237,10 @@ enum SubscriptionTrigger {
   ipcMain.on(IpcChannel.StartVoting, () => {
     voteResults = new Map();
     pubsub.publish(SubscriptionTrigger.VotingStarted, { votingStarted: { success: true } });
-  })
+  });
 
   if (isDevelopment()) {
-    const { default: installExtension, REACT_DEVELOPER_TOOLS } = require("electron-devtools-installer") as typeof electronDevtoolsInstaller;
+    const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer') as typeof electronDevtoolsInstaller;
     await installExtension(REACT_DEVELOPER_TOOLS);
   }
   window = createWindow();
