@@ -39,7 +39,7 @@ export default function ProgressCircle({ value, max }: ProgressCircleProps) {
       }
       setCircle(circle);
     }
-  }, []);
+  }, [progressText]);
 
   useEffect(() => {
     setProgress(value / max);
