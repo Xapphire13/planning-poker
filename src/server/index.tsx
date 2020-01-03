@@ -249,10 +249,6 @@ enum SubscriptionTrigger {
   ipcMain.handle(IpcChannel.GetConnectedCount, () => joinedUsers.size);
 
   ipcMain.handle(IpcChannel.GetResults, () => {
-    if (voteResults.size !== joinedUsers.size) {
-      throw new Error('Not all of the votes are in!');
-    }
-
     return [...voteResults.entries()].map<[User, Vote]>(([userId, vote]) => [
       joinedUsers.get(userId)!,
       vote

@@ -89,6 +89,7 @@
     "graphql-tag": "^2.10.1",
     "hash-sum": "^2.0.0",
     "internal-ip": "^5.0.0",
+    "moment": "^2.24.0",
     "ngrok": "^3.2.7",
     "node-fetch": "^2.6.0",
     "prettier": "^1.19.1",
