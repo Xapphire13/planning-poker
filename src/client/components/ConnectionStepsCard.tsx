@@ -33,7 +33,7 @@ export default function ConnectionStepsCard({
   connectionInfo
 }: ConnectionStepsCardProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const [destination, setDestination] = useState<'local' | 'remote'>('local');
+  const [destination, setDestination] = useState<'local' | 'remote'>('remote');
   const url =
     destination === 'local' || !connectionInfo.remote
       ? connectionInfo.local
@@ -78,7 +78,11 @@ export default function ConnectionStepsCard({
             <Typography>Local</Typography>
           </Grid>
           <Grid item>
-            <Switch color="default" onChange={handleSwitchToggled} />
+            <Switch
+              color="default"
+              checked={destination === 'remote'}
+              onChange={handleSwitchToggled}
+            />
           </Grid>
           <Grid item>
             <Typography>Remote</Typography>
