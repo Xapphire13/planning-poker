@@ -7,6 +7,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { colors, Color } from '@material-ui/core';
 import hashSum from 'hash-sum';
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import Theme, { muiTheme } from ':shared/theme/DefaultTheme';
 import User from ':shared/User';
 import createStylesFn from '../../shared/theme/createStylesFn';
@@ -157,7 +158,9 @@ export default function VoteDistributionRow({
 
                 return (
                   <Tooltip
-                    title={voter.name}
+                    title={
+                      <Typography variant="caption">{voter.name}</Typography>
+                    }
                     key={voter.id}
                     {...css(computedStyles)}
                   >
@@ -170,7 +173,9 @@ export default function VoteDistributionRow({
               hiddenAvatars.length > 0 && (
                 <Tooltip
                   title={hiddenAvatars.map(user => (
-                    <div key={user.id}>{user.name}</div>
+                    <Typography variant="caption" key={user.id}>
+                      {user.name}
+                    </Typography>
                   ))}
                   key="hidden"
                 >
