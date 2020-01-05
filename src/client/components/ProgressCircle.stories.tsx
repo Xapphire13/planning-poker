@@ -13,7 +13,7 @@ export const Default = CreateStory(() => {
   }, []);
 
   return (
-    <div style={{ width: 200 }}>
+    <div style={{ width: 200, height: 200 }}>
       <ProgressCircle max={10} value={value} />
     </div>
   );
