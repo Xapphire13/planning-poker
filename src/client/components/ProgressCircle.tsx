@@ -3,6 +3,8 @@ import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import grey from '@material-ui/core/colors/grey';
 import Typography from '@material-ui/core/Typography';
+import useMeasure from 'react-use/lib/useMeasure';
+import { CSSProperties } from 'aphrodite';
 import createStylesFn from '../../shared/theme/createStylesFn';
 
 export type ProgressCircleProps = {
@@ -13,8 +15,7 @@ export type ProgressCircleProps = {
 const stylesFn = createStylesFn(() => ({
   container: {
     position: 'relative',
-    width: '100%',
-    height: '100%'
+    width: '100%'
   },
   circleContainer: {
     position: 'absolute',
@@ -44,32 +45,35 @@ const stylesFn = createStylesFn(() => ({
 
 export default function ProgressCircle({ value, max }: ProgressCircleProps) {
   const { css, styles } = useStyles({ stylesFn });
+  const [containerRef, { width: containerWidth }] = useMeasure();
 
   const progress = Math.floor((value / max) * 100);
   const progressText = `${value} / ${max}`;
 
+  const computedContainerStyle: CSSProperties = {
+    height: containerWidth
+  };
+
   return (
-    <>
-      <div {...css(styles.container)}>
-        <div {...css(styles.circleContainer)}>
-          <CircularProgress
-            variant="static"
-            color="inherit"
-            thickness={0.25}
-            value={100}
-            {...css(styles.lowerCircle)}
-          />
-        </div>
-        <div {...css(styles.circleContainer)}>
-          <CircularProgress
-            variant="static"
-            thickness={0.75}
-            value={progress}
-            {...css(styles.circle)}
-          />
-        </div>
-        <Typography {...css(styles.progressText)}>{progressText}</Typography>
+    <div {...css(styles.container, computedContainerStyle)} ref={containerRef}>
+      <div {...css(styles.circleContainer)}>
+        <CircularProgress
+          variant="static"
+          color="inherit"
+          thickness={0.25}
+          value={100}
+          {...css(styles.lowerCircle)}
+        />
       </div>
-    </>
+      <div {...css(styles.circleContainer)}>
+        <CircularProgress
+          variant="static"
+          thickness={0.75}
+          value={progress}
+          {...css(styles.circle)}
+        />
+      </div>
+      <Typography {...css(styles.progressText)}>{progressText}</Typography>
+    </div>
   );
 }
