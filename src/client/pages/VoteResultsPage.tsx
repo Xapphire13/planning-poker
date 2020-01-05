@@ -46,13 +46,6 @@ function averageOfVotes(votes: Partial<Record<Vote, User[]>>) {
   return Math.round(total / count);
 }
 
-function numberOfVotes(votes: Partial<Record<Vote, User[]>>) {
-  return Object.keys(votes).reduce((res, key) => {
-    const vote = key === 'Infinity' ? 'Infinity' : (+key as Vote);
-    return res + votes[vote]!.length;
-  }, 0);
-}
-
 export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [votes, setVotes] = useState<Partial<Record<Vote, User[]>>>();
@@ -113,11 +106,7 @@ export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
             <Button
               variant="contained"
               color="primary"
-              onClick={() =>
-                navigate?.('/vote', {
-                  state: { numberOfPeople: numberOfVotes(votes) }
-                })
-              }
+              onClick={() => navigate?.('/vote')}
               {...css(styles.button)}
             >
               New vote

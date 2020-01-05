@@ -44,10 +44,10 @@ function formatTimeRemaining(seconds: number) {
   return `${minutesPart}:${secondsPart}`;
 }
 
-export default function VotePage({ location, navigate }: VotePageProps) {
+export default function VotePage({ navigate }: VotePageProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [numberOfPeopleReady, setNumberOfPeopleReady] = useState(0);
-  const numberOfPeople: number | undefined = location?.state?.numberOfPeople;
+  const [numberOfPeople, setNumberOfPeople] = useState<number>();
   const [timeRemaining, setTimeRemaining] = useState(10);
   const [countdownStarted, setCountdownStarted] = useState(false);
   const countdown = useCallback(() => {
@@ -73,7 +73,10 @@ export default function VotePage({ location, navigate }: VotePageProps) {
   }, []);
 
   useEffect(() => {
-    ipcRenderer.send(IpcChannel.StartVoting);
+    (async () => {
+      setNumberOfPeople(await ipcRenderer.invoke(IpcChannel.GetConnectedCount));
+      ipcRenderer.send(IpcChannel.StartVoting);
+    })();
   }, []);
 
   useEffect(() => {
@@ -94,8 +97,8 @@ export default function VotePage({ location, navigate }: VotePageProps) {
     }
   }, [navigate, numberOfPeople, numberOfPeopleReady, timeRemaining]);
 
-  if (!numberOfPeople) {
-    throw new Error("Can't vote without people");
+  if (numberOfPeople == null) {
+    return <></>;
   }
 
   return (

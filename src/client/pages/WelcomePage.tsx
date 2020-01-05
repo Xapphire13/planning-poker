@@ -114,7 +114,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
   }, []);
 
   const handleStartVoteClicked = () => {
-    navigate?.('/vote', { state: { numberOfPeople: numberOfPeopleConnected } });
+    navigate?.('/vote');
   };
 
   return (
