@@ -26,20 +26,20 @@ export default function ProgressCircle({ value, max }: ProgressCircleProps) {
   const progressText = `${value} / ${max}`;
 
   useEffect(() => {
-    if (containerRef.current) {
-      const circle = new ProgressBar.Circle(containerRef.current, {
+    if (containerRef.current && !circle) {
+      const newCircle = new ProgressBar.Circle(containerRef.current, {
         color: Theme.color.primary,
         trailWidth: 0.5,
         text: {
           value: progressText
         }
       });
-      if (circle.text) {
-        circle.text.style.color = Theme.color.text.default;
+      if (newCircle.text) {
+        newCircle.text.style.color = Theme.color.text.default;
       }
-      setCircle(circle);
+      setCircle(newCircle);
     }
-  }, [progressText]);
+  }, [circle, progressText]);
 
   useEffect(() => {
     setProgress(value / max);
