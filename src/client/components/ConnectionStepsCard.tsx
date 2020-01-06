@@ -33,7 +33,7 @@ export default function ConnectionStepsCard({
   connectionInfo
 }: ConnectionStepsCardProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const [destination, setDestination] = useState<'local' | 'remote'>('remote');
+  const [destination, setDestination] = useState<'local' | 'remote'>('local');
   const url =
     destination === 'local' || !connectionInfo.remote
       ? connectionInfo.local
