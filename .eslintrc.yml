@@ -41,3 +41,6 @@ rules:
         - "**/*.stories.tsx"
   react/jsx-one-expression-per-line: off
   react/jsx-curly-newline: off
+  no-plusplus: off
+  "@typescript-eslint/indent": off
+  no-underscore-dangle: off

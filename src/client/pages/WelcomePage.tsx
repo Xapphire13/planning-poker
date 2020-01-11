@@ -18,7 +18,7 @@ import Divider from '@material-ui/core/Divider';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import ConnectionInfo from ':shared/ConnectionInfo';
+import ConnectionInterface from ':shared/ConnectionInterface';
 import ConnectionStepsCard from ':client/components/ConnectionStepsCard';
 import IpcChannel from ':shared/IpcChannel';
 import createStylesFn from '../../shared/theme/createStylesFn';
@@ -66,16 +66,21 @@ const stylesFn = createStylesFn(({ unit }) => ({
 
 export default function WelcomePage({ navigate }: WelcomePageProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const [connectionInfo, setConnectionInfo] = useState<ConnectionInfo>();
+  const [connectionInterfaces, setConnectionInterfaces] = useState<
+    ConnectionInterface[]
+  >();
   const [numberOfPeopleConnected, setNumberOfPeopleConnected] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  useEffect(() => {
+  const loadInteraces = () =>
     ipcRenderer
       .invoke(IpcChannel.GetConnectionInfo)
-      .then((connInfo: ConnectionInfo) => {
-        setConnectionInfo(connInfo);
+      .then((interfaces: ConnectionInterface[]) => {
+        setConnectionInterfaces(interfaces);
       });
+
+  useEffect(() => {
+    loadInteraces();
   }, []);
 
   useEffect(() => {
@@ -117,6 +122,18 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
     navigate?.('/vote');
   };
 
+  const handleNgrokToggled = async (desiredState: 'on' | 'off') => {
+    if (desiredState === 'on') {
+      const success = await ipcRenderer.invoke(IpcChannel.ConnectNgrok);
+      if (success) {
+        loadInteraces();
+      }
+    } else if (desiredState === 'off') {
+      await ipcRenderer.invoke(IpcChannel.DisconnectNgrok);
+      loadInteraces();
+    }
+  };
+
   return (
     <div {...css(styles.container)}>
       <div
@@ -136,9 +153,12 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
           </Toolbar>
         </AppBar>
         <div>
-          {connectionInfo && (
+          {connectionInterfaces && (
             <Container maxWidth="xs" {...css(styles.contentContainer)}>
-              <ConnectionStepsCard connectionInfo={connectionInfo} />
+              <ConnectionStepsCard
+                connectionInterfaces={connectionInterfaces}
+                toggleNgrok={handleNgrokToggled}
+              />
               <Typography variant="body2" {...css(styles.connectedText)}>
                 {numberOfPeopleConnected} people connected
               </Typography>

@@ -5,7 +5,9 @@ enum IpcChannel {
   PersonConnected = 'person-connected',
   PersonDisconnected = 'person-disconnected',
   StartVoting = 'start-voting',
-  GetResults = 'get-results'
+  GetResults = 'get-results',
+  ConnectNgrok = 'connect-ngrok',
+  DisconnectNgrok = 'disconnect-ngrok'
 }
 
 export default IpcChannel;

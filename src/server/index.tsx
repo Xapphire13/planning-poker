@@ -10,23 +10,23 @@ import {
   gql,
   AuthenticationError
 } from 'apollo-server-express';
-import internalIp from 'internal-ip';
 import path from 'path';
 import ReactDomServer from 'react-dom/server';
 import { StyleSheetServer } from 'aphrodite';
 import { ServerLocation } from '@reach/router';
 import { ServerStyleSheets } from '@material-ui/core/styles';
-import ngrok from 'ngrok';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as electronDevtoolsInstaller from 'electron-devtools-installer';
 import { format as formatUrl } from 'url';
-import ConnectionInfo from ':shared/ConnectionInfo';
+import ConnectionInterface from ':shared/ConnectionInterface';
 import isDevelopment from './isDevelopment';
 import webTemplate from './webTemplate';
 import { Bootstrap } from ':web/index';
 import User from ':shared/User';
 import IpcChannel from ':shared/IpcChannel';
 import { Vote } from ':shared/Vote';
+import getNetworkInterfaces from ':server/getNetworkInterfaces';
+import NgrokConnection from './NgrokConnection';
 
 const PORT = 4000;
 
@@ -87,6 +87,11 @@ enum SubscriptionTrigger {
   const joinedUsers: Map<string, User> = new Map();
   let voteResults: Map<string, Vote> = new Map();
   const pubsub = new PubSub();
+  const ngrokConnection = new NgrokConnection(PORT);
+  const networkInterfaces = (await getNetworkInterfaces()).map(iface => ({
+    name: iface.name,
+    address: `http://${iface.address}:${PORT}`
+  }));
 
   const resolvers: IResolvers<any, Context> = {
     Query: {
@@ -207,42 +212,22 @@ enum SubscriptionTrigger {
   });
 
   await new Promise(res => httpServer.listen(PORT, res));
-  const ngrokUrl = await (async () => {
-    try {
-      const url = await ngrok.connect(PORT);
-      return url.replace('https://', 'http://');
-    } catch (err) {
-      console.error("Couldn't connect to ngrok", err);
-    }
-
-    return undefined;
-  })();
   console.log(
     `GraphQL ready at http://localhost:${PORT}${apolloServer.graphqlPath}`
   );
   console.log(
     `GraphQL subscriptions ready at ws://localhost:${PORT}${apolloServer.subscriptionsPath}`
   );
-  console.log(`Local URL: http://localhost:${PORT}`);
-  if (ngrokUrl) {
-    console.log(`Remote URL: ${ngrokUrl}`);
-  }
 
   await app.whenReady();
 
   ipcMain.handle(
     IpcChannel.GetConnectionInfo,
-    async (): Promise<ConnectionInfo> => {
-      const localIp = await internalIp.v4();
-
-      if (!localIp) {
-        throw new Error("Can't get local address");
-      }
-
-      return {
-        local: `http://${localIp}:${PORT}`,
-        remote: ngrokUrl
-      };
+    async (): Promise<ConnectionInterface[]> => {
+      return [
+        ...networkInterfaces,
+        { name: 'Ngrok', address: ngrokConnection.url } as ConnectionInterface
+      ];
     }
   );
 
@@ -253,6 +238,17 @@ enum SubscriptionTrigger {
       joinedUsers.get(userId)!,
       vote
     ]);
+  });
+
+  ipcMain.handle(IpcChannel.ConnectNgrok, () => {
+    return ngrokConnection.connect().then(
+      () => true,
+      () => false
+    );
+  });
+
+  ipcMain.handle(IpcChannel.DisconnectNgrok, () => {
+    return ngrokConnection.disconnect();
   });
 
   ipcMain.on(IpcChannel.StartVoting, () => {
@@ -272,5 +268,6 @@ enum SubscriptionTrigger {
 
     await installExtension(REACT_DEVELOPER_TOOLS);
   }
+
   window = createWindow();
 })();
