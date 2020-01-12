@@ -24,13 +24,15 @@
   "author": "Xapphire13",
   "license": "ISC",
   "build": {
+    "productName": "Planning Poker",
     "asar": false,
     "appId": "xapphire13.planning-poker",
     "directories": {
       "output": "dist-packages"
     },
     "mac": {
-      "category": "public.app-category.business"
+      "category": "public.app-category.business",
+      "target": "dmg"
     }
   },
   "devDependencies": {
