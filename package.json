@@ -25,7 +25,6 @@
   "license": "ISC",
   "build": {
     "productName": "Planning Poker",
-    "asar": false,
     "appId": "xapphire13.planning-poker",
     "directories": {
       "output": "dist-packages"

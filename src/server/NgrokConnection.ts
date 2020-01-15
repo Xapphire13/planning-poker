@@ -1,4 +1,5 @@
 import ngrok from 'ngrok';
+import isDevelopment from './isDevelopment';
 
 export default class NgrokConnection {
   private _url: string | undefined;
@@ -15,7 +16,14 @@ export default class NgrokConnection {
     }
 
     try {
-      const url = await ngrok.connect(this.port);
+      const url = await ngrok.connect({
+        addr: this.port,
+        binPath: defaultPath => {
+          return isDevelopment()
+            ? defaultPath
+            : defaultPath.replace('app.asar', 'app.asar.unpacked');
+        }
+      });
 
       this._url = url.replace('https://', 'http://');
     } catch (err) {
