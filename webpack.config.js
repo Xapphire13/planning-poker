@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const SRC_DIR = path.resolve(__dirname, './src');
 const DIST_DIR = path.resolve(__dirname, './dist');
@@ -36,7 +37,16 @@ const webConfig = {
   output: {
     filename: 'web.js',
     path: path.join(DIST_DIR, 'web')
-  }
+  },
+  plugins: [
+    ...baseConfig.plugins,
+    new CopyPlugin([
+      {
+        from: path.join(__dirname, './icon.png'),
+        to: path.join(DIST_DIR, 'web')
+      }
+    ])
+  ]
 };
 
 const ssrConfig = {
