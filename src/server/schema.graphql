@@ -1,0 +1,37 @@
+type VoteResult {
+  userId: ID!
+  vote: String!
+}
+
+type VoidResult {
+  success: Boolean!
+}
+
+type User {
+  id: ID!
+  name: String!
+}
+
+type Session {
+  id: ID!
+  users: [User]
+  results: [VoteResult]
+}
+
+type Query {
+  session(sessionId: String!): Session
+}
+
+type Mutation {
+  createSession: String
+  join(name: String!, sessionId: String!): VoidResult
+  vote(vote: String!, sessionId: String!): VoidResult
+  startVoting(sessionId: String!): VoidResult
+}
+
+type Subscription {
+  votingStarted(sessionId: String!): VoidResult
+  personJoined(sessionId: String!): [User]
+  personDisconnected(sessionId: String!): [User]
+  voteCast(sessionId: String!): [User]
+}

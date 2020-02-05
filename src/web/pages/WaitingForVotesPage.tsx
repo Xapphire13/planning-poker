@@ -7,13 +7,12 @@ import Button from '@material-ui/core/Button';
 import TimerIcon from '@material-ui/icons/Timer';
 import Grid from '@material-ui/core/Grid';
 import moment from 'moment';
-import createStylesFn from ':shared/theme/createStylesFn';
-import IpcChannel from ':shared/IpcChannel';
+import { useSubscription } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
+import createStylesFn from ':web/theme/createStylesFn';
 import ProgressCircle from '../components/ProgressCircle';
 
-const { ipcRenderer } = window.require('electron');
-
-export type VotePageProps = RouteComponentProps;
+export type WaitingForVotesPageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
   contentContainer: {
@@ -44,12 +43,21 @@ function formatTimeRemaining(seconds: number) {
   return `${minutesPart}:${secondsPart}`;
 }
 
-export default function VotePage({ navigate }: VotePageProps) {
+const VOTE_CAST_SUBSCRIPTION = gql`
+  subscription VoteCastSubscription {
+    voteCast(sessionId: '') {
+      id
+    }
+  }
+`;
+
+export default function WaitingForVotesPage({
+  navigate
+}: WaitingForVotesPageProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const [numberOfPeopleReady, setNumberOfPeopleReady] = useState(0);
-  const [numberOfPeople, setNumberOfPeople] = useState<number>();
-  const [timeRemaining, setTimeRemaining] = useState(10);
+  const [timeRemaining, setTimeRemaining] = useState(20);
   const [countdownStarted, setCountdownStarted] = useState(false);
+  const { data: voteCastData } = useSubscription(VOTE_CAST_SUBSCRIPTION);
   const countdown = useCallback(() => {
     setTimeRemaining(prev => {
       if (prev > 0) {
@@ -62,22 +70,7 @@ export default function VotePage({ navigate }: VotePageProps) {
     });
   }, []);
 
-  useEffect(() => {
-    const voteCastListener = () => setNumberOfPeopleReady(prev => prev + 1);
-    ipcRenderer.on(IpcChannel.VoteCast, voteCastListener);
-
-    // Cleanup
-    return () => {
-      ipcRenderer.removeListener(IpcChannel.VoteCast, voteCastListener);
-    };
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      setNumberOfPeople(await ipcRenderer.invoke(IpcChannel.GetConnectedCount));
-      ipcRenderer.send(IpcChannel.StartVoting);
-    })();
-  }, []);
+  const numberOfPeopleReady: number = voteCastData?.voteCast?.length;
 
   useEffect(() => {
     if (numberOfPeopleReady > 0) {
@@ -92,20 +85,21 @@ export default function VotePage({ navigate }: VotePageProps) {
   }, [countdown, countdownStarted]);
 
   useEffect(() => {
-    if (timeRemaining === 0 || numberOfPeopleReady === numberOfPeople) {
+    // TODO
+    if (timeRemaining === 0 || numberOfPeopleReady === 100) {
       navigate?.('/results');
     }
-  }, [navigate, numberOfPeople, numberOfPeopleReady, timeRemaining]);
-
-  if (numberOfPeople == null) {
-    return <></>;
-  }
+  }, [navigate, numberOfPeopleReady, timeRemaining]);
 
   return (
     <Container maxWidth="xs" {...css(styles.contentContainer)}>
       <Typography variant="h6">Waiting for votes</Typography>
       <div {...css(styles.circleContainer)}>
-        <ProgressCircle value={numberOfPeopleReady} max={numberOfPeople} />
+        <ProgressCircle
+          value={numberOfPeopleReady}
+          // TODO
+          max={100}
+        />
       </div>
       <Grid
         container

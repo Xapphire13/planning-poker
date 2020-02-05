@@ -2,7 +2,7 @@ import React from 'react';
 import { Router } from '@reach/router';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import WelcomePage from ':web/pages/WelcomePage';
-import createStylesFn from ':shared/theme/createStylesFn';
+import createStylesFn from ':web/theme/createStylesFn';
 import WaitingPage from ':web/pages/WaitingPage';
 import VotePage from ':web/pages/VotePage';
 

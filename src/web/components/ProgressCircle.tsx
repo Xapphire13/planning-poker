@@ -5,7 +5,7 @@ import grey from '@material-ui/core/colors/grey';
 import Typography from '@material-ui/core/Typography';
 import useMeasure from 'react-use/lib/useMeasure';
 import { CSSProperties } from 'aphrodite';
-import createStylesFn from '../../shared/theme/createStylesFn';
+import createStylesFn from '../theme/createStylesFn';
 
 export type ProgressCircleProps = {
   value: number;

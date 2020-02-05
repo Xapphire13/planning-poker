@@ -8,13 +8,12 @@ import Button from '@material-ui/core/Button';
 import Confetti from 'react-confetti';
 import useWindowSize from 'react-use/lib/useWindowSize';
 import Snackbar from '@material-ui/core/Snackbar';
-import User from ':shared/User';
-import IpcChannel from ':shared/IpcChannel';
-import createStylesFn from '../../shared/theme/createStylesFn';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
+import User from ':web/User';
+import createStylesFn from '../theme/createStylesFn';
 import VoteDistributions from '../components/VoteDistributions';
-import { Vote } from ':shared/Vote';
-
-const { ipcRenderer } = window.require('electron');
+import { Vote } from ':web/Vote';
 
 export type VoteResultsPageProps = RouteComponentProps;
 
@@ -46,46 +45,40 @@ function averageOfVotes(votes: Partial<Record<Vote, User[]>>) {
   return Math.round(total / count);
 }
 
+const SESSION_RESULTS_QUERY = gql`
+  query SessionResults {
+    session {
+      users {
+        id
+        name
+      }
+      results {
+        userId
+        vote
+      }
+    }
+  }
+`;
+
 export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const [votes, setVotes] = useState<Partial<Record<Vote, User[]>>>();
   const [showUnanimousNotification, setShowUnanimousNotification] = useState(
     false
   );
   const { width, height } = useWindowSize();
-  const isUnanimous = votes ? Object.keys(votes).length === 1 : false;
+  const { data: sessionResultsData } = useQuery(SESSION_RESULTS_QUERY);
+
+  const results = sessionResultsData?.session?.results;
+  const users = sessionResultsData?.session?.users;
+  const isUnanimous = false; // TODO
 
   useEffect(() => {
     setShowUnanimousNotification(isUnanimous);
   }, [isUnanimous]);
 
-  useEffect(() => {
-    (async () => {
-      const usersAndVote: [User, Vote][] = await ipcRenderer.invoke(
-        IpcChannel.GetResults
-      );
-
-      const results = usersAndVote.reduce<Partial<Record<Vote, User[]>>>(
-        (result, [user, vote]) => {
-          if (!result[vote]) {
-            // eslint-disable-next-line no-param-reassign
-            result[vote] = [];
-          }
-
-          result[vote]!.push(user);
-
-          return result;
-        },
-        {}
-      );
-
-      setVotes(results);
-    })();
-  }, []);
-
   return (
     <>
-      {votes && (
+      {results && users && (
         <Grid
           container
           justify="space-between"
@@ -95,12 +88,12 @@ export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
           <Grid item>
             <Container>
               <Typography variant="h6">
-                Average: {averageOfVotes(votes)}
+                Average: {averageOfVotes(results)}
               </Typography>
             </Container>
           </Grid>
           <Grid item>
-            <VoteDistributions votes={votes} />
+            <VoteDistributions results={results} users={users} />
           </Grid>
           <Grid item>
             <Button

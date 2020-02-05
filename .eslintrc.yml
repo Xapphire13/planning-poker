@@ -33,6 +33,7 @@ rules:
   import/no-extraneous-dependencies:
     - error
     - devDependencies:
+        - "**/*.config.js"
         - "**/*.test.ts"
         - "**/*.test.tsx"
         - "**/*.spec.ts"
@@ -41,6 +42,6 @@ rules:
         - "**/*.stories.tsx"
   react/jsx-one-expression-per-line: off
   react/jsx-curly-newline: off
-  no-plusplus: off
+  no-plusplus: 0
   "@typescript-eslint/indent": off
-  no-underscore-dangle: off
+  no-underscore-dangle: 0

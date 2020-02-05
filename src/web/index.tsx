@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import ':shared/webpack-global-fix';
 import WithStylesContext from 'react-with-styles/lib/WithStylesContext';
 // @ts-ignore
 import AphroditeInterface from 'react-with-styles-interface-aphrodite';
@@ -16,15 +15,15 @@ import { getMainDefinition } from 'apollo-utilities';
 import { onError } from 'apollo-link-error';
 import uuid from 'uuid/v4';
 import { StyleSheet } from 'aphrodite';
-import LocalStorageUtils from './LocalStorageUtils';
-import User from ':shared/User';
-import isServer from ':shared/isServer';
+import LocalStorageUtils from './utils/LocalStorageUtils';
+import User from ':web/User';
+import isSsr from ':web/utils/isSsr';
 import App from './App';
-import DefaultTheme, { muiTheme } from ':shared/theme/DefaultTheme';
+import DefaultTheme, { muiTheme } from ':web/theme/DefaultTheme';
 
 let user: User | undefined;
 
-if (!isServer()) {
+if (!isSsr()) {
   // Create user if not-exists
   user = LocalStorageUtils.getItem<User>('user');
   if (!user) {
@@ -102,7 +101,7 @@ export type BootstrapProps = {
   port?: number;
 };
 
-export function Bootstrap({ port }: BootstrapProps) {
+export default function Bootstrap({ port }: BootstrapProps) {
   // Remove SSR MUI-Styles
   useEffect(() => {
     const jssStyles = document.querySelector('#jss-server-side');
@@ -110,7 +109,7 @@ export function Bootstrap({ port }: BootstrapProps) {
   }, []);
 
   const client = new ApolloClient({
-    link: isServer() ? createServerLink(port) : createClientLink(),
+    link: isSsr() ? createServerLink(port) : createClientLink(),
     cache: new InMemoryCache()
   });
 
@@ -130,7 +129,7 @@ export function Bootstrap({ port }: BootstrapProps) {
   );
 }
 
-if (!isServer()) {
+if (!isSsr()) {
   const entryPointScript = document.getElementById(
     'entry-point-script'
   ) as HTMLScriptElement;

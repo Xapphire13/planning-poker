@@ -6,8 +6,8 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import VoteButton from ':web/components/VoteButton';
-import createStylesFn from ':shared/theme/createStylesFn';
-import { VoteValues, Vote } from ':shared/Vote';
+import createStylesFn from ':web/theme/createStylesFn';
+import { VoteValues, Vote } from ':web/Vote';
 
 export type VotePageProps = RouteComponentProps;
 

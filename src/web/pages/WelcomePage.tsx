@@ -9,10 +9,10 @@ import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 import gql from 'graphql-tag';
 import { RouteComponentProps } from '@reach/router';
-import LocalStorageUtils from ':web/LocalStorageUtils';
-import createStylesFn from ':shared/theme/createStylesFn';
-import isServer from ':shared/isServer';
-import User from ':shared/User';
+import LocalStorageUtils from ':web/utils/LocalStorageUtils';
+import createStylesFn from ':web/theme/createStylesFn';
+import isSsr from ':web/utils/isSsr';
+import User from ':web/User';
 
 export type WelcomePageProps = RouteComponentProps;
 
@@ -39,7 +39,7 @@ const JOIN_MUTATION = gql`
 export default function WelcomePage({ navigate }: WelcomePageProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [name, setName] = useState(() => {
-    if (isServer()) {
+    if (isSsr()) {
       return undefined;
     }
 
@@ -50,6 +50,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
     return nameInput?.value;
   });
   const [userId, setUserId] = useState<string>();
+  const [sessionId, setSessionId] = useState<string>();
   const [joinSession] = useMutation(JOIN_MUTATION);
 
   useEffect(() => {
@@ -87,8 +88,18 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
       </AppBar>
       <Container maxWidth="sm" {...css(styles.marginTop)}>
         <TextField
+          id="session-id-input"
+          label="Session ID"
+          required
+          fullWidth
+          value={sessionId ?? ''}
+          onChange={ev => setSessionId(ev.target.value)}
+          autoFocus
+        />
+        <TextField
           id="name-input"
           label="Name"
+          {...css(styles.marginTop)}
           required
           fullWidth
           value={name ?? ''}
@@ -98,10 +109,13 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
           {...css(styles.button)}
           variant="contained"
           color="primary"
-          disabled={!name || !userId}
+          disabled={!name || !sessionId || !userId}
           onClick={handleJoin}
         >
           Join
+        </Button>
+        <Button {...css(styles.button)} variant="text" color="secondary">
+          or host new session
         </Button>
       </Container>
     </>

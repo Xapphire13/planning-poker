@@ -1,9 +1,9 @@
 import React from 'react';
 import SimpsonsNames from 'simpsons-names';
 import uuid from 'uuid/v4';
-import VoteDistributions from ':client/components/VoteDistributions';
+import VoteDistributions from ':web/components/VoteDistributions';
 import CreateStory from ':storybook/CreateStory';
-import User from ':shared/User';
+import User from ':web/User';
 
 export default {
   title: 'Vote Distributions'
@@ -16,23 +16,12 @@ function generateVoters(number: number) {
   }));
 }
 
+// TODO
 export const Default = CreateStory(() => (
-  <VoteDistributions
-    votes={{
-      1: generateVoters(1),
-      2: generateVoters(3),
-      3: generateVoters(2),
-      5: generateVoters(6),
-      8: generateVoters(2)
-    }}
-  />
+  <VoteDistributions results={[]} users={[]} />
 ));
 
+// TODO
 export const Overflowing = CreateStory(() => (
-  <VoteDistributions
-    votes={{
-      3: generateVoters(1),
-      5: generateVoters(50)
-    }}
-  />
+  <VoteDistributions users={generateVoters(50)} results={[]} />
 ));

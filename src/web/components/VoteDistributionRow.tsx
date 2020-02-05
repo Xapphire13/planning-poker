@@ -8,10 +8,10 @@ import { colors, Color } from '@material-ui/core';
 import hashSum from 'hash-sum';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Theme, { muiTheme } from ':shared/theme/DefaultTheme';
-import User from ':shared/User';
-import createStylesFn from '../../shared/theme/createStylesFn';
-import { Vote } from ':shared/Vote';
+import Theme, { muiTheme } from ':web/theme/DefaultTheme';
+import User from ':web/User';
+import createStylesFn from '../theme/createStylesFn';
+import { Vote } from ':web/Vote';
 
 const STORYPOINT_BORDER_WIDTH = 2;
 const AVATAR_SIZE = 5 * Theme.unit;

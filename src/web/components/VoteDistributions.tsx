@@ -1,13 +1,13 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
-import VoteDistributionRow from './VoteDistributionRow';
-import User from ':shared/User';
-import createStylesFn from ':shared/theme/createStylesFn';
-import { Vote } from ':shared/Vote';
+// import VoteDistributionRow from './VoteDistributionRow';
+import User from ':web/User';
+import createStylesFn from ':web/theme/createStylesFn';
 
 export type VoteDistributionsProps = {
-  votes: Partial<Record<Vote, User[]>>;
+  results: any[]; // TODO
+  users: User[];
 };
 
 const stylesFn = createStylesFn(() => ({
@@ -16,18 +16,19 @@ const stylesFn = createStylesFn(() => ({
   }
 }));
 
-export default function VoteDistributions({ votes }: VoteDistributionsProps) {
+export default function VoteDistributions({
+  results,
+  users
+}: VoteDistributionsProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const winningVoteCount = Math.max(
-    ...Object.keys(votes).map(key => {
-      const vote = key === 'Infinity' ? 'Infinity' : (+key as Vote);
-      return votes[vote]!.length;
-    })
-  );
+
+  if (css && styles && results && users) {
+    // TODO
+  }
 
   return (
     <Grid container direction="column" spacing={1}>
-      {Object.keys(votes)
+      {/* {Object.keys(votes)
         .map(key => (key === 'Infinity' ? 'Infinity' : (+key as Vote)))
         .sort((a, b) => {
           if (a === 'Infinity') {
@@ -51,7 +52,7 @@ export default function VoteDistributions({ votes }: VoteDistributionsProps) {
               />
             </Grid>
           );
-        })}
+        })} */}
     </Grid>
   );
 }

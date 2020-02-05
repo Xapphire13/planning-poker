@@ -12,22 +12,16 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import GitHubIcon from '@material-ui/icons/GitHub';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { shell } from 'electron';
 import Divider from '@material-ui/core/Divider';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import ConnectionInterface from ':shared/ConnectionInterface';
-import ConnectionStepsCard from ':client/components/ConnectionStepsCard';
-import IpcChannel from ':shared/IpcChannel';
-import createStylesFn from '../../shared/theme/createStylesFn';
-
-const { ipcRenderer } = window.require('electron');
+import ConnectionStepsCard from ':web/components/ConnectionStepsCard';
+import createStylesFn from '../theme/createStylesFn';
 
 const DRAWER_WIDTH = 240;
 
-export type WelcomePageProps = RouteComponentProps;
+export type HostPageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
   contentContainer: {
@@ -64,74 +58,13 @@ const stylesFn = createStylesFn(({ unit }) => ({
   }
 }));
 
-export default function WelcomePage({ navigate }: WelcomePageProps) {
+export default function WelcomePage({ navigate }: HostPageProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const [connectionInterfaces, setConnectionInterfaces] = useState<
-    ConnectionInterface[]
-  >();
-  const [numberOfPeopleConnected, setNumberOfPeopleConnected] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  const loadInteraces = () =>
-    ipcRenderer
-      .invoke(IpcChannel.GetConnectionInfo)
-      .then((interfaces: ConnectionInterface[]) => {
-        setConnectionInterfaces(interfaces);
-      });
-
-  useEffect(() => {
-    loadInteraces();
-  }, []);
-
-  useEffect(() => {
-    const personConnectedListener = () =>
-      setNumberOfPeopleConnected(prev => prev + 1);
-    const personDisconnectedListener = () =>
-      setNumberOfPeopleConnected(prev => prev - 1);
-
-    (async () => {
-      const count: number = await ipcRenderer.invoke(
-        IpcChannel.GetConnectedCount
-      );
-      setNumberOfPeopleConnected(prev => prev + count);
-
-      ipcRenderer.addListener(
-        IpcChannel.PersonConnected,
-        personConnectedListener
-      );
-      ipcRenderer.addListener(
-        IpcChannel.PersonDisconnected,
-        personDisconnectedListener
-      );
-    })();
-
-    // Cleanup
-    return () => {
-      ipcRenderer.removeListener(
-        IpcChannel.PersonConnected,
-        personConnectedListener
-      );
-      ipcRenderer.removeListener(
-        IpcChannel.PersonDisconnected,
-        personDisconnectedListener
-      );
-    };
-  }, []);
+  const numberOfPeopleConnected = 0; // TODO
 
   const handleStartVoteClicked = () => {
     navigate?.('/vote');
-  };
-
-  const handleNgrokToggled = async (desiredState: 'on' | 'off') => {
-    if (desiredState === 'on') {
-      const success = await ipcRenderer.invoke(IpcChannel.ConnectNgrok);
-      if (success) {
-        loadInteraces();
-      }
-    } else if (desiredState === 'off') {
-      await ipcRenderer.invoke(IpcChannel.DisconnectNgrok);
-      loadInteraces();
-    }
   };
 
   return (
@@ -153,26 +86,21 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
           </Toolbar>
         </AppBar>
         <div>
-          {connectionInterfaces && (
-            <Container maxWidth="xs" {...css(styles.contentContainer)}>
-              <ConnectionStepsCard
-                connectionInterfaces={connectionInterfaces}
-                toggleNgrok={handleNgrokToggled}
-              />
-              <Typography variant="body2" {...css(styles.connectedText)}>
-                {numberOfPeopleConnected} people connected
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={numberOfPeopleConnected < 2}
-                onClick={handleStartVoteClicked}
-                {...css(styles.readyButton)}
-              >
-                Ready!
-              </Button>
-            </Container>
-          )}
+          <Container maxWidth="xs" {...css(styles.contentContainer)}>
+            <ConnectionStepsCard />
+            <Typography variant="body2" {...css(styles.connectedText)}>
+              {numberOfPeopleConnected} people connected
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={numberOfPeopleConnected < 2}
+              onClick={handleStartVoteClicked}
+              {...css(styles.readyButton)}
+            >
+              Ready!
+            </Button>
+          </Container>
         </div>
 
         <Drawer
@@ -194,8 +122,9 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
             <ListItem
               button
               onClick={() =>
-                shell.openExternal(
-                  'https://github.com/Xapphire13/planning-poker'
+                window.open(
+                  'https://github.com/Xapphire13/planning-poker',
+                  '_blank'
                 )
               }
             >

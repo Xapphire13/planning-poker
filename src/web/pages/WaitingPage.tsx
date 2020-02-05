@@ -7,7 +7,7 @@ import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import Button from '@material-ui/core/Button';
 import { useSubscription } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import createStylesFn from ':shared/theme/createStylesFn';
+import createStylesFn from ':web/theme/createStylesFn';
 
 export type WaitingPageProps = RouteComponentProps;
 

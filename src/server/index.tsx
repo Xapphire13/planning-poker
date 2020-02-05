@@ -1,13 +1,11 @@
+/* eslint-disable no-console */
 import React from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { app, BrowserWindow, ipcMain } from 'electron';
 import express from 'express';
 import { createServer } from 'http';
 import {
   ApolloServer,
   PubSub,
   IResolvers,
-  gql,
   AuthenticationError
 } from 'apollo-server-express';
 import path from 'path';
@@ -15,125 +13,142 @@ import ReactDomServer from 'react-dom/server';
 import { StyleSheetServer } from 'aphrodite';
 import { ServerLocation } from '@reach/router';
 import { ServerStyleSheets } from '@material-ui/core/styles';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as electronDevtoolsInstaller from 'electron-devtools-installer';
-import { format as formatUrl } from 'url';
-import ConnectionInterface from ':shared/ConnectionInterface';
-import isDevelopment from './isDevelopment';
+import { importSchema } from 'graphql-import';
 import webTemplate from './webTemplate';
-import { Bootstrap } from ':web/index';
-import User from ':shared/User';
-import IpcChannel from ':shared/IpcChannel';
-import { Vote } from ':shared/Vote';
-import getNetworkInterfaces from ':server/getNetworkInterfaces';
-import NgrokConnection from './NgrokConnection';
-
-const PORT = 4000;
+import Session from './Session';
 
 interface Context {
   userId: string;
 }
 
-function createWindow() {
-  const win = new BrowserWindow({
-    width: 300,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  });
-
-  win.loadURL(
-    formatUrl({
-      pathname: path.join(__dirname, 'index.html'),
-      protocol: 'file',
-      slashes: true
-    })
-  );
-
-  return win;
+enum SubscriptionTrigger {
+  VotingStarted = 'VOTING_STARTED',
+  PersonJoined = 'PERSON_JOINED',
+  PersonDisconnected = 'PERSON_DISCONNECTED',
+  VoteCast = 'VOTE_CAST'
 }
 
-const typeDefs = gql`
-  type User {
-    id: ID!
-    name: String!
-  }
-
-  type VoidResult {
-    success: Boolean!
-  }
-
-  type Query {
-    noop: VoidResult
-  }
-
-  type Mutation {
-    join(name: String!): VoidResult
-    vote(vote: String!): VoidResult
-  }
-
-  type Subscription {
-    votingStarted: VoidResult
-  }
-`;
-
-enum SubscriptionTrigger {
-  VotingStarted = 'VOTING_STARTED'
+function getSessionTrigger(sessionId: string, trigger: SubscriptionTrigger) {
+  return `${trigger}-${sessionId}`;
 }
 
 (async () => {
-  let window: BrowserWindow | undefined;
-  const joinedUsers: Map<string, User> = new Map();
-  let voteResults: Map<string, Vote> = new Map();
+  /** sessionId -> Session */
+  const sessions = new Map<string, Session>();
   const pubsub = new PubSub();
-  const ngrokConnection = new NgrokConnection(PORT);
-  const networkInterfaces = (await getNetworkInterfaces()).map(iface => ({
-    name: iface.name,
-    address: `http://${iface.address}:${PORT}`
-  }));
 
   const resolvers: IResolvers<any, Context> = {
     Query: {
-      noop: () => ({
-        success: true
-      })
+      session: (_, { sessionId }) => {
+        const session = sessions.get(sessionId);
+
+        if (!session) {
+          return null;
+        }
+
+        return {
+          id: session.sessionId,
+          users: session.users,
+          results: session.results().map(([userId, vote]) => ({ userId, vote }))
+        };
+      }
     },
     Mutation: {
-      join: (_: any, { name }, { userId }) => {
-        if (userId && !joinedUsers.has(userId)) {
-          joinedUsers.set(userId, {
-            id: userId,
-            name
-          });
+      createSession: () => {
+        const session = new Session();
+        sessions.set(session.sessionId, session);
 
-          window?.webContents.send(IpcChannel.PersonConnected);
+        return session.sessionId;
+      },
+      join: (_: any, { name, sessionId }, { userId }) => {
+        const session = sessions.get(sessionId);
+
+        if (!session) {
+          throw new Error('No such session');
+        }
+
+        if (session.join({ id: userId, name })) {
+          pubsub.publish(
+            getSessionTrigger(sessionId, SubscriptionTrigger.PersonJoined),
+            {
+              personJoined: session.users
+            }
+          );
         }
 
         return {
           success: true
         };
       },
-      vote: (_, { vote }, { userId }) => {
-        voteResults.set(userId, vote);
-        window?.webContents.send(IpcChannel.VoteCast);
+      vote: (_, { vote, sessionId }, { userId }) => {
+        const session = sessions.get(sessionId);
+
+        if (!session) {
+          throw new Error('No such session');
+        }
+
+        if (session.registerVote(userId, vote)) {
+          pubsub.publish(
+            getSessionTrigger(sessionId, SubscriptionTrigger.VoteCast),
+            {
+              voteCast: session.voteCount
+            }
+          );
+        }
 
         return {
           success: true
         };
+      },
+      startVoting: (_, { sessionId }) => {
+        const session = sessions.get(sessionId);
+
+        if (!session) {
+          throw new Error('No such session');
+        }
+
+        session.newRound();
+
+        pubsub.publish(
+          getSessionTrigger(sessionId, SubscriptionTrigger.VotingStarted),
+          {
+            votingStarted: { success: true }
+          }
+        );
       }
     },
     Subscription: {
       votingStarted: {
-        subscribe: () =>
-          pubsub.asyncIterator([SubscriptionTrigger.VotingStarted])
+        subscribe: (sessionId: string) =>
+          pubsub.asyncIterator([
+            getSessionTrigger(sessionId, SubscriptionTrigger.VotingStarted)
+          ])
+      },
+      personJoined: {
+        subscribe: (sessionId: string) =>
+          pubsub.asyncIterator([
+            getSessionTrigger(sessionId, SubscriptionTrigger.PersonJoined)
+          ])
+      },
+      personDisconnected: {
+        subscribe: (sessionId: string) =>
+          pubsub.asyncIterator([
+            getSessionTrigger(sessionId, SubscriptionTrigger.PersonDisconnected)
+          ])
+      },
+      voteCast: {
+        subscribe: (sessionId: string) =>
+          pubsub.asyncIterator([
+            getSessionTrigger(sessionId, SubscriptionTrigger.VoteCast)
+          ])
       }
     }
   };
 
   const expressServer = express();
+  expressServer.set('port', process.env.PORT || 8080);
   const apolloServer = new ApolloServer({
-    typeDefs,
+    typeDefs: await importSchema(path.join(__dirname, './schema.graphql')),
     resolvers,
     context: ({ req }): Context => {
       if (!req) {
@@ -172,9 +187,19 @@ enum SubscriptionTrigger {
           (async () => {
             const context: Context = await ctx.initPromise;
 
-            const userHadJoined = joinedUsers.delete(context.userId);
-            if (userHadJoined) {
-              window?.webContents.send(IpcChannel.PersonDisconnected);
+            const session = [...sessions.values()].find(it =>
+              it.hasUser(context.userId)
+            );
+            if (session?.leave(context.userId)) {
+              pubsub.publish(
+                getSessionTrigger(
+                  session.sessionId,
+                  SubscriptionTrigger.PersonDisconnected
+                ),
+                {
+                  voteCast: session.users
+                }
+              );
             }
           })();
         }
@@ -187,14 +212,16 @@ enum SubscriptionTrigger {
   apolloServer.installSubscriptionHandlers(httpServer);
   expressServer.use(express.static(path.resolve(__dirname, 'web')));
   // Web entry point
-  expressServer.use(/\/.*/, (req, res) => {
+  expressServer.use(/\/.*/, async (req, res) => {
     const muiSheets = new ServerStyleSheets();
+
+    const { Bootstrap } = (await import(path.join(__dirname, 'ssr'))).default;
 
     const { html, css } = StyleSheetServer.renderStatic(() =>
       ReactDomServer.renderToString(
         muiSheets.collect(
           <ServerLocation url={req.originalUrl}>
-            <Bootstrap port={PORT} />
+            <Bootstrap />
           </ServerLocation>
         )
       )
@@ -211,63 +238,15 @@ enum SubscriptionTrigger {
     res.send(result);
   });
 
-  await new Promise(res => httpServer.listen(PORT, res));
+  await new Promise(res => httpServer.listen(expressServer.get('port'), res));
   console.log(
-    `GraphQL ready at http://localhost:${PORT}${apolloServer.graphqlPath}`
+    `GraphQL ready at http://localhost:${expressServer.get('port')}${
+      apolloServer.graphqlPath
+    }`
   );
   console.log(
-    `GraphQL subscriptions ready at ws://localhost:${PORT}${apolloServer.subscriptionsPath}`
+    `GraphQL subscriptions ready at ws://localhost:${expressServer.get(
+      'port'
+    )}${apolloServer.subscriptionsPath}`
   );
-
-  await app.whenReady();
-
-  ipcMain.handle(
-    IpcChannel.GetConnectionInfo,
-    async (): Promise<ConnectionInterface[]> => {
-      return [
-        ...networkInterfaces,
-        { name: 'Ngrok', address: ngrokConnection.url } as ConnectionInterface
-      ];
-    }
-  );
-
-  ipcMain.handle(IpcChannel.GetConnectedCount, () => joinedUsers.size);
-
-  ipcMain.handle(IpcChannel.GetResults, () => {
-    return [...voteResults.entries()].map<[User, Vote]>(([userId, vote]) => [
-      joinedUsers.get(userId)!,
-      vote
-    ]);
-  });
-
-  ipcMain.handle(IpcChannel.ConnectNgrok, () => {
-    return ngrokConnection.connect().then(
-      () => true,
-      () => false
-    );
-  });
-
-  ipcMain.handle(IpcChannel.DisconnectNgrok, () => {
-    return ngrokConnection.disconnect();
-  });
-
-  ipcMain.on(IpcChannel.StartVoting, () => {
-    voteResults = new Map();
-    pubsub.publish(SubscriptionTrigger.VotingStarted, {
-      votingStarted: { success: true }
-    });
-  });
-
-  if (isDevelopment()) {
-    /* eslint-disable import/no-extraneous-dependencies, global-require */
-    const {
-      default: installExtension,
-      REACT_DEVELOPER_TOOLS
-    } = require('electron-devtools-installer') as typeof electronDevtoolsInstaller;
-    /* eslint-enable import/no-extraneous-dependencies, global-require */
-
-    await installExtension(REACT_DEVELOPER_TOOLS);
-  }
-
-  window = createWindow();
 })();
