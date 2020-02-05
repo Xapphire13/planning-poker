@@ -2,3 +2,4 @@ dist/
 dist-packages/
 node_modules/
 .DS_Store
+__generated__/

@@ -33,6 +33,10 @@ function getSessionTrigger(sessionId: string, trigger: SubscriptionTrigger) {
   return `${trigger}-${sessionId}`;
 }
 
+process.on('unhandledRejection', err => {
+  console.error(err);
+});
+
 (async () => {
   /** sessionId -> Session */
   const sessions = new Map<string, Session>();

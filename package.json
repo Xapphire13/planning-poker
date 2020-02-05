@@ -5,6 +5,7 @@
   "private": true,
   "main": "./dist/server.js",
   "scripts": {
+    "apollo:generate": "mkdir -p ./src/__generated__ && apollo codegen:generate --target typescript --outputFlat ./src/__generated__/graphql.ts",
     "build-storybook": "build-storybook",
     "build:prod": "NODE_ENV=production npm run build",
     "build:server": "tsc -p ./src/server && npm run copy-schema",
@@ -15,6 +16,7 @@
     "heroku-postbuild": "npm run build:prod",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src",
+    "postinstall": "npm run apollo:generate",
     "start": "heroku local",
     "storybook": "start-storybook -p 6006"
   },
@@ -40,6 +42,7 @@
     "@types/uuid": "^3.4.6",
     "@typescript-eslint/eslint-plugin": "^2.14.0",
     "@typescript-eslint/parser": "^2.14.0",
+    "apollo": "^2.22.0",
     "babel-loader": "^8.0.6",
     "copy-webpack-plugin": "^5.1.1",
     "eslint": "^6.8.0",
