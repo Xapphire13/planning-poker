@@ -36,14 +36,15 @@ if (!isSsr()) {
 }
 
 function createClientLink() {
+  const isHttps = window.location.protocol === 'https:';
   const HOST = window.location.host;
 
   const httpLink = new HttpLink({
-    uri: `http://${HOST}/graphql`
+    uri: `${window.location.protocol}//${HOST}/graphql`
   });
 
   const wsLink = new WebSocketLink({
-    uri: `ws://${HOST}/graphql`,
+    uri: `${isHttps ? 'wss' : 'ws'}://${HOST}/graphql`,
     options: {
       connectionParams: {
         userId: user!.id
