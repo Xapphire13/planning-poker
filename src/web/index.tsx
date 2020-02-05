@@ -103,10 +103,9 @@ export type BootstrapProps = {
 };
 
 export default function Bootstrap({ port }: BootstrapProps) {
-  // Remove SSR MUI-Styles
+  // Remove SSR styles
   useEffect(() => {
-    const jssStyles = document.querySelector('#jss-server-side');
-    jssStyles?.remove();
+    document.querySelector('#server-side-styles')?.remove();
   }, []);
 
   const client = new ApolloClient({

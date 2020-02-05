@@ -1,6 +1,6 @@
 export default (
   ssrHtml: string,
-  muiCss: string,
+  ssrCss: string,
   aphroditeCss: string,
   renderedClassNames: string[],
   entryPoint: string
@@ -28,7 +28,7 @@ export default (
       }
     </style>
     <style data-aphrodite>${aphroditeCss}</style>
-    <style id="jss-server-side">${muiCss}</style>
+    <style id=server-side-styles">${ssrCss}</style>
     <title>Planning Poker</title>
   </head>
 

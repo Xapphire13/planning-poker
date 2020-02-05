@@ -14,6 +14,7 @@ import { StyleSheetServer } from 'aphrodite';
 import { ServerLocation } from '@reach/router';
 import { ServerStyleSheets } from '@material-ui/core/styles';
 import { importSchema } from 'graphql-import';
+import { JssProvider, SheetsRegistry } from 'react-jss';
 import webTemplate from './webTemplate';
 import Session from './Session';
 
@@ -214,22 +215,25 @@ function getSessionTrigger(sessionId: string, trigger: SubscriptionTrigger) {
   // Web entry point
   expressServer.use(/\/.*/, async (req, res) => {
     const muiSheets = new ServerStyleSheets();
+    const jssSheets = new SheetsRegistry();
 
     const { Bootstrap } = (await import(path.join(__dirname, 'ssr'))).default;
 
     const { html, css } = StyleSheetServer.renderStatic(() =>
       ReactDomServer.renderToString(
         muiSheets.collect(
-          <ServerLocation url={req.originalUrl}>
-            <Bootstrap />
-          </ServerLocation>
+          <JssProvider registry={jssSheets}>
+            <ServerLocation url={req.originalUrl}>
+              <Bootstrap />
+            </ServerLocation>
+          </JssProvider>
         )
       )
     );
 
     const result = webTemplate(
       html,
-      muiSheets.toString(),
+      [muiSheets.toString(), jssSheets.toString()].join('\n'),
       css.content,
       css.renderedClassNames,
       '/web.js'
