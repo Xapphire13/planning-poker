@@ -23,7 +23,8 @@ const baseConfig = {
     alias: {
       ':server': path.join(SRC_DIR, './server'),
       ':web': path.join(SRC_DIR, './web'),
-      ':storybook': path.join(SRC_DIR, './storybook')
+      ':storybook': path.join(SRC_DIR, './storybook'),
+      ':__generated__': path.join(SRC_DIR, './__generated__')
     }
   },
   plugins: [new webpack.ProgressPlugin()]

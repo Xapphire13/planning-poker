@@ -29,8 +29,8 @@ const stylesFn = createStylesFn(() => ({
 }));
 
 const VOTING_STARTED_SUBSCRIPTION = gql`
-  subscription onVotingStarted {
-    votingStarted {
+  subscription OnVotingStarted($sessionId: String!) {
+    votingStarted(sessionid: $sessionId) {
       success
     }
   }

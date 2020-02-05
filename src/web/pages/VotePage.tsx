@@ -12,8 +12,8 @@ import { VoteValues, Vote } from ':web/Vote';
 export type VotePageProps = RouteComponentProps;
 
 const VOTE_MUTATION = gql`
-  mutation CastVote($vote: String!) {
-    vote(vote: $vote) {
+  mutation CastVote($vote: String!, $sessionId: String!) {
+    vote(vote: $vote, sessionId: $sessionId) {
       success
     }
   }

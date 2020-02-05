@@ -29,8 +29,8 @@ const stylesFn = createStylesFn(({ unit }) => ({
 }));
 
 const JOIN_MUTATION = gql`
-  mutation JoinSession($name: String!) {
-    join(name: $name) {
+  mutation JoinSession($name: String!, $sessionId: String!) {
+    join(name: $name, sessionId: $sessionId) {
       success
     }
   }
@@ -79,6 +79,10 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
     })();
   };
 
+  const handleHostSession = () => {
+    navigate?.('/host');
+  };
+
   return (
     <>
       <AppBar position="static">
@@ -114,7 +118,12 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
         >
           Join
         </Button>
-        <Button {...css(styles.button)} variant="text" color="secondary">
+        <Button
+          {...css(styles.button)}
+          variant="text"
+          color="secondary"
+          onClick={handleHostSession}
+        >
           or host new session
         </Button>
       </Container>

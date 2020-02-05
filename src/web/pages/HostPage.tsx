@@ -16,8 +16,11 @@ import Divider from '@material-ui/core/Divider';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
 import ConnectionStepsCard from ':web/components/ConnectionStepsCard';
 import createStylesFn from '../theme/createStylesFn';
+import { CreateSession } from ':__generated__/graphql';
 
 const DRAWER_WIDTH = 240;
 
@@ -58,10 +61,28 @@ const stylesFn = createStylesFn(({ unit }) => ({
   }
 }));
 
+const CREATE_SESSION_MUTATION = gql`
+  mutation CreateSession {
+    createSession
+  }
+`;
+
 export default function WelcomePage({ navigate }: HostPageProps) {
   const { css, styles } = useStyles({ stylesFn });
+  const [sessionId, setSessionId] = useState<string>();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [createSession] = useMutation<CreateSession>(CREATE_SESSION_MUTATION);
   const numberOfPeopleConnected = 0; // TODO
+
+  useEffect(() => {
+    (async () => {
+      const result = await createSession();
+
+      if (result.data?.createSession) {
+        setSessionId(result.data.createSession);
+      }
+    })();
+  }, [createSession]);
 
   const handleStartVoteClicked = () => {
     navigate?.('/vote');
@@ -87,7 +108,7 @@ export default function WelcomePage({ navigate }: HostPageProps) {
         </AppBar>
         <div>
           <Container maxWidth="xs" {...css(styles.contentContainer)}>
-            <ConnectionStepsCard />
+            {sessionId && <ConnectionStepsCard sessionId={sessionId} />}
             <Typography variant="body2" {...css(styles.connectedText)}>
               {numberOfPeopleConnected} people connected
             </Typography>

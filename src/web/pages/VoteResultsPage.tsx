@@ -46,8 +46,8 @@ function averageOfVotes(votes: Partial<Record<Vote, User[]>>) {
 }
 
 const SESSION_RESULTS_QUERY = gql`
-  query SessionResults {
-    session {
+  query SessionResults($sessionId: String!) {
+    session(sessionId: $sessionId) {
       users {
         id
         name

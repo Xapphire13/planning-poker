@@ -9,6 +9,6 @@ export default {
 // TODO
 export const Default = CreateStory(() => (
   <div style={{ width: 300 }}>
-    <ConnectionStepsCard />
+    <ConnectionStepsCard sessionId="DEADBEEF" />
   </div>
 ));

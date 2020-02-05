@@ -33,29 +33,40 @@ const stylesFn = createStylesFn(({ unit }) => ({
   }
 }));
 
-export type ConnectionStepsCardProps = {};
+export type ConnectionStepsCardProps = {
+  sessionId: string;
+};
 
-export default function ConnectionStepsCard() {
+export default function ConnectionStepsCard({
+  sessionId
+}: ConnectionStepsCardProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [qrCodeSvg, setQrCodeSvg] = useState<string>();
+  const url = `${window.location.protocol}//${window.location.host}`;
 
   useEffect(() => {
-    // TODO put in real address
-    QRCode.toString('', { type: 'svg', margin: 1 }, (err, svgText) => {
-      if (err) {
-        console.error(err);
-        setQrCodeSvg(undefined);
-        return;
-      }
+    QRCode.toString(
+      `${url}?sessionId=${sessionId}`,
+      { type: 'svg', margin: 1 },
+      (err, svgText) => {
+        if (err) {
+          console.error(err);
+          setQrCodeSvg(undefined);
+          return;
+        }
 
-      setQrCodeSvg(svgText);
-    });
-  }, []);
+        setQrCodeSvg(svgText);
+      }
+    );
+  }, [sessionId, url]);
 
   return (
     <Card {...css(styles.container)}>
       <Typography>
-        To join, go to: <span {...css(styles.url)}>TODO</span>
+        To join, go to: <span {...css(styles.url)}>{url}</span>
+      </Typography>
+      <Typography>
+        And enter code <span>{sessionId}</span>
       </Typography>
       {qrCodeSvg && (
         <>
