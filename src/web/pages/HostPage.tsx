@@ -21,6 +21,7 @@ import { useMutation } from '@apollo/react-hooks';
 import ConnectionStepsCard from ':web/components/ConnectionStepsCard';
 import createStylesFn from '../theme/createStylesFn';
 import { CreateSession } from ':__generated__/graphql';
+import useConnectedCount from ':web/hooks/useConnectedCount';
 
 const DRAWER_WIDTH = 240;
 
@@ -71,8 +72,8 @@ export default function WelcomePage({ navigate }: HostPageProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [sessionId, setSessionId] = useState<string>();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const numberOfPeopleConnected = useConnectedCount(sessionId);
   const [createSession] = useMutation<CreateSession>(CREATE_SESSION_MUTATION);
-  const numberOfPeopleConnected = 0; // TODO
 
   useEffect(() => {
     (async () => {
@@ -110,7 +111,9 @@ export default function WelcomePage({ navigate }: HostPageProps) {
           <Container maxWidth="xs" {...css(styles.contentContainer)}>
             {sessionId && <ConnectionStepsCard sessionId={sessionId} />}
             <Typography variant="body2" {...css(styles.connectedText)}>
-              {numberOfPeopleConnected} people connected
+              {numberOfPeopleConnected === 1
+                ? '1 person connected'
+                : `${numberOfPeopleConnected} people connected`}
             </Typography>
             <Button
               variant="contained"

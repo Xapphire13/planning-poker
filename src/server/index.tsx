@@ -75,9 +75,7 @@ process.on('unhandledRejection', err => {
         if (session.join({ id: userId, name })) {
           pubsub.publish(
             getSessionTrigger(sessionId, SubscriptionTrigger.PersonJoined),
-            {
-              personJoined: session.users
-            }
+            { personJoined: session.users }
           );
         }
 
@@ -124,28 +122,28 @@ process.on('unhandledRejection', err => {
     },
     Subscription: {
       votingStarted: {
-        subscribe: (sessionId: string) =>
-          pubsub.asyncIterator([
+        subscribe: (_, { sessionId }) =>
+          pubsub.asyncIterator(
             getSessionTrigger(sessionId, SubscriptionTrigger.VotingStarted)
-          ])
+          )
       },
       personJoined: {
-        subscribe: (sessionId: string) =>
-          pubsub.asyncIterator([
+        subscribe: (_, { sessionId }) =>
+          pubsub.asyncIterator(
             getSessionTrigger(sessionId, SubscriptionTrigger.PersonJoined)
-          ])
+          )
       },
       personDisconnected: {
-        subscribe: (sessionId: string) =>
-          pubsub.asyncIterator([
+        subscribe: (_, { sessionId }) =>
+          pubsub.asyncIterator(
             getSessionTrigger(sessionId, SubscriptionTrigger.PersonDisconnected)
-          ])
+          )
       },
       voteCast: {
-        subscribe: (sessionId: string) =>
-          pubsub.asyncIterator([
+        subscribe: (_, { sessionId }) =>
+          pubsub.asyncIterator(
             getSessionTrigger(sessionId, SubscriptionTrigger.VoteCast)
-          ])
+          )
       }
     }
   };
@@ -201,9 +199,7 @@ process.on('unhandledRejection', err => {
                   session.sessionId,
                   SubscriptionTrigger.PersonDisconnected
                 ),
-                {
-                  voteCast: session.users
-                }
+                { personDisconnected: session.users }
               );
             }
           })();

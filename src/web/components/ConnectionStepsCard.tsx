@@ -12,7 +12,11 @@ const stylesFn = createStylesFn(({ unit }) => ({
     padding: unit
   },
   url: {
-    fontWeight: 'bold'
+    fontWeight: 'lighter'
+  },
+  sessionId: {
+    fontWeight: 'bold',
+    fontSize: '1.2em'
   },
   grow: {
     flexGrow: 1
@@ -62,11 +66,10 @@ export default function ConnectionStepsCard({
 
   return (
     <Card {...css(styles.container)}>
-      <Typography>
-        To join, go to: <span {...css(styles.url)}>{url}</span>
-      </Typography>
-      <Typography>
-        And enter code <span>{sessionId}</span>
+      <Typography>To join, go to:</Typography>
+      <Typography align="center">
+        <span {...css(styles.url)}>{url}?sessionId=</span>
+        <span {...css(styles.sessionId)}>{sessionId}</span>
       </Typography>
       {qrCodeSvg && (
         <>
