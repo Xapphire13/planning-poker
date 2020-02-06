@@ -6,6 +6,7 @@ extends:
   - airbnb-typescript
   - airbnb/hooks
   - plugin:prettier/recommended
+  - "./graphql.eslint.js"
 globals:
   Atomics: readonly
   SharedArrayBuffer: readonly

@@ -45,7 +45,7 @@ function formatTimeRemaining(seconds: number) {
 
 const VOTE_CAST_SUBSCRIPTION = gql`
   subscription VoteCastSubscription {
-    voteCast(sessionId: '') {
+    voteCast(sessionId: "") {
       id
     }
   }
