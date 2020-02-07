@@ -7,10 +7,18 @@ import Button from '@material-ui/core/Button';
 import TimerIcon from '@material-ui/icons/Timer';
 import Grid from '@material-ui/core/Grid';
 import moment from 'moment';
-import { useSubscription } from '@apollo/react-hooks';
+import { useSubscription, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import createStylesFn from ':web/theme/createStylesFn';
 import ProgressCircle from '../components/ProgressCircle';
+import {
+  VoteCastSubscription,
+  VoteCastSubscriptionVariables,
+  StartVoting,
+  StartVotingVariables
+} from ':__generated__/graphql';
+import StorageUtil from ':web/utils/storageUtil';
+import useConnectedCount from ':web/hooks/useConnectedCount';
 
 export type WaitingForVotesPageProps = RouteComponentProps;
 
@@ -44,9 +52,17 @@ function formatTimeRemaining(seconds: number) {
 }
 
 const VOTE_CAST_SUBSCRIPTION = gql`
-  subscription VoteCastSubscription {
-    voteCast(sessionId: "") {
+  subscription VoteCastSubscription($sessionId: String!) {
+    voteCast(sessionId: $sessionId) {
       id
+    }
+  }
+`;
+
+const START_VOTING_MUTATION = gql`
+  mutation StartVoting($sessionId: String!) {
+    startVoting(sessionId: $sessionId) {
+      success
     }
   }
 `;
@@ -54,10 +70,23 @@ const VOTE_CAST_SUBSCRIPTION = gql`
 export default function WaitingForVotesPage({
   navigate
 }: WaitingForVotesPageProps) {
+  const sessionId = StorageUtil.session.getItem<string>('sessionId');
   const { css, styles } = useStyles({ stylesFn });
   const [timeRemaining, setTimeRemaining] = useState(20);
   const [countdownStarted, setCountdownStarted] = useState(false);
-  const { data: voteCastData } = useSubscription(VOTE_CAST_SUBSCRIPTION);
+  const [startVoting] = useMutation<StartVoting, StartVotingVariables>(
+    START_VOTING_MUTATION
+  );
+  const numberOfPeopleInSession = useConnectedCount(sessionId);
+  const { data: voteCastData } = useSubscription<
+    VoteCastSubscription,
+    VoteCastSubscriptionVariables
+  >(VOTE_CAST_SUBSCRIPTION, {
+    skip: !sessionId,
+    variables: {
+      sessionId: sessionId ?? ''
+    }
+  });
   const countdown = useCallback(() => {
     setTimeRemaining(prev => {
       if (prev > 0) {
@@ -70,26 +99,46 @@ export default function WaitingForVotesPage({
     });
   }, []);
 
-  const numberOfPeopleReady: number = voteCastData?.voteCast?.length;
+  const numberOfPeopleReady: number = voteCastData?.voteCast?.length ?? 0;
 
+  // Redirect if no session id
+  useEffect(() => {
+    if (!sessionId) {
+      navigate?.('/host');
+    }
+  }, [navigate, sessionId]);
+
+  // Signal that voting has started
+  useEffect(() => {
+    if (sessionId) {
+      startVoting({ variables: { sessionId } });
+    }
+  }, [sessionId, startVoting]);
+
+  // Start countdown when first person is done voting
   useEffect(() => {
     if (numberOfPeopleReady > 0) {
       setCountdownStarted(true);
     }
   }, [countdown, numberOfPeopleReady]);
 
+  // Start countdown
   useEffect(() => {
     if (countdownStarted) {
       setTimeout(countdown, 1000);
     }
   }, [countdown, countdownStarted]);
 
+  // Show results when time runs out or all votes are in (min 2 votes)
   useEffect(() => {
-    // TODO
-    if (timeRemaining === 0 || numberOfPeopleReady === 100) {
+    if (
+      timeRemaining === 0 ||
+      (numberOfPeopleInSession > 1 &&
+        numberOfPeopleReady === numberOfPeopleInSession)
+    ) {
       navigate?.('/results');
     }
-  }, [navigate, numberOfPeopleReady, timeRemaining]);
+  }, [navigate, numberOfPeopleInSession, numberOfPeopleReady, timeRemaining]);
 
   return (
     <Container maxWidth="xs" {...css(styles.contentContainer)}>
@@ -97,8 +146,7 @@ export default function WaitingForVotesPage({
       <div {...css(styles.circleContainer)}>
         <ProgressCircle
           value={numberOfPeopleReady}
-          // TODO
-          max={100}
+          max={numberOfPeopleInSession}
         />
       </div>
       <Grid

@@ -93,7 +93,7 @@ export default function WelcomePage({ navigate }: HostPageProps) {
   }, [createSession, sessionId]);
 
   const handleStartVoteClicked = () => {
-    navigate?.('/vote');
+    navigate?.('/waitingForVotes');
   };
 
   return (

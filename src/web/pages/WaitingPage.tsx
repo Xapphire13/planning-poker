@@ -8,6 +8,11 @@ import Button from '@material-ui/core/Button';
 import { useSubscription } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import createStylesFn from ':web/theme/createStylesFn';
+import {
+  OnVotingStarted,
+  OnVotingStartedVariables
+} from ':__generated__/graphql';
+import StorageUtil from ':web/utils/storageUtil';
 
 export type WaitingPageProps = RouteComponentProps;
 
@@ -38,14 +43,21 @@ const VOTING_STARTED_SUBSCRIPTION = gql`
 
 export default function WaitingPage({ navigate }: WaitingPageProps) {
   const { css, styles } = useStyles({ stylesFn });
-  useSubscription(VOTING_STARTED_SUBSCRIPTION, {
-    shouldResubscribe: true,
-    onSubscriptionData: ({ subscriptionData }) => {
-      if (subscriptionData?.data?.votingStarted?.success) {
-        navigate?.('/vote');
+  const sessionId = StorageUtil.local.getItem<string>('sessionId');
+  useSubscription<OnVotingStarted, OnVotingStartedVariables>(
+    VOTING_STARTED_SUBSCRIPTION,
+    {
+      skip: !sessionId,
+      variables: {
+        sessionId: sessionId ?? ''
+      },
+      onSubscriptionData: ({ subscriptionData }) => {
+        if (subscriptionData?.data?.votingStarted?.success) {
+          navigate?.('/vote');
+        }
       }
     }
-  });
+  );
 
   return (
     <Container maxWidth="sm" {...css(styles.container)}>

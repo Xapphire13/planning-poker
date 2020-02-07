@@ -6,6 +6,7 @@ import createStylesFn from ':web/theme/createStylesFn';
 import WaitingPage from ':web/pages/WaitingPage';
 import VotePage from ':web/pages/VotePage';
 import HostPage from ':web/pages/HostPage';
+import WaitingForVotesPage from './pages/WaitingForVotesPage';
 
 const stylesFn = createStylesFn(({ color, fontFamily }) => ({
   container: {
@@ -27,6 +28,7 @@ export default function App() {
       <WelcomePage path="/" />
       <HostPage path="/host" />
       <WaitingPage path="/waiting" />
+      <WaitingForVotesPage path="/waitingForVotes" />
       <VotePage path="/vote" />
     </Router>
   );

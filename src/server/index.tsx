@@ -118,6 +118,10 @@ process.on('unhandledRejection', err => {
             votingStarted: { success: true }
           }
         );
+
+        return {
+          success: true
+        };
       }
     },
     Subscription: {
@@ -209,6 +213,8 @@ process.on('unhandledRejection', err => {
         if (ctx.initPromise) {
           (async () => {
             const context: Context = await ctx.initPromise;
+
+            console.log(`User ${context.userId} disconnected`);
 
             const session = [...sessions.values()].find(it =>
               it.hasUser(context.userId)
