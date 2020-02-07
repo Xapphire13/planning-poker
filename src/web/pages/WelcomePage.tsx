@@ -13,6 +13,7 @@ import StorageUtils from ':web/utils/storageUtil';
 import createStylesFn from ':web/theme/createStylesFn';
 import isSsr from ':web/utils/isSsr';
 import User from ':web/User';
+import { JoinSession, JoinSessionVariables } from ':__generated__/graphql';
 
 export type WelcomePageProps = RouteComponentProps;
 
@@ -36,22 +37,33 @@ const JOIN_MUTATION = gql`
   }
 `;
 
+/**
+ * Gets value entered into an input box after SSR and before React hydrated the page
+ *
+ * @param inputId The DOM id of the input
+ */
+function getValueEnteredBeforeScriptLoad(inputId: string) {
+  if (isSsr()) {
+    return undefined;
+  }
+
+  const input = document.getElementById(inputId) as HTMLInputElement | null;
+
+  return input?.value;
+}
+
 export default function WelcomePage({ navigate }: WelcomePageProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const [name, setName] = useState(() => {
-    if (isSsr()) {
-      return undefined;
-    }
-
-    const nameInput = document.getElementById(
-      'name-input'
-    ) as HTMLInputElement | null;
-
-    return nameInput?.value;
-  });
-  const [userId, setUserId] = useState<string>();
+  const [name, setName] = useState(() =>
+    getValueEnteredBeforeScriptLoad('name-input')
+  );
+  const [userId, setUserId] = useState(() =>
+    getValueEnteredBeforeScriptLoad('session-id-input')
+  );
   const [sessionId, setSessionId] = useState<string>();
-  const [joinSession] = useMutation(JOIN_MUTATION);
+  const [joinSession] = useMutation<JoinSession, JoinSessionVariables>(
+    JOIN_MUTATION
+  );
 
   useEffect(() => {
     const user = StorageUtils.local.getItem<User>('user')!;
@@ -62,7 +74,19 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
     setUserId(user.id);
   }, []);
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+
+    if (searchParams.has('sessionId')) {
+      setSessionId(searchParams.get('sessionId')!);
+    }
+  }, []);
+
   const handleJoin = () => {
+    if (!name || !sessionId) {
+      return;
+    }
+
     StorageUtils.local.setItem<User>('user', {
       id: userId!,
       name: name!
@@ -71,7 +95,8 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
     (async () => {
       await joinSession({
         variables: {
-          name
+          name,
+          sessionId
         }
       });
 
