@@ -122,28 +122,48 @@ process.on('unhandledRejection', err => {
     },
     Subscription: {
       votingStarted: {
-        subscribe: (_, { sessionId }) =>
-          pubsub.asyncIterator(
+        subscribe: (_, { sessionId }) => {
+          if (!sessions.has(sessionId)) {
+            throw new Error('Session not found');
+          }
+
+          return pubsub.asyncIterator(
             getSessionTrigger(sessionId, SubscriptionTrigger.VotingStarted)
-          )
+          );
+        }
       },
       personJoined: {
-        subscribe: (_, { sessionId }) =>
-          pubsub.asyncIterator(
+        subscribe: (_, { sessionId }) => {
+          if (!sessions.has(sessionId)) {
+            throw new Error('Session not found');
+          }
+
+          return pubsub.asyncIterator(
             getSessionTrigger(sessionId, SubscriptionTrigger.PersonJoined)
-          )
+          );
+        }
       },
       personDisconnected: {
-        subscribe: (_, { sessionId }) =>
-          pubsub.asyncIterator(
+        subscribe: (_, { sessionId }) => {
+          if (!sessions.has(sessionId)) {
+            throw new Error('Session not found');
+          }
+
+          return pubsub.asyncIterator(
             getSessionTrigger(sessionId, SubscriptionTrigger.PersonDisconnected)
-          )
+          );
+        }
       },
       voteCast: {
-        subscribe: (_, { sessionId }) =>
-          pubsub.asyncIterator(
+        subscribe: (_, { sessionId }) => {
+          if (!sessions.has(sessionId)) {
+            throw new Error('Session not found');
+          }
+
+          return pubsub.asyncIterator(
             getSessionTrigger(sessionId, SubscriptionTrigger.VoteCast)
-          )
+          );
+        }
       }
     }
   };

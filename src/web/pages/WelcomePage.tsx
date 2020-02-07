@@ -9,7 +9,7 @@ import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 import gql from 'graphql-tag';
 import { RouteComponentProps } from '@reach/router';
-import StorageUtils from ':web/utils/storageUtil';
+import StorageUtil from ':web/utils/storageUtil';
 import createStylesFn from ':web/theme/createStylesFn';
 import isSsr from ':web/utils/isSsr';
 import User from ':web/User';
@@ -66,7 +66,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
   );
 
   useEffect(() => {
-    const user = StorageUtils.local.getItem<User>('user')!;
+    const user = StorageUtil.local.getItem<User>('user')!;
 
     if (user.name) {
       setName(user.name);
@@ -76,9 +76,11 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
+    const restoredSessionId =
+      searchParams.get('sessionId') || StorageUtil.local.getItem('sessionId');
 
-    if (searchParams.has('sessionId')) {
-      setSessionId(searchParams.get('sessionId')!);
+    if (restoredSessionId) {
+      setSessionId(restoredSessionId);
     }
   }, []);
 
@@ -87,7 +89,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
       return;
     }
 
-    StorageUtils.local.setItem<User>('user', {
+    StorageUtil.local.setItem<User>('user', {
       id: userId!,
       name: name!
     });
@@ -99,6 +101,8 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
           sessionId
         }
       });
+
+      StorageUtil.local.setItem('sessionId', sessionId);
 
       navigate?.('/waiting');
     })();
