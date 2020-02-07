@@ -15,7 +15,7 @@ import { getMainDefinition } from 'apollo-utilities';
 import { onError } from 'apollo-link-error';
 import uuid from 'uuid/v4';
 import { StyleSheet } from 'aphrodite';
-import LocalStorageUtils from './utils/LocalStorageUtils';
+import StorageUtils from './utils/storageUtil';
 import User from ':web/User';
 import isSsr from ':web/utils/isSsr';
 import App from './App';
@@ -25,14 +25,14 @@ let user: User | undefined;
 
 if (!isSsr()) {
   // Create user if not-exists
-  user = LocalStorageUtils.getItem<User>('user');
+  user = StorageUtils.local.getItem<User>('user');
   if (!user) {
     user = {
       id: uuid(),
       name: ''
     };
   }
-  LocalStorageUtils.setItem('user', user);
+  StorageUtils.local.setItem('user', user);
 }
 
 function createClientLink() {

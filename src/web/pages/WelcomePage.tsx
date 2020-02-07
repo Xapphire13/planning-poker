@@ -9,7 +9,7 @@ import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 import gql from 'graphql-tag';
 import { RouteComponentProps } from '@reach/router';
-import LocalStorageUtils from ':web/utils/LocalStorageUtils';
+import StorageUtils from ':web/utils/storageUtil';
 import createStylesFn from ':web/theme/createStylesFn';
 import isSsr from ':web/utils/isSsr';
 import User from ':web/User';
@@ -54,7 +54,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
   const [joinSession] = useMutation(JOIN_MUTATION);
 
   useEffect(() => {
-    const user = LocalStorageUtils.getItem<User>('user')!;
+    const user = StorageUtils.local.getItem<User>('user')!;
 
     if (user.name) {
       setName(user.name);
@@ -63,7 +63,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
   }, []);
 
   const handleJoin = () => {
-    LocalStorageUtils.setItem<User>('user', {
+    StorageUtils.local.setItem<User>('user', {
       id: userId!,
       name: name!
     });

@@ -22,6 +22,8 @@ import ConnectionStepsCard from ':web/components/ConnectionStepsCard';
 import createStylesFn from '../theme/createStylesFn';
 import { CreateSession } from ':__generated__/graphql';
 import useConnectedCount from ':web/hooks/useConnectedCount';
+import StorageUtil from ':web/utils/storageUtil';
+import storageUtil from ':web/utils/storageUtil';
 
 const DRAWER_WIDTH = 240;
 
@@ -70,20 +72,25 @@ const CREATE_SESSION_MUTATION = gql`
 
 export default function WelcomePage({ navigate }: HostPageProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const [sessionId, setSessionId] = useState<string>();
+  const [sessionId, setSessionId] = useState<string | undefined>(
+    StorageUtil.session.getItem('sessionId')
+  );
   const [drawerOpen, setDrawerOpen] = useState(false);
   const numberOfPeopleConnected = useConnectedCount(sessionId);
   const [createSession] = useMutation<CreateSession>(CREATE_SESSION_MUTATION);
 
   useEffect(() => {
-    (async () => {
-      const result = await createSession();
+    if (!sessionId) {
+      (async () => {
+        const result = await createSession();
 
-      if (result.data?.createSession) {
-        setSessionId(result.data.createSession);
-      }
-    })();
-  }, [createSession]);
+        if (result.data?.createSession) {
+          setSessionId(result.data.createSession);
+          storageUtil.session.setItem('sessionId', result.data.createSession);
+        }
+      })();
+    }
+  }, [createSession, sessionId]);
 
   const handleStartVoteClicked = () => {
     navigate?.('/vote');
