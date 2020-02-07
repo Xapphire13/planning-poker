@@ -200,6 +200,7 @@ process.on('unhandledRejection', err => {
       };
     },
     subscriptions: {
+      keepAlive: 20000,
       onConnect: ({ userId }: any): Promise<Context> => {
         if (!userId) {
           throw new AuthenticationError(
