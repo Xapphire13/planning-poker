@@ -8,6 +8,8 @@ import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import VoteButton from ':web/components/VoteButton';
 import createStylesFn from ':web/theme/createStylesFn';
 import { VoteValues, Vote } from ':web/Vote';
+import { CastVote, CastVoteVariables } from ':__generated__/graphql';
+import StorageUtil from ':web/utils/storageUtil';
 
 export type VotePageProps = RouteComponentProps;
 
@@ -27,14 +29,20 @@ const stylesFn = createStylesFn(({ unit }) => ({
 }));
 
 export default function VotePage({ navigate }: VotePageProps) {
-  const [castVote] = useMutation(VOTE_MUTATION);
+  const [castVote] = useMutation<CastVote, CastVoteVariables>(VOTE_MUTATION);
   const { css, styles } = useStyles({ stylesFn });
+  const sessionId = StorageUtil.local.getItem<string>('sessionId');
 
   const handleVoteButtonPressed = (vote: Vote) => {
+    if (!sessionId) {
+      return;
+    }
+
     (async () => {
       await castVote({
         variables: {
-          vote: String(vote)
+          vote: String(vote),
+          sessionId
         }
       });
 

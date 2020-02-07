@@ -10,10 +10,14 @@ import useWindowSize from 'react-use/lib/useWindowSize';
 import Snackbar from '@material-ui/core/Snackbar';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import User from ':web/User';
 import createStylesFn from '../theme/createStylesFn';
 import VoteDistributions from '../components/VoteDistributions';
-import { Vote } from ':web/Vote';
+import {
+  SessionResults,
+  SessionResultsVariables
+} from ':__generated__/graphql';
+import nonNull from ':web/utils/nonNull';
+import StorageUtil from ':web/utils/storageUtil';
 
 export type VoteResultsPageProps = RouteComponentProps;
 
@@ -29,20 +33,24 @@ const stylesFn = createStylesFn(({ unit }) => ({
   }
 }));
 
-function averageOfVotes(votes: Partial<Record<Vote, User[]>>) {
-  let count = 0;
-  let total = 0;
-  Object.keys(votes).forEach(key => {
-    const vote = key === 'Infinity' ? 'Infinity' : (+key as Vote);
-    if (vote === 'Infinity') {
+function averageOfVotes(votes: { vote: string }[]) {
+  let total: number | undefined;
+  let numericVotes = votes.length;
+  votes.forEach(({ vote }) => {
+    const numericVote = parseInt(vote, 10);
+
+    // eslint-disable-next-line no-restricted-globals
+    if (isNaN(numericVote)) {
+      numericVotes--;
       return;
     }
 
-    count += votes[vote]!.length;
-    total += votes[vote]!.length * vote;
+    if (total == null) total = 0;
+
+    total += numericVote;
   });
 
-  return Math.round(total / count);
+  return total != null ? Math.round(total / numericVotes) : undefined;
 }
 
 const SESSION_RESULTS_QUERY = gql`
@@ -61,20 +69,35 @@ const SESSION_RESULTS_QUERY = gql`
 `;
 
 export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
+  const sessionId = StorageUtil.session.getItem('sessionId');
   const { css, styles } = useStyles({ stylesFn });
   const [showUnanimousNotification, setShowUnanimousNotification] = useState(
     false
   );
   const { width, height } = useWindowSize();
-  const { data: sessionResultsData } = useQuery(SESSION_RESULTS_QUERY);
+  const { data: sessionResultsData } = useQuery<
+    SessionResults,
+    SessionResultsVariables
+  >(SESSION_RESULTS_QUERY, {
+    fetchPolicy: 'no-cache',
+    skip: !sessionId,
+    variables: {
+      sessionId: sessionId ?? ''
+    }
+  });
 
-  const results = sessionResultsData?.session?.results;
-  const users = sessionResultsData?.session?.users;
-  const isUnanimous = false; // TODO
+  const results = sessionResultsData?.session?.results?.filter(nonNull);
+  const users = sessionResultsData?.session?.users?.filter(nonNull);
+  const isUnanimous =
+    results?.every(it => it.vote === results[0].vote) ?? false;
 
   useEffect(() => {
     setShowUnanimousNotification(isUnanimous);
   }, [isUnanimous]);
+
+  const handleNewVote = () => {
+    navigate?.('/waitingForVotes');
+  };
 
   return (
     <>
@@ -99,7 +122,7 @@ export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
             <Button
               variant="contained"
               color="primary"
-              onClick={() => navigate?.('/vote')}
+              onClick={handleNewVote}
               {...css(styles.button)}
             >
               New vote

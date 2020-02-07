@@ -47,7 +47,7 @@ export default function ProgressCircle({ value, max }: ProgressCircleProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [containerRef, { width: containerWidth }] = useMeasure();
 
-  const progress = Math.floor((value / max) * 100);
+  const progress = max === 0 ? 0 : Math.floor((value / max) * 100);
   const progressText = `${value} / ${max}`;
 
   const computedContainerStyle: CSSProperties = {

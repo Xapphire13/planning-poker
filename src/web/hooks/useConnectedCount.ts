@@ -41,7 +41,9 @@ export default function useConnectedCount(sessionId: string | undefined) {
   const [
     triggerQuery,
     { data: sessionUsersData, subscribeToMore }
-  ] = useLazyQuery<SessionUsers, SessionUsersVariables>(SESSION_USERS_QUERY);
+  ] = useLazyQuery<SessionUsers, SessionUsersVariables>(SESSION_USERS_QUERY, {
+    fetchPolicy: 'no-cache'
+  });
 
   useEffect(() => {
     if (sessionId) {

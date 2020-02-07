@@ -7,6 +7,7 @@ import WaitingPage from ':web/pages/WaitingPage';
 import VotePage from ':web/pages/VotePage';
 import HostPage from ':web/pages/HostPage';
 import WaitingForVotesPage from './pages/WaitingForVotesPage';
+import VoteResultsPage from './pages/VoteResultsPage';
 
 const stylesFn = createStylesFn(({ color, fontFamily }) => ({
   container: {
@@ -30,6 +31,7 @@ export default function App() {
       <WaitingPage path="/waiting" />
       <WaitingForVotesPage path="/waitingForVotes" />
       <VotePage path="/vote" />
+      <VoteResultsPage path="/results" />
     </Router>
   );
 }

@@ -1,6 +1,6 @@
 function wrapStorage(storage: Storage | undefined) {
   return {
-    getItem<T>(key: string): T | undefined {
+    getItem<T = string>(key: string): T | undefined {
       const itemJson = storage?.getItem(key);
       return itemJson && JSON.parse(itemJson);
     },

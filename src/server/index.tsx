@@ -94,7 +94,9 @@ process.on('unhandledRejection', err => {
           pubsub.publish(
             getSessionTrigger(sessionId, SubscriptionTrigger.VoteCast),
             {
-              voteCast: session.voteCount
+              voteCast: [...session.results()].map(([id]) =>
+                session.users.find(user => user.id === id)
+              )
             }
           );
         }

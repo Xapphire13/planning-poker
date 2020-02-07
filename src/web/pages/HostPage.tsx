@@ -23,7 +23,6 @@ import createStylesFn from '../theme/createStylesFn';
 import { CreateSession } from ':__generated__/graphql';
 import useConnectedCount from ':web/hooks/useConnectedCount';
 import StorageUtil from ':web/utils/storageUtil';
-import storageUtil from ':web/utils/storageUtil';
 
 const DRAWER_WIDTH = 240;
 
@@ -86,7 +85,7 @@ export default function WelcomePage({ navigate }: HostPageProps) {
 
         if (result.data?.createSession) {
           setSessionId(result.data.createSession);
-          storageUtil.session.setItem('sessionId', result.data.createSession);
+          StorageUtil.session.setItem('sessionId', result.data.createSession);
         }
       })();
     }

@@ -88,9 +88,10 @@ export default function WaitingForVotesPage({
     }
   });
   const countdown = useCallback(() => {
+    // TODO, stop timeout after unmount
     setTimeRemaining(prev => {
       if (prev > 0) {
-        setTimeout(countdown, 1000);
+        window.setTimeout(countdown, 1000);
 
         return prev - 1;
       }
@@ -124,9 +125,14 @@ export default function WaitingForVotesPage({
 
   // Start countdown
   useEffect(() => {
+    let timeout: number;
     if (countdownStarted) {
-      setTimeout(countdown, 1000);
+      timeout = window.setTimeout(countdown, 0);
     }
+
+    return () => {
+      if (timeout != null) clearTimeout(timeout);
+    };
   }, [countdown, countdownStarted]);
 
   // Show results when time runs out or all votes are in (min 2 votes)

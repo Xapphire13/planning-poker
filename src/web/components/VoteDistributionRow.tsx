@@ -11,7 +11,6 @@ import Typography from '@material-ui/core/Typography';
 import Theme, { muiTheme } from ':web/theme/DefaultTheme';
 import User from ':web/User';
 import createStylesFn from '../theme/createStylesFn';
-import { Vote } from ':web/Vote';
 
 const STORYPOINT_BORDER_WIDTH = 2;
 const AVATAR_SIZE = 5 * Theme.unit;
@@ -38,7 +37,7 @@ function getInitials(user: User) {
 }
 
 export type VoteDistributionRowProps = {
-  storyPoints: Vote;
+  storyPoints: string;
   voters: User[];
   isWinningVote?: boolean;
 };
