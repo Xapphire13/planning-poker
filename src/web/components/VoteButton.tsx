@@ -1,42 +1,68 @@
 import React from 'react';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import useStyles from 'react-with-styles/lib/hooks/useStyles';
-import grey from '@material-ui/core/colors/grey';
-import createStylesFn from ':web/theme/createStylesFn';
+import { createUseStyles } from 'react-jss';
+import classnames from 'classnames';
+import color from 'color';
 import { Vote } from ':web/Vote';
+import { muiTheme } from ':web/theme/DefaultTheme';
 
 export type VoteButtonProps = {
   value: Vote;
   onPress: () => void;
+  backgroundColor?: string;
 };
 
-const stylesFn = createStylesFn(() => ({
+type StyleProps = {
+  backgroundColor: string;
+};
+
+const useStyles = createUseStyles({
   container: {
-    width: 100,
-    height: 100,
+    width: 140,
+    height: 90,
+    borderRadius: 5,
+    border: 'none',
     cursor: 'pointer',
-    ':hover': {
-      backgroundColor: grey[500]
+    position: 'relative',
+    backgroundColor: ({ backgroundColor }: StyleProps) => backgroundColor,
+    '&:hover, &:focus': {
+      backgroundColor: ({ backgroundColor }: StyleProps) => {
+        const clr = color(backgroundColor);
+
+        return clr.isLight() ? clr.darken(0.3).hex() : clr.lighten(0.3).hex();
+      }
     }
   },
   textContainer: {
     textAlign: 'center',
-    position: 'relative',
+    position: 'absolute',
     top: '50%',
-    transform: 'translateY(-50%)'
+    left: '50%',
+    transform: 'translate(-50%,-50%)',
+    color: ({ backgroundColor }: StyleProps) =>
+      muiTheme.palette.getContrastText(backgroundColor)
   }
-}));
+});
 
-export default function VoteButton({ value, onPress }: VoteButtonProps) {
-  const { css, styles } = useStyles({ stylesFn });
+export default function VoteButton({
+  value,
+  onPress,
+  backgroundColor
+}: VoteButtonProps) {
+  const styles = useStyles({
+    backgroundColor: backgroundColor ?? '#FFFFFF'
+  } as StyleProps);
   const valueText = value === 'Infinity' ? '∞' : value;
 
   return (
-    <Paper {...css(styles.container)} onClick={onPress}>
-      <div {...css(styles.textContainer)}>
+    <button
+      type="button"
+      className={classnames(styles.container)}
+      onClick={onPress}
+    >
+      <div className={classnames(styles.textContainer)}>
         <Typography variant="h5">{valueText}</Typography>
       </div>
-    </Paper>
+    </button>
   );
 }

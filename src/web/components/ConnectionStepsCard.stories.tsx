@@ -1,5 +1,5 @@
 import React from 'react';
-import CreateStory from ':storybook/CreateStory';
+import createStory from ':storybook/CreateStory';
 import ConnectionStepsCard from './ConnectionStepsCard';
 
 export default {
@@ -7,7 +7,7 @@ export default {
 };
 
 // TODO
-export const Default = CreateStory(() => (
+export const Default = createStory(() => (
   <div style={{ width: 300 }}>
     <ConnectionStepsCard sessionId="DEADBEEF" />
   </div>

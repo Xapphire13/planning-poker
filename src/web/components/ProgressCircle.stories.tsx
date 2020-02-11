@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import ProgressCircle from './ProgressCircle';
-import CreateStory from ':storybook/CreateStory';
+import createStory from ':storybook/CreateStory';
 
 export default {
   title: 'Progress Circle'
 };
 
-export const Default = CreateStory(() => {
+export const Default = createStory(() => {
   const [value, setValue] = useState(0);
   useEffect(() => {
     setInterval(() => setValue(prev => (prev === 10 ? 0 : prev + 1)), 1000);

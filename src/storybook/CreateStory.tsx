@@ -38,7 +38,7 @@ function Container({ children }: React.PropsWithChildren<{}>) {
   return <div {...css(styles.container)}>{children}</div>;
 }
 
-export default function CreateStory(Story: React.ReactType) {
+export default function createStory(Story: React.ReactType) {
   return () => (
     <Bootstrap>
       <Container>
