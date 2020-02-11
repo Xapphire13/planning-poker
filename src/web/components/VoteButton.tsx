@@ -6,21 +6,27 @@ import color from 'color';
 import { Vote } from ':web/Vote';
 import { muiTheme } from ':web/theme/DefaultTheme';
 
+const CARD_RATIO = 9 / 14;
+const BASE_WIDTH = 140;
+
 export type VoteButtonProps = {
   value: Vote;
   onPress: () => void;
   backgroundColor?: string;
+  width?: number;
 };
 
 type StyleProps = {
   backgroundColor: string;
+  width: number;
 };
 
 const useStyles = createUseStyles({
   container: {
-    width: 140,
-    height: 90,
-    borderRadius: 5,
+    width: ({ width }: StyleProps) => width,
+    height: ({ width }: StyleProps) => Math.round(width * CARD_RATIO),
+    borderRadius: ({ width }: StyleProps) =>
+      Math.round((width / BASE_WIDTH) * 5),
     border: 'none',
     cursor: 'pointer',
     position: 'relative',
@@ -47,10 +53,12 @@ const useStyles = createUseStyles({
 export default function VoteButton({
   value,
   onPress,
-  backgroundColor
+  backgroundColor,
+  width = BASE_WIDTH
 }: VoteButtonProps) {
   const styles = useStyles({
-    backgroundColor: backgroundColor ?? '#FFFFFF'
+    backgroundColor: backgroundColor ?? '#FFFFFF',
+    width
   } as StyleProps);
   const valueText = value === 'Infinity' ? '∞' : value;
 

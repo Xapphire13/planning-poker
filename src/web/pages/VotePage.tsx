@@ -6,6 +6,7 @@ import Container from '@material-ui/core/Container';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import HStack from 'pancake-layout/dist/HStack';
 import color from 'color';
+import useMeasure from 'react-use/lib/useMeasure';
 import VoteButton from ':web/components/VoteButton';
 import createStylesFn from ':web/theme/createStylesFn';
 import { VoteValues, Vote } from ':web/Vote';
@@ -28,18 +29,15 @@ const stylesFn = createStylesFn(({ unit }) => ({
   container: {
     marginTop: unit,
     marginBottom: unit
-  },
-  stack: {
-    maxWidth: 300,
-    left: '50%',
-    transform: 'translateX(-50%)'
   }
 }));
 
 export default function VotePage({ navigate }: VotePageProps) {
   const [castVote] = useMutation<CastVote, CastVoteVariables>(VOTE_MUTATION);
   const { css, styles } = useStyles({ stylesFn });
+  const [stackRef, { width }] = useMeasure();
   const sessionId = StorageUtil.local.getItem<string>('sessionId');
+  const buttonWidth = width > 0 ? Math.round(width / 2) - 5 : undefined;
 
   const handleVoteButtonPressed = (vote: Vote) => {
     if (!sessionId) {
@@ -62,17 +60,21 @@ export default function VotePage({ navigate }: VotePageProps) {
 
   return (
     <Container maxWidth="sm" {...css(styles.container)}>
-      <HStack {...css(styles.stack)} wrap hGap={4} vGap={2}>
-        {VoteValues.map((val, i) => (
-          <VoteButton
-            value={val}
-            onPress={() => handleVoteButtonPressed(val)}
-            backgroundColor={color(BUTTON_COLOR)
-              .darken(1 - 0.9 ** i) // Each tile 10% darker than the last
-              .hex()}
-          />
-        ))}
-      </HStack>
+      <div ref={stackRef}>
+        <HStack wrap hGap={4} vGap={2} justify="center">
+          {VoteValues.map((val, i) => (
+            <VoteButton
+              key={val}
+              value={val}
+              onPress={() => handleVoteButtonPressed(val)}
+              width={buttonWidth}
+              backgroundColor={color(BUTTON_COLOR)
+                .darken(1 - 0.9 ** i) // Each tile 10% darker than the last
+                .hex()}
+            />
+          ))}
+        </HStack>
+      </div>
     </Container>
   );
 }

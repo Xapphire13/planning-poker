@@ -18,9 +18,15 @@ storiesOf('VoteButton', module)
     'many',
     createStory(() => (
       <>
-        <HStack style={{ maxWidth: 300 }} wrap hGap={4} vGap={2}>
-          <VoteButton value={1} onPress={() => {}} backgroundColor="#9768D1" />
+        <HStack style={{ width: 300 }} wrap hGap={4} vGap={2}>
           <VoteButton
+            width={145}
+            value={1}
+            onPress={() => {}}
+            backgroundColor="#9768D1"
+          />
+          <VoteButton
+            width={145}
             value={2}
             onPress={() => {}}
             backgroundColor={color('#9768D1')
@@ -28,6 +34,7 @@ storiesOf('VoteButton', module)
               .hex()}
           />
           <VoteButton
+            width={145}
             value={3}
             onPress={() => {}}
             backgroundColor={color('#9768D1')
@@ -36,6 +43,7 @@ storiesOf('VoteButton', module)
               .hex()}
           />
           <VoteButton
+            width={145}
             value={5}
             onPress={() => {}}
             backgroundColor={color('#9768D1')
@@ -45,6 +53,7 @@ storiesOf('VoteButton', module)
               .hex()}
           />
           <VoteButton
+            width={145}
             value={8}
             onPress={() => {}}
             backgroundColor={color('#9768D1')
@@ -55,6 +64,7 @@ storiesOf('VoteButton', module)
               .hex()}
           />
           <VoteButton
+            width={145}
             value={13}
             onPress={() => {}}
             backgroundColor={color('#9768D1')
@@ -66,6 +76,7 @@ storiesOf('VoteButton', module)
               .hex()}
           />
           <VoteButton
+            width={145}
             value={21}
             onPress={() => {}}
             backgroundColor={color('#9768D1')
@@ -78,6 +89,7 @@ storiesOf('VoteButton', module)
               .hex()}
           />
           <VoteButton
+            width={145}
             value="Infinity"
             onPress={() => {}}
             backgroundColor={color('#9768D1')
