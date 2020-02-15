@@ -18,15 +18,21 @@ type Session {
   results: [VoteResult]
 }
 
+enum SessionState {
+  WAITING
+  VOTING
+}
+
 type Query {
   session(sessionId: String!): Session
 }
 
 type Mutation {
   createSession: String
-  join(name: String!, sessionId: String!): VoidResult
+  join(name: String!, sessionId: String!): SessionState
   vote(vote: String!, sessionId: String!): VoidResult
   startVoting(sessionId: String!): VoidResult
+  endRound(sessionId: String!): VoidResult
 }
 
 type Subscription {

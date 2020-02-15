@@ -15,7 +15,9 @@ import {
   VoteCastSubscription,
   VoteCastSubscriptionVariables,
   StartVoting,
-  StartVotingVariables
+  StartVotingVariables,
+  EndRound,
+  EndRoundVariables
 } from ':__generated__/graphql';
 import StorageUtil from ':web/utils/storageUtil';
 import useConnectedCount from ':web/hooks/useConnectedCount';
@@ -67,6 +69,14 @@ const START_VOTING_MUTATION = gql`
   }
 `;
 
+const END_ROUND_MUTATION = gql`
+  mutation EndRound($sessionId: String!) {
+    endRound(sessionId: $sessionId) {
+      success
+    }
+  }
+`;
+
 export default function WaitingForVotesPage({
   navigate
 }: WaitingForVotesPageProps) {
@@ -76,6 +86,9 @@ export default function WaitingForVotesPage({
   const [countdownStarted, setCountdownStarted] = useState(false);
   const [startVoting] = useMutation<StartVoting, StartVotingVariables>(
     START_VOTING_MUTATION
+  );
+  const [endRound] = useMutation<EndRound, EndRoundVariables>(
+    END_ROUND_MUTATION
   );
   const numberOfPeopleInSession = useConnectedCount(sessionId);
   const { data: voteCastData } = useSubscription<
@@ -142,9 +155,20 @@ export default function WaitingForVotesPage({
       (numberOfPeopleInSession > 1 &&
         numberOfPeopleReady === numberOfPeopleInSession)
     ) {
-      navigate?.('/results');
+      if (sessionId) {
+        endRound({ variables: { sessionId } }).then(() => {
+          navigate?.('/results');
+        });
+      }
     }
-  }, [navigate, numberOfPeopleInSession, numberOfPeopleReady, timeRemaining]);
+  }, [
+    endRound,
+    navigate,
+    numberOfPeopleInSession,
+    numberOfPeopleReady,
+    sessionId,
+    timeRemaining
+  ]);
 
   return (
     <Container maxWidth="xs" {...css(styles.contentContainer)}>

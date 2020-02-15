@@ -1,5 +1,6 @@
 import shortid from 'shortid';
 import User from './models/user';
+import SessionState from './models/SessionState';
 
 export default class Session {
   readonly sessionId: string;
@@ -9,6 +10,8 @@ export default class Session {
 
   /** userId -> vote */
   private voteMap: Map<string, string> = new Map();
+
+  private _state: SessionState = SessionState.Waiting;
 
   constructor() {
     this.sessionId = shortid();
@@ -20,6 +23,10 @@ export default class Session {
 
   get users() {
     return [...this.userMap.values()];
+  }
+
+  get state() {
+    return this._state;
   }
 
   /** Returns `true` if the user hasn't already joined the session */
@@ -62,9 +69,16 @@ export default class Session {
 
   newRound() {
     this.voteMap.clear();
+    this._state = SessionState.Voting;
   }
 
-  /** [userId, vote][] */
+  endRound() {
+    this._state = SessionState.Waiting;
+  }
+
+  /**
+   * Results are in the form -> [userId, vote][]
+   */
   results() {
     return [...this.voteMap.entries()];
   }
