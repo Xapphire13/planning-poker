@@ -79,9 +79,8 @@ process.on('unhandledRejection', err => {
           );
         }
 
-        return {
-          success: true
-        };
+        console.log(session);
+        return session.state;
       },
       vote: (_, { vote, sessionId }, { userId }) => {
         const session = sessions.get(sessionId);
@@ -120,6 +119,19 @@ process.on('unhandledRejection', err => {
             votingStarted: { success: true }
           }
         );
+
+        return {
+          success: true
+        };
+      },
+      endRound: (_, { sessionId }) => {
+        const session = sessions.get(sessionId);
+
+        if (!session) {
+          throw new Error('No such session');
+        }
+
+        session.endRound();
 
         return {
           success: true

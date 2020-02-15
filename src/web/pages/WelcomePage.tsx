@@ -13,7 +13,11 @@ import StorageUtil from ':web/utils/storageUtil';
 import createStylesFn from ':web/theme/createStylesFn';
 import isSsr from ':web/utils/isSsr';
 import User from ':web/User';
-import { JoinSession, JoinSessionVariables } from ':__generated__/graphql';
+import {
+  JoinSession,
+  JoinSessionVariables,
+  SessionState
+} from ':__generated__/graphql';
 
 export type WelcomePageProps = RouteComponentProps;
 
@@ -31,9 +35,7 @@ const stylesFn = createStylesFn(({ unit }) => ({
 
 const JOIN_MUTATION = gql`
   mutation JoinSession($name: String!, $sessionId: String!) {
-    join(name: $name, sessionId: $sessionId) {
-      success
-    }
+    sessionState: join(name: $name, sessionId: $sessionId)
   }
 `;
 
@@ -95,16 +97,22 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
     });
 
     (async () => {
-      await joinSession({
-        variables: {
-          name,
-          sessionId
-        }
-      });
+      const sessionState = (
+        await joinSession({
+          variables: {
+            name,
+            sessionId
+          }
+        })
+      )?.data?.sessionState;
 
       StorageUtil.local.setItem('sessionId', sessionId);
 
-      navigate?.('/waiting');
+      if (sessionState === SessionState.VOTING) {
+        navigate?.('/vote');
+      } else {
+        navigate?.('/waiting');
+      }
     })();
   };
 
