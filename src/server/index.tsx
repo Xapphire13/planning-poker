@@ -79,7 +79,6 @@ process.on('unhandledRejection', err => {
           );
         }
 
-        console.log(session);
         return session.state;
       },
       vote: (_, { vote, sessionId }, { userId }) => {
@@ -285,13 +284,6 @@ process.on('unhandledRejection', err => {
 
   await new Promise(res => httpServer.listen(expressServer.get('port'), res));
   console.log(
-    `GraphQL ready at http://localhost:${expressServer.get('port')}${
-      apolloServer.graphqlPath
-    }`
-  );
-  console.log(
-    `GraphQL subscriptions ready at ws://localhost:${expressServer.get(
-      'port'
-    )}${apolloServer.subscriptionsPath}`
+    `Ready at http://localhost:${expressServer.get('port')}`
   );
 })();
