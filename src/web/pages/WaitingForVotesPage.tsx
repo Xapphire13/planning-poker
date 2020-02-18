@@ -9,6 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import moment from 'moment';
 import { useSubscription, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import VStack from 'pancake-layout/dist/VStack';
 import createStylesFn from ':web/theme/createStylesFn';
 import ProgressCircle from '../components/ProgressCircle';
 import {
@@ -21,6 +22,7 @@ import {
 } from ':__generated__/graphql';
 import StorageUtil from ':web/utils/storageUtil';
 import useConnectedCount from ':web/hooks/useConnectedCount';
+import Theme from ':web/theme/DefaultTheme';
 
 export type WaitingForVotesPageProps = RouteComponentProps;
 
@@ -115,6 +117,17 @@ export default function WaitingForVotesPage({
 
   const numberOfPeopleReady: number = voteCastData?.voteCast?.length ?? 0;
 
+  const handleEndRound = useCallback(
+    async (nextPage: string) => {
+      if (sessionId) {
+        await endRound({ variables: { sessionId } }).then(() => {
+          navigate?.(nextPage);
+        });
+      }
+    },
+    [endRound, navigate, sessionId]
+  );
+
   // Redirect if no session id
   useEffect(() => {
     if (!sessionId) {
@@ -155,18 +168,12 @@ export default function WaitingForVotesPage({
       (numberOfPeopleInSession > 1 &&
         numberOfPeopleReady === numberOfPeopleInSession)
     ) {
-      if (sessionId) {
-        endRound({ variables: { sessionId } }).then(() => {
-          navigate?.('/results');
-        });
-      }
+      handleEndRound('/results');
     }
   }, [
-    endRound,
-    navigate,
+    handleEndRound,
     numberOfPeopleInSession,
     numberOfPeopleReady,
-    sessionId,
     timeRemaining
   ]);
 
@@ -193,13 +200,18 @@ export default function WaitingForVotesPage({
           <Typography>{formatTimeRemaining(timeRemaining)}</Typography>
         </Grid>
       </Grid>
-      <Button
-        variant="outlined"
-        onClick={() => navigate?.('/')}
-        {...css(styles.button)}
-      >
-        Cancel
-      </Button>
+      <VStack gap={Theme.unit / 2}>
+        <Button
+          variant="outlined"
+          onClick={() => handleEndRound('/host')}
+          {...css(styles.button)}
+        >
+          Cancel
+        </Button>
+        <Button variant="text" onClick={() => handleEndRound('/results')}>
+          Or manually end round
+        </Button>
+      </VStack>
     </Container>
   );
 }

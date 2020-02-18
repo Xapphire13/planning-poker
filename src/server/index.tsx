@@ -23,7 +23,7 @@ interface Context {
 }
 
 enum SubscriptionTrigger {
-  VotingStarted = 'VOTING_STARTED',
+  SessionStateChanged = 'SESSION_STATE_CHANGED',
   PersonJoined = 'PERSON_JOINED',
   PersonDisconnected = 'PERSON_DISCONNECTED',
   VoteCast = 'VOTE_CAST'
@@ -44,7 +44,7 @@ process.on('unhandledRejection', err => {
 
   const resolvers: IResolvers<any, Context> = {
     Query: {
-      session: (_, { sessionId }) => {
+      session: (_, { sessionId }, { userId }) => {
         const session = sessions.get(sessionId);
 
         if (!session) {
@@ -54,7 +54,10 @@ process.on('unhandledRejection', err => {
         return {
           id: session.sessionId,
           users: session.users,
-          results: session.results().map(([userId, vote]) => ({ userId, vote }))
+          results: session
+            .results()
+            .map(([userId, vote]) => ({ userId, vote })),
+          state: session.getStateForUser(userId)
         };
       }
     },
@@ -134,9 +137,9 @@ process.on('unhandledRejection', err => {
         session.newRound();
 
         pubsub.publish(
-          getSessionTrigger(sessionId, SubscriptionTrigger.VotingStarted),
+          getSessionTrigger(sessionId, SubscriptionTrigger.SessionStateChanged),
           {
-            votingStarted: { success: true }
+            sessionStateChanged: session.state
           }
         );
 
@@ -153,20 +156,30 @@ process.on('unhandledRejection', err => {
 
         session.endRound();
 
+        pubsub.publish(
+          getSessionTrigger(sessionId, SubscriptionTrigger.SessionStateChanged),
+          {
+            sessionStateChanged: session.state
+          }
+        );
+
         return {
           success: true
         };
       }
     },
     Subscription: {
-      votingStarted: {
+      sessionStateChanged: {
         subscribe: (_, { sessionId }) => {
           if (!sessions.has(sessionId)) {
             throw new Error('Session not found');
           }
 
           return pubsub.asyncIterator(
-            getSessionTrigger(sessionId, SubscriptionTrigger.VotingStarted)
+            getSessionTrigger(
+              sessionId,
+              SubscriptionTrigger.SessionStateChanged
+            )
           );
         }
       },

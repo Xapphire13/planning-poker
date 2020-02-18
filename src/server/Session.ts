@@ -29,6 +29,20 @@ export default class Session {
     return this._state;
   }
 
+  getStateForUser(userId: string) {
+    // If user isn't in the session, return the global session state
+    if (!this.userMap.has(userId)) {
+      return this.state;
+    }
+
+    // If the session is still in voting state but the current user has voted
+    if (this.state === SessionState.Voting && this.voteMap.has(userId)) {
+      return SessionState.Waiting;
+    }
+
+    return this.state;
+  }
+
   /** Returns `true` if the user hasn't already joined the session */
   join(user: User) {
     if (this.userMap.has(user.id)) {

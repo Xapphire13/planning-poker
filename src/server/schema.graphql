@@ -16,6 +16,7 @@ type Session {
   id: ID!
   users: [User]
   results: [VoteResult]
+  state: SessionState
 }
 
 enum SessionState {
@@ -37,7 +38,7 @@ type Mutation {
 }
 
 type Subscription {
-  votingStarted(sessionId: String!): VoidResult
+  sessionStateChanged(sessionId: String!): SessionState
   personJoined(sessionId: String!): [User]
   personDisconnected(sessionId: String!): [User]
   voteCast(sessionId: String!): [User]

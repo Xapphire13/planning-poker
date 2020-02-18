@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { RouteComponentProps } from '@reach/router';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
@@ -10,8 +10,13 @@ import useMeasure from 'react-use/lib/useMeasure';
 import VoteButton from ':web/components/VoteButton';
 import createStylesFn from ':web/theme/createStylesFn';
 import { VoteValues, Vote } from ':web/Vote';
-import { CastVote, CastVoteVariables } from ':__generated__/graphql';
+import {
+  CastVote,
+  CastVoteVariables,
+  SessionState
+} from ':__generated__/graphql';
 import StorageUtil from ':web/utils/storageUtil';
+import useSessionState from ':web/hooks/useSessionState';
 
 export type VotePageProps = RouteComponentProps;
 
@@ -37,7 +42,14 @@ export default function VotePage({ navigate }: VotePageProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [stackRef, { width }] = useMeasure();
   const sessionId = StorageUtil.local.getItem<string>('sessionId');
+  const sessionState = useSessionState(sessionId);
   const buttonWidth = width > 0 ? Math.round(width / 2) - 5 : undefined;
+
+  useEffect(() => {
+    if (sessionState === SessionState.WAITING) {
+      navigate?.('/waiting');
+    }
+  }, [navigate, sessionState]);
 
   const handleVoteButtonPressed = (vote: Vote) => {
     if (!sessionId) {
