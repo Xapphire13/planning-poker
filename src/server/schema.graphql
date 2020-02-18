@@ -30,6 +30,7 @@ type Query {
 type Mutation {
   createSession: String
   join(name: String!, sessionId: String!): SessionState
+  leave(sessionId: String!): VoidResult
   vote(vote: String!, sessionId: String!): VoidResult
   startVoting(sessionId: String!): VoidResult
   endRound(sessionId: String!): VoidResult

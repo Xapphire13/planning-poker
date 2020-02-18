@@ -81,6 +81,27 @@ process.on('unhandledRejection', err => {
 
         return session.state;
       },
+      leave: (_, { sessionId }, { userId }) => {
+        const session = sessions.get(sessionId);
+
+        if (!session) {
+          throw new Error('No such session');
+        }
+
+        if (session.leave(userId)) {
+          pubsub.publish(
+            getSessionTrigger(
+              session.sessionId,
+              SubscriptionTrigger.PersonDisconnected
+            ),
+            { personDisconnected: session.users }
+          );
+        }
+
+        return {
+          success: true
+        };
+      },
       vote: (_, { vote, sessionId }, { userId }) => {
         const session = sessions.get(sessionId);
 
@@ -283,7 +304,5 @@ process.on('unhandledRejection', err => {
   });
 
   await new Promise(res => httpServer.listen(expressServer.get('port'), res));
-  console.log(
-    `Ready at http://localhost:${expressServer.get('port')}`
-  );
+  console.log(`Ready at http://localhost:${expressServer.get('port')}`);
 })();
