@@ -2,10 +2,6 @@ import React, { useState, useEffect } from 'react';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import { useMutation } from '@apollo/react-hooks';
 import Button from '@material-ui/core/Button';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typeography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 import gql from 'graphql-tag';
 import { RouteComponentProps } from '@reach/router';
@@ -18,6 +14,7 @@ import {
   JoinSessionVariables,
   SessionState
 } from ':__generated__/graphql';
+import AppBarLayout from ':web/layouts/AppBarLayout';
 
 export type WelcomePageProps = RouteComponentProps;
 
@@ -121,49 +118,42 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
   };
 
   return (
-    <>
-      <AppBar position="static">
-        <Toolbar variant="dense">
-          <Typeography variant="h6">Planning poker</Typeography>
-        </Toolbar>
-      </AppBar>
-      <Container maxWidth="sm" {...css(styles.marginTop)}>
-        <TextField
-          id="session-id-input"
-          label="Session ID"
-          required
-          fullWidth
-          value={sessionId ?? ''}
-          onChange={ev => setSessionId(ev.target.value)}
-          autoFocus
-        />
-        <TextField
-          id="name-input"
-          label="Name"
-          {...css(styles.marginTop)}
-          required
-          fullWidth
-          value={name ?? ''}
-          onChange={ev => setName(ev.target.value)}
-        />
-        <Button
-          {...css(styles.button)}
-          variant="contained"
-          color="primary"
-          disabled={!name || !sessionId || !userId}
-          onClick={handleJoin}
-        >
-          Join
-        </Button>
-        <Button
-          {...css(styles.button)}
-          variant="text"
-          color="secondary"
-          onClick={handleHostSession}
-        >
-          or host new session
-        </Button>
-      </Container>
-    </>
+    <AppBarLayout>
+      <TextField
+        id="session-id-input"
+        label="Session ID"
+        required
+        fullWidth
+        value={sessionId ?? ''}
+        onChange={ev => setSessionId(ev.target.value)}
+        autoFocus
+      />
+      <TextField
+        id="name-input"
+        label="Name"
+        {...css(styles.marginTop)}
+        required
+        fullWidth
+        value={name ?? ''}
+        onChange={ev => setName(ev.target.value)}
+      />
+      <Button
+        {...css(styles.button)}
+        variant="contained"
+        color="primary"
+        disabled={!name || !sessionId || !userId}
+        onClick={handleJoin}
+      >
+        Join
+      </Button>
+      <Button
+        {...css(styles.button)}
+        variant="text"
+        color="secondary"
+        onClick={handleHostSession}
+      >
+        or host new session
+      </Button>
+    </AppBarLayout>
   );
 }
