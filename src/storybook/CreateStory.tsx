@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ThemeProvider } from '@material-ui/core';
 import WithStylesContext from 'react-with-styles/lib/WithStylesContext';
 // @ts-ignore
@@ -18,6 +18,10 @@ const stylesFn = createStylesFn(({ color, fontFamily }) => ({
 }));
 
 function Bootstrap({ children }: React.PropsWithChildren<{}>) {
+  useEffect(() => {
+    document.body.style.width = 'unset';
+  }, []);
+
   return (
     <ThemeProvider theme={muiTheme}>
       <WithStylesContext.Provider

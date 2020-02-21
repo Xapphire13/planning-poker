@@ -16,12 +16,24 @@ function generateVoters(number: number) {
   }));
 }
 
-// TODO
-export const Default = createStory(() => (
-  <VoteDistributions results={[]} users={[]} />
-));
+function generateVote(start: number = 1, end?: number) {
+  return (user: User) => ({
+    userId: user.id,
+    vote: (start + Math.floor((end ?? start + 10) * Math.random())).toString()
+  });
+}
 
-// TODO
-export const Overflowing = createStory(() => (
-  <VoteDistributions users={generateVoters(50)} results={[]} />
-));
+export const Default = createStory(() => {
+  const users = generateVoters(5);
+
+  return (
+    <VoteDistributions results={users.map(generateVote())} users={users} />
+  );
+});
+
+export const Overflowing = createStory(() => {
+  const users = generateVoters(50);
+  return (
+    <VoteDistributions results={users.map(generateVote(1, 1))} users={users} />
+  );
+});

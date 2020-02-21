@@ -10,6 +10,7 @@ type VoidResult {
 type User {
   id: ID!
   name: String!
+  connectionStatus: ConnectionStatus!
 }
 
 type Session {
@@ -22,6 +23,11 @@ type Session {
 enum SessionState {
   WAITING
   VOTING
+}
+
+enum ConnectionStatus {
+  DISCONNECTED
+  CONNECTED
 }
 
 type Query {
@@ -42,4 +48,5 @@ type Subscription {
   personJoined(sessionId: String!): [User]
   personDisconnected(sessionId: String!): [User]
   voteCast(sessionId: String!): [User]
+  connectionStatusChanged(sessionId: String!): User
 }

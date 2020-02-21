@@ -172,9 +172,11 @@ export default function VoteDistributionRow({
               hiddenAvatars.length > 0 && (
                 <Tooltip
                   title={hiddenAvatars.map(user => (
-                    <Typography variant="caption" key={user.id}>
-                      {user.name}
-                    </Typography>
+                    <div>
+                      <Typography variant="caption" key={user.id}>
+                        {user.name}
+                      </Typography>
+                    </div>
                   ))}
                   key="hidden"
                 >

@@ -23,6 +23,8 @@ import createStylesFn from '../theme/createStylesFn';
 import { CreateSession } from ':__generated__/graphql';
 import useConnectedCount from ':web/hooks/useConnectedCount';
 import StorageUtil from ':web/utils/storageUtil';
+import useConnectedUsers from ':web/hooks/useConnectedUsers';
+import SessionParticipants from ':web/components/SessionParticipants';
 
 const DRAWER_WIDTH = 240;
 
@@ -77,6 +79,7 @@ export default function WelcomePage({ navigate }: HostPageProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const numberOfPeopleConnected = useConnectedCount(sessionId);
   const [createSession] = useMutation<CreateSession>(CREATE_SESSION_MUTATION);
+  const connectedUsers = useConnectedUsers(sessionId);
 
   useEffect(() => {
     if (!sessionId) {
@@ -130,6 +133,11 @@ export default function WelcomePage({ navigate }: HostPageProps) {
             >
               Ready!
             </Button>
+            <Divider />
+            <SessionParticipants
+              users={connectedUsers}
+              sessionCode={sessionId ?? ''}
+            />
           </Container>
         </div>
 

@@ -17,6 +17,7 @@ import { importSchema } from 'graphql-import';
 import { JssProvider, SheetsRegistry } from 'react-jss';
 import webTemplate from './webTemplate';
 import Session from './Session';
+import ConnectionStatus from './models/ConnectionStatus';
 
 interface Context {
   userId: string;
@@ -26,7 +27,8 @@ enum SubscriptionTrigger {
   SessionStateChanged = 'SESSION_STATE_CHANGED',
   PersonJoined = 'PERSON_JOINED',
   PersonDisconnected = 'PERSON_DISCONNECTED',
-  VoteCast = 'VOTE_CAST'
+  VoteCast = 'VOTE_CAST',
+  ConnectionStatusChanged = 'CONNECTION_STATUS_CHANGED'
 }
 
 function getSessionTrigger(sessionId: string, trigger: SubscriptionTrigger) {
@@ -41,6 +43,10 @@ process.on('unhandledRejection', err => {
   /** sessionId -> Session */
   const sessions = new Map<string, Session>();
   const pubsub = new PubSub();
+
+  function findSessionForUser(userId: string) {
+    return [...sessions.values()].find(it => it.hasUser(userId));
+  }
 
   const resolvers: IResolvers<any, Context> = {
     Query: {
@@ -75,10 +81,30 @@ process.on('unhandledRejection', err => {
           throw new Error('No such session');
         }
 
-        if (session.join({ id: userId, name })) {
+        if (
+          session.join({
+            id: userId,
+            name,
+            connectionStatus: ConnectionStatus.Connected
+          })
+        ) {
           pubsub.publish(
             getSessionTrigger(sessionId, SubscriptionTrigger.PersonJoined),
             { personJoined: session.users }
+          );
+
+          pubsub.publish(
+            getSessionTrigger(
+              session.sessionId,
+              SubscriptionTrigger.ConnectionStatusChanged
+            ),
+            {
+              connectionStatusChanged: {
+                id: userId,
+                name,
+                connectionStatus: ConnectionStatus.Connected
+              }
+            }
           );
         }
 
@@ -215,6 +241,20 @@ process.on('unhandledRejection', err => {
             getSessionTrigger(sessionId, SubscriptionTrigger.VoteCast)
           );
         }
+      },
+      connectionStatusChanged: {
+        subscribe: (_, { sessionId }) => {
+          if (!sessions.has(sessionId)) {
+            throw new Error('Session not found');
+          }
+
+          return pubsub.asyncIterator(
+            getSessionTrigger(
+              sessionId,
+              SubscriptionTrigger.ConnectionStatusChanged
+            )
+          );
+        }
       }
     }
   };
@@ -253,6 +293,23 @@ process.on('unhandledRejection', err => {
           );
         }
 
+        const session = findSessionForUser(userId);
+
+        if (session) {
+          const user = session.getUser(userId)!;
+          user.connectionStatus = ConnectionStatus.Connected;
+
+          pubsub.publish(
+            getSessionTrigger(
+              session.sessionId,
+              SubscriptionTrigger.ConnectionStatusChanged
+            ),
+            {
+              connectionStatusChanged: user
+            }
+          );
+        }
+
         return Promise.resolve({
           userId
         });
@@ -260,20 +317,23 @@ process.on('unhandledRejection', err => {
       onDisconnect: (_, ctx) => {
         if (ctx.initPromise) {
           (async () => {
-            const context: Context = await ctx.initPromise;
+            const { userId }: Context = await ctx.initPromise;
 
-            console.log(`User ${context.userId} disconnected`);
+            console.log(`User ${userId} disconnected`);
 
-            const session = [...sessions.values()].find(it =>
-              it.hasUser(context.userId)
-            );
-            if (session?.leave(context.userId)) {
+            const session = findSessionForUser(userId);
+            if (session) {
+              const user = session.getUser(userId)!;
+              user.connectionStatus = ConnectionStatus.Disconnected;
+
               pubsub.publish(
                 getSessionTrigger(
                   session.sessionId,
-                  SubscriptionTrigger.PersonDisconnected
+                  SubscriptionTrigger.ConnectionStatusChanged
                 ),
-                { personDisconnected: session.users }
+                {
+                  connectionStatusChanged: user
+                }
               );
             }
           })();

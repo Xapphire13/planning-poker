@@ -1,5 +1,5 @@
 import shortid from 'shortid';
-import User from './models/user';
+import User from './models/User';
 import SessionState from './models/SessionState';
 
 export default class Session {
@@ -99,5 +99,9 @@ export default class Session {
 
   hasUser(userId: string) {
     return this.userMap.has(userId);
+  }
+
+  getUser(userId: string) {
+    return this.userMap.get(userId);
   }
 }

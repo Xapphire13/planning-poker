@@ -9,6 +9,7 @@ import {
   PersonJoinedVariables,
   PersonDisconnectedVariables
 } from ':__generated__/graphql';
+import PERSON_DISCONNECTED_SUBSCRIPTION from ':web/graphql/PersonDisconnectedSubscription';
 
 const SESSION_USERS_QUERY = gql`
   query SessionUsers($sessionId: String!) {
@@ -23,14 +24,6 @@ const SESSION_USERS_QUERY = gql`
 const PERSON_JOINED_SUBSCRIPTION = gql`
   subscription PersonJoined($sessionId: String!) {
     users: personJoined(sessionId: $sessionId) {
-      id
-    }
-  }
-`;
-
-const PERSON_DISCONNECTED_SUBSCRIPTION = gql`
-  subscription PersonDisconnected($sessionId: String!) {
-    users: personDisconnected(sessionId: $sessionId) {
       id
     }
   }
