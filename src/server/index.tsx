@@ -348,6 +348,12 @@ process.on('unhandledRejection', err => {
   expressServer.use(express.static(path.resolve(__dirname, 'web')));
   // Web entry point
   expressServer.use(/\/.*/, async (req, res) => {
+    if (process.env.NO_SSR) {
+      res.send(webTemplate('', '', '', [], '/web.js'));
+
+      return;
+    }
+
     const muiSheets = new ServerStyleSheets();
     const jssSheets = new SheetsRegistry();
 
@@ -365,15 +371,15 @@ process.on('unhandledRejection', err => {
       )
     );
 
-    const result = webTemplate(
-      html,
-      [muiSheets.toString(), jssSheets.toString()].join('\n'),
-      css.content,
-      css.renderedClassNames,
-      '/web.js'
+    res.send(
+      webTemplate(
+        html,
+        [muiSheets.toString(), jssSheets.toString()].join('\n'),
+        css.content,
+        css.renderedClassNames,
+        '/web.js'
+      )
     );
-
-    res.send(result);
   });
 
   await new Promise(res => httpServer.listen(expressServer.get('port'), res));

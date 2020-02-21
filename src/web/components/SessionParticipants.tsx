@@ -28,20 +28,25 @@ export default function SessionParticipants({
   return (
     <VStack>
       <HStack justify="space-between">
-        <Typography>Session Participants</Typography>
-        <Typography>Session Code: {sessionCode}</Typography>
+        <Typography variant="caption">Session Participants</Typography>
+        <Typography variant="caption">Session Code: {sessionCode}</Typography>
       </HStack>
-      <UserAvatarGroup
-        users={users.map(user => {
-          return {
-            ...user,
-            customClassName:
-              user.connectionStatus === ConnectionStatus.DISCONNECTED
-                ? styles.disconnectedUser
-                : undefined
-          };
-        })}
-      />
+      {users.length <= 0 && (
+        <Typography align="center">0 people connected</Typography>
+      )}
+      {users.length > 0 && (
+        <UserAvatarGroup
+          users={users.map(user => {
+            return {
+              ...user,
+              customClassName:
+                user.connectionStatus === ConnectionStatus.DISCONNECTED
+                  ? styles.disconnectedUser
+                  : undefined
+            };
+          })}
+        />
+      )}
     </VStack>
   );
 }

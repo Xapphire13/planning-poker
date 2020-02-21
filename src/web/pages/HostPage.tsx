@@ -18,10 +18,11 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
+import VStack from 'pancake-layout/dist/VStack';
+import VStackItem from 'pancake-layout/dist/VStackItem';
 import ConnectionStepsCard from ':web/components/ConnectionStepsCard';
 import createStylesFn from '../theme/createStylesFn';
 import { CreateSession } from ':__generated__/graphql';
-import useConnectedCount from ':web/hooks/useConnectedCount';
 import StorageUtil from ':web/utils/storageUtil';
 import useConnectedUsers from ':web/hooks/useConnectedUsers';
 import SessionParticipants from ':web/components/SessionParticipants';
@@ -33,16 +34,15 @@ export type HostPageProps = RouteComponentProps;
 const stylesFn = createStylesFn(({ unit }) => ({
   contentContainer: {
     marginTop: unit,
-    marginBottom: unit
+    marginBottom: unit,
+    height: `calc(100% - ${2 * unit}px)`,
+    position: 'relative'
   },
   readyButton: {
     marginTop: unit,
     display: 'block',
     marginLeft: 'auto',
     marginRight: 'auto'
-  },
-  connectedText: {
-    textAlign: 'center'
   },
   closeMenuButton: {
     position: 'absolute',
@@ -52,16 +52,16 @@ const stylesFn = createStylesFn(({ unit }) => ({
     width: DRAWER_WIDTH,
     flexShrink: 0
   },
-  container: {
+  slideContainer: {
+    position: 'relative',
     height: '100%',
     overflowX: 'hidden'
   },
-  slideContainer: {
-    position: 'relative',
-    height: '100%'
-  },
   slideContainerMenuOpen: {
     left: DRAWER_WIDTH
+  },
+  fullHeight: {
+    height: '100%'
   }
 }));
 
@@ -77,7 +77,6 @@ export default function WelcomePage({ navigate }: HostPageProps) {
     StorageUtil.session.getItem('sessionId')
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const numberOfPeopleConnected = useConnectedCount(sessionId);
   const [createSession] = useMutation<CreateSession>(CREATE_SESSION_MUTATION);
   const connectedUsers = useConnectedUsers(sessionId);
 
@@ -98,13 +97,12 @@ export default function WelcomePage({ navigate }: HostPageProps) {
     navigate?.('/waitingForVotes');
   };
 
+  const numberOfPeopleConnected = connectedUsers.length;
+
   return (
-    <div {...css(styles.container)}>
-      <div
-        {...css(
-          styles.slideContainer,
-          drawerOpen && styles.slideContainerMenuOpen
-        )}
+    <div {...css(styles.slideContainer)}>
+      <VStack
+        {...css(styles.fullHeight, drawerOpen && styles.slideContainerMenuOpen)}
       >
         <AppBar position="static">
           <Toolbar variant="dense">
@@ -116,64 +114,66 @@ export default function WelcomePage({ navigate }: HostPageProps) {
             <Typography variant="h6">Planning Poker</Typography>
           </Toolbar>
         </AppBar>
-        <div>
+        <VStackItem grow>
           <Container maxWidth="xs" {...css(styles.contentContainer)}>
-            {sessionId && <ConnectionStepsCard sessionId={sessionId} />}
-            <Typography variant="body2" {...css(styles.connectedText)}>
-              {numberOfPeopleConnected === 1
-                ? '1 person connected'
-                : `${numberOfPeopleConnected} people connected`}
-            </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={numberOfPeopleConnected < 2}
-              onClick={handleStartVoteClicked}
-              {...css(styles.readyButton)}
-            >
-              Ready!
-            </Button>
-            <Divider />
-            <SessionParticipants
-              users={connectedUsers}
-              sessionCode={sessionId ?? ''}
-            />
-          </Container>
-        </div>
+            <VStack justify="space-between" {...css(styles.fullHeight)}>
+              <>
+                {sessionId && <ConnectionStepsCard sessionId={sessionId} />}
 
-        <Drawer
-          anchor="left"
-          variant="persistent"
-          open={drawerOpen}
-          PaperProps={...css(styles.drawer)}
-        >
-          <Toolbar variant="dense">
-            <IconButton
-              {...css(styles.closeMenuButton)}
-              onClick={() => setDrawerOpen(false)}
-            >
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          <Divider />
-          <List>
-            <ListItem
-              button
-              onClick={() =>
-                window.open(
-                  'https://github.com/Xapphire13/planning-poker',
-                  '_blank'
-                )
-              }
-            >
-              <ListItemIcon>
-                <GitHubIcon />
-              </ListItemIcon>
-              <ListItemText primary="Source Code" />
-            </ListItem>
-          </List>
-        </Drawer>
-      </div>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={numberOfPeopleConnected < 2}
+                  onClick={handleStartVoteClicked}
+                  {...css(styles.readyButton)}
+                >
+                  Ready!
+                </Button>
+              </>
+              <>
+                <Divider />
+                <SessionParticipants
+                  users={connectedUsers}
+                  sessionCode={sessionId ?? ''}
+                />
+              </>
+            </VStack>
+          </Container>
+        </VStackItem>
+      </VStack>
+
+      <Drawer
+        anchor="left"
+        variant="persistent"
+        open={drawerOpen}
+        PaperProps={...css(styles.drawer)}
+      >
+        <Toolbar variant="dense">
+          <IconButton
+            {...css(styles.closeMenuButton)}
+            onClick={() => setDrawerOpen(false)}
+          >
+            <ChevronLeftIcon />
+          </IconButton>
+        </Toolbar>
+        <Divider />
+        <List>
+          <ListItem
+            button
+            onClick={() =>
+              window.open(
+                'https://github.com/Xapphire13/planning-poker',
+                '_blank'
+              )
+            }
+          >
+            <ListItemIcon>
+              <GitHubIcon />
+            </ListItemIcon>
+            <ListItemText primary="Source Code" />
+          </ListItem>
+        </List>
+      </Drawer>
     </div>
   );
 }
