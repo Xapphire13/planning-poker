@@ -93,7 +93,7 @@
     "internal-ip": "^5.0.0",
     "moment": "^2.24.0",
     "node-fetch": "^2.6.0",
-    "pancake-layout": "^0.3.1",
+    "pancake-layout": "^0.3.2",
     "prettier": "^1.19.1",
     "qrcode": "^1.4.4",
     "react": "^16.12.0",
