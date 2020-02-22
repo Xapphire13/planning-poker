@@ -47,7 +47,7 @@ export default function useConnectedUsers(sessionId: string | undefined) {
     SessionUsersWithConnectionStatus,
     SessionUsersWithConnectionStatusVariables
   >(SESSION_USERS_WITH_CONNECTION_STATUS_QUERY, {
-    fetchPolicy: 'no-cache'
+    fetchPolicy: 'cache-and-network'
   });
 
   useEffect(() => {

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import { RouteComponentProps } from '@reach/router';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -10,7 +9,11 @@ import useWindowSize from 'react-use/lib/useWindowSize';
 import Snackbar from '@material-ui/core/Snackbar';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import createStylesFn from '../theme/createStylesFn';
+import VStackItem from 'pancake-layout/dist/VStackItem';
+import VStack from 'pancake-layout/dist/VStack';
+import classNames from 'classnames';
+import Divider from '@material-ui/core/Divider';
+import { createUseStyles } from 'react-jss';
 import VoteDistributions from '../components/VoteDistributions';
 import {
   SessionResults,
@@ -18,20 +21,26 @@ import {
 } from ':__generated__/graphql';
 import nonNull from ':web/utils/nonNull';
 import StorageUtil from ':web/utils/storageUtil';
+import AppBarLayout from ':web/layouts/AppBarLayout';
+import SessionParticipants from ':web/components/SessionParticipants';
+import Theme from ':web/theme/DefaultTheme';
 
 export type VoteResultsPageProps = RouteComponentProps;
 
-const stylesFn = createStylesFn(({ unit }) => ({
+const useStyles = createUseStyles({
   container: {
-    padding: `${unit}px 0`,
+    height: '100%'
+  },
+  contentContainer: {
+    padding: `${Theme.unit}px 0`,
     height: '100%'
   },
   button: {
-    display: 'block',
-    marginLeft: 'auto',
-    marginRight: 'auto'
+    display: 'block !important',
+    marginLeft: 'auto !important',
+    marginRight: 'auto !important'
   }
-}));
+});
 
 function averageOfVotes(votes: { vote: string }[]) {
   let total: number | undefined;
@@ -70,7 +79,7 @@ const SESSION_RESULTS_QUERY = gql`
 
 export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
   const sessionId = StorageUtil.session.getItem('sessionId');
-  const { css, styles } = useStyles({ stylesFn });
+  const styles = useStyles();
   const [showUnanimousNotification, setShowUnanimousNotification] = useState(
     false
   );
@@ -101,35 +110,52 @@ export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
 
   return (
     <>
-      {results && users && (
-        <Grid
-          container
+      <AppBarLayout fullWidth>
+        <VStack
           justify="space-between"
-          direction="column"
-          {...css(styles.container)}
+          className={classNames(styles.container)}
         >
-          <Grid item>
-            <Container>
-              <Typography variant="h6">
-                Average: {averageOfVotes(results)}
-              </Typography>
-            </Container>
-          </Grid>
-          <Grid item>
-            <VoteDistributions results={results} users={users} />
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleNewVote}
-              {...css(styles.button)}
-            >
-              New vote
-            </Button>
-          </Grid>
-        </Grid>
-      )}
+          <VStackItem grow>
+            {results && users && (
+              <Grid
+                container
+                justify="space-between"
+                direction="column"
+                className={classNames(styles.contentContainer)}
+              >
+                <Grid item>
+                  <Container>
+                    <Typography variant="h6">
+                      Average: {averageOfVotes(results)}
+                    </Typography>
+                  </Container>
+                </Grid>
+                <Grid item>
+                  <VoteDistributions results={results} users={users} />
+                </Grid>
+                <Grid item>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleNewVote}
+                    className={classNames(styles.button)}
+                  >
+                    New vote
+                  </Button>
+                </Grid>
+              </Grid>
+            )}
+          </VStackItem>
+          <>
+            {sessionId && (
+              <Container maxWidth="xs">
+                <Divider />
+                <SessionParticipants sessionId={sessionId} />
+              </Container>
+            )}
+          </>
+        </VStack>
+      </AppBarLayout>
       {isUnanimous && (
         <>
           <Confetti width={width} height={height} />

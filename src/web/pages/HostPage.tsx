@@ -2,17 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from '@reach/router';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
-import VStack from 'pancake-layout/dist/VStack';
 import ConnectionStepsCard from ':web/components/ConnectionStepsCard';
 import createStylesFn from '../theme/createStylesFn';
 import { CreateSession } from ':__generated__/graphql';
 import StorageUtil from ':web/utils/storageUtil';
 import useConnectedUsers from ':web/hooks/useConnectedUsers';
-import SessionParticipants from ':web/components/SessionParticipants';
 import AppBarLayout from '../layouts/AppBarLayout';
+import SessionParticipantsLayout from ':web/layouts/SessionParticipantsLayout';
 
 export type HostPageProps = RouteComponentProps;
 
@@ -63,28 +61,19 @@ export default function WelcomePage({ navigate }: HostPageProps) {
 
   return (
     <AppBarLayout>
-      <VStack justify="space-between" {...css(styles.fullHeight)}>
-        <>
-          {sessionId && <ConnectionStepsCard sessionId={sessionId} />}
+      <SessionParticipantsLayout sessionId={sessionId}>
+        {sessionId && <ConnectionStepsCard sessionId={sessionId} />}
 
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={numberOfPeopleConnected < 2}
-            onClick={handleStartVoteClicked}
-            {...css(styles.readyButton)}
-          >
-            Ready!
-          </Button>
-        </>
-        <>
-          <Divider />
-          <SessionParticipants
-            users={connectedUsers}
-            sessionCode={sessionId ?? ''}
-          />
-        </>
-      </VStack>
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={numberOfPeopleConnected < 2}
+          onClick={handleStartVoteClicked}
+          {...css(styles.readyButton)}
+        >
+          Ready!
+        </Button>
+      </SessionParticipantsLayout>
     </AppBarLayout>
   );
 }

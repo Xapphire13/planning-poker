@@ -18,6 +18,8 @@
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src",
     "postinstall": "npm run apollo:generate",
     "start": "heroku local",
+    "start:no-ssr": "NO_SSR=true npm start",
+    "dev": "npm run build:server && concurrently npm:start:no-ssr \"npm:build:web -- --watch\"",
     "storybook": "start-storybook -p 6006"
   },
   "keywords": [
@@ -46,6 +48,7 @@
     "@typescript-eslint/parser": "^2.14.0",
     "apollo": "^2.22.0",
     "babel-loader": "^8.0.6",
+    "concurrently": "^5.1.0",
     "copy-webpack-plugin": "^5.1.1",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-typescript": "^6.3.1",
@@ -90,7 +93,7 @@
     "internal-ip": "^5.0.0",
     "moment": "^2.24.0",
     "node-fetch": "^2.6.0",
-    "pancake-layout": "^0.3.0",
+    "pancake-layout": "^0.3.1",
     "prettier": "^1.19.1",
     "qrcode": "^1.4.4",
     "react": "^16.12.0",

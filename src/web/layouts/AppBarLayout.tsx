@@ -51,9 +51,14 @@ const useStyles = createUseStyles({
 
 export type AppBarLayoutProps = {
   children: React.ReactNode | React.ReactNodeArray;
+
+  fullWidth?: boolean;
 };
 
-export default function AppBarLayout({ children }: AppBarLayoutProps) {
+export default function AppBarLayout({
+  children,
+  fullWidth
+}: AppBarLayoutProps) {
   const styles = useStyles();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -77,7 +82,8 @@ export default function AppBarLayout({ children }: AppBarLayoutProps) {
         </AppBar>
         <VStackItem grow>
           <Container
-            maxWidth="xs"
+            disableGutters={fullWidth}
+            maxWidth={!fullWidth && 'xs'}
             className={classNames(styles.contentContainer)}
           >
             {children}

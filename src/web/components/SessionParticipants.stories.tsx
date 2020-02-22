@@ -7,6 +7,8 @@ import SessionParticipants from './SessionParticipants';
 import { UserWithConnectionStatus } from ':web/User';
 import { ConnectionStatus } from '../../__generated__/graphql';
 
+// TODO
+// @ts-ignore
 function generateUser(
   overrides: Partial<UserWithConnectionStatus> = {}
 ): UserWithConnectionStatus {
@@ -22,13 +24,14 @@ storiesOf('SessionParticipants', module).add(
   'default',
   createStory(() => (
     <SessionParticipants
-      sessionCode="12345"
-      users={[
-        generateUser({ name: '🐝' }),
-        generateUser(),
-        generateUser(),
-        generateUser({ connectionStatus: ConnectionStatus.DISCONNECTED })
-      ]}
+      sessionId="12345"
+      // TODO
+      // users={[
+      //   generateUser({ name: '🐝' }),
+      //   generateUser(),
+      //   generateUser(),
+      //   generateUser({ connectionStatus: ConnectionStatus.DISCONNECTED })
+      // ]}
     />
   ))
 );

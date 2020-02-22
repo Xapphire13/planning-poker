@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { RouteComponentProps } from '@reach/router';
-import useStyles from 'react-with-styles/lib/hooks/useStyles';
-import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TimerIcon from '@material-ui/icons/Timer';
@@ -10,7 +8,8 @@ import moment from 'moment';
 import { useSubscription, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import VStack from 'pancake-layout/dist/VStack';
-import createStylesFn from ':web/theme/createStylesFn';
+import { createUseStyles } from 'react-jss';
+import classNames from 'classnames';
 import ProgressCircle from '../components/ProgressCircle';
 import {
   VoteCastSubscription,
@@ -21,25 +20,25 @@ import {
   EndRoundVariables
 } from ':__generated__/graphql';
 import StorageUtil from ':web/utils/storageUtil';
-import useConnectedCount from ':web/hooks/useConnectedCount';
 import Theme from ':web/theme/DefaultTheme';
+import FullScreenLayout from ':web/layouts/FullScreenLayout';
+import useConnectedUsers from ':web/hooks/useConnectedUsers';
+import SessionParticipantsLayout from ':web/layouts/SessionParticipantsLayout';
 
 export type WaitingForVotesPageProps = RouteComponentProps;
 
-const stylesFn = createStylesFn(({ unit }) => ({
-  contentContainer: {
-    position: 'relative',
-    top: '50%',
-    transform: 'translateY(-50%)',
+const useStyles = createUseStyles({
+  container: {
+    height: '100%',
     textAlign: 'center'
   },
   circleContainer: {
-    margin: `${2 * unit}px 0`
+    margin: `${2 * Theme.unit}px 0`
   },
   button: {
-    marginTop: 2 * unit
+    marginTop: 2 * Theme.unit
   }
-}));
+});
 
 function formatTimeRemaining(seconds: number) {
   const duration = moment.duration(seconds, 's');
@@ -83,7 +82,7 @@ export default function WaitingForVotesPage({
   navigate
 }: WaitingForVotesPageProps) {
   const sessionId = StorageUtil.session.getItem<string>('sessionId');
-  const { css, styles } = useStyles({ stylesFn });
+  const styles = useStyles();
   const [timeRemaining, setTimeRemaining] = useState(20);
   const [countdownStarted, setCountdownStarted] = useState(false);
   const [startVoting] = useMutation<StartVoting, StartVotingVariables>(
@@ -92,7 +91,7 @@ export default function WaitingForVotesPage({
   const [endRound] = useMutation<EndRound, EndRoundVariables>(
     END_ROUND_MUTATION
   );
-  const numberOfPeopleInSession = useConnectedCount(sessionId);
+  const users = useConnectedUsers(sessionId);
   const { data: voteCastData } = useSubscription<
     VoteCastSubscription,
     VoteCastSubscriptionVariables
@@ -116,6 +115,7 @@ export default function WaitingForVotesPage({
   }, []);
 
   const numberOfPeopleReady: number = voteCastData?.voteCast?.length ?? 0;
+  const numberOfPeopleInSession = users.length;
 
   const handleEndRound = useCallback(
     async (nextPage: string) => {
@@ -178,40 +178,44 @@ export default function WaitingForVotesPage({
   ]);
 
   return (
-    <Container maxWidth="xs" {...css(styles.contentContainer)}>
-      <Typography variant="h6">Waiting for votes</Typography>
-      <div {...css(styles.circleContainer)}>
-        <ProgressCircle
-          value={numberOfPeopleReady}
-          max={numberOfPeopleInSession}
-        />
-      </div>
-      <Grid
-        container
-        alignItems="center"
-        wrap="nowrap"
-        justify="center"
-        spacing={1}
-      >
-        <Grid item>
-          <TimerIcon />
-        </Grid>
-        <Grid item>
-          <Typography>{formatTimeRemaining(timeRemaining)}</Typography>
-        </Grid>
-      </Grid>
-      <VStack gap={Theme.unit / 2}>
-        <Button
-          variant="outlined"
-          onClick={() => handleEndRound('/host')}
-          {...css(styles.button)}
-        >
-          Cancel
-        </Button>
-        <Button variant="text" onClick={() => handleEndRound('/results')}>
-          Or manually end round
-        </Button>
-      </VStack>
-    </Container>
+    <FullScreenLayout>
+      <SessionParticipantsLayout sessionId={sessionId}>
+        <VStack className={classNames(styles.container)} justify="center">
+          <Typography variant="h6">Waiting for votes</Typography>
+          <div className={classNames(styles.circleContainer)}>
+            <ProgressCircle
+              value={numberOfPeopleReady}
+              max={numberOfPeopleInSession}
+            />
+          </div>
+          <Grid
+            container
+            alignItems="center"
+            wrap="nowrap"
+            justify="center"
+            spacing={1}
+          >
+            <Grid item>
+              <TimerIcon />
+            </Grid>
+            <Grid item>
+              <Typography>{formatTimeRemaining(timeRemaining)}</Typography>
+            </Grid>
+          </Grid>
+          <VStack gap={Theme.unit / 2}>
+            <Button
+              variant="outlined"
+              onClick={() => handleEndRound('/host')}
+              className={classNames(styles.button)}
+            >
+              Cancel
+            </Button>
+            <Button variant="text" onClick={() => handleEndRound('/results')}>
+              Or manually end round
+            </Button>
+          </VStack>
+        </VStack>
+      </SessionParticipantsLayout>
+    </FullScreenLayout>
   );
 }

@@ -4,9 +4,9 @@ import { createUseStyles } from 'react-jss';
 import VStack from 'pancake-layout/dist/VStack';
 import HStack from 'pancake-layout/dist/HStack';
 import Typography from '@material-ui/core/Typography';
-import { UserWithConnectionStatus } from ':web/User';
 import UserAvatarGroup from './UserAvatarGroup';
 import { ConnectionStatus } from ':__generated__/graphql';
+import useConnectedUsers from ':web/hooks/useConnectedUsers';
 
 const useStyles = createUseStyles({
   disconnectedUser: {
@@ -15,21 +15,20 @@ const useStyles = createUseStyles({
 });
 
 type SessionParticipantsProps = {
-  users: UserWithConnectionStatus[];
-  sessionCode: string;
+  sessionId: string;
 };
 
 export default function SessionParticipants({
-  users,
-  sessionCode
+  sessionId
 }: SessionParticipantsProps) {
   const styles = useStyles();
+  const users = useConnectedUsers(sessionId);
 
   return (
     <VStack>
       <HStack justify="space-between">
         <Typography variant="caption">Session Participants</Typography>
-        <Typography variant="caption">Session Code: {sessionCode}</Typography>
+        <Typography variant="caption">Session Code: {sessionId}</Typography>
       </HStack>
       {users.length <= 0 && (
         <Typography align="center">0 people connected</Typography>
