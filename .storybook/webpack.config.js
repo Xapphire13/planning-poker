@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require("webpack");
 
 module.exports = ({ config }) => {
   config.module.rules = [{
@@ -19,6 +20,12 @@ module.exports = ({ config }) => {
   }
 
   config.resolve.extensions.push('.ts', '.tsx');
+
+  config.plugins = [
+    ...(config.plugins || []),
+    new webpack.NamedModulesPlugin(),
+    new (require("rewiremock/webpack/plugin"))()
+  ];
 
   return config;
 };

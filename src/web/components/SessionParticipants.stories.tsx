@@ -1,14 +1,15 @@
+/* eslint-disable global-require */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import shortid from 'shortid';
 import SimpsonNames from 'simpsons-names';
+import rewiremock from 'rewiremock/webpack';
 import createStory from ':storybook/CreateStory';
-import SessionParticipants from './SessionParticipants';
+import _SessionParticipants from './SessionParticipants';
+
 import { UserWithConnectionStatus } from ':web/User';
 import { ConnectionStatus } from '../../__generated__/graphql';
 
-// TODO
-// @ts-ignore
 function generateUser(
   overrides: Partial<UserWithConnectionStatus> = {}
 ): UserWithConnectionStatus {
@@ -22,16 +23,19 @@ function generateUser(
 
 storiesOf('SessionParticipants', module).add(
   'default',
-  createStory(() => (
-    <SessionParticipants
-      sessionId="12345"
-      // TODO
-      // users={[
-      //   generateUser({ name: '🐝' }),
-      //   generateUser(),
-      //   generateUser(),
-      //   generateUser({ connectionStatus: ConnectionStatus.DISCONNECTED })
-      // ]}
-    />
-  ))
+  createStory(() => {
+    const SessionParticipants = rewiremock.proxy(
+      () => require('./SessionParticipants'),
+      {
+        '../hooks/useConnectedUsers': () => [
+          generateUser({ name: '🐝' }),
+          generateUser(),
+          generateUser(),
+          generateUser({ connectionStatus: ConnectionStatus.DISCONNECTED })
+        ]
+      }
+    ).default as typeof _SessionParticipants;
+
+    return <SessionParticipants sessionId="12345" />;
+  })
 );
