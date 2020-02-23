@@ -19,14 +19,8 @@ storiesOf('VoteButton', module)
     createStory(() => (
       <>
         <HStack style={{ width: 300 }} wrap hGap={4} vGap={2}>
+          <VoteButton value={1} onPress={() => {}} backgroundColor="#9768D1" />
           <VoteButton
-            width={145}
-            value={1}
-            onPress={() => {}}
-            backgroundColor="#9768D1"
-          />
-          <VoteButton
-            width={145}
             value={2}
             onPress={() => {}}
             backgroundColor={color('#9768D1')
@@ -34,7 +28,6 @@ storiesOf('VoteButton', module)
               .hex()}
           />
           <VoteButton
-            width={145}
             value={3}
             onPress={() => {}}
             backgroundColor={color('#9768D1')
@@ -43,7 +36,6 @@ storiesOf('VoteButton', module)
               .hex()}
           />
           <VoteButton
-            width={145}
             value={5}
             onPress={() => {}}
             backgroundColor={color('#9768D1')
@@ -53,7 +45,6 @@ storiesOf('VoteButton', module)
               .hex()}
           />
           <VoteButton
-            width={145}
             value={8}
             onPress={() => {}}
             backgroundColor={color('#9768D1')
@@ -64,7 +55,6 @@ storiesOf('VoteButton', module)
               .hex()}
           />
           <VoteButton
-            width={145}
             value={13}
             onPress={() => {}}
             backgroundColor={color('#9768D1')
@@ -76,7 +66,6 @@ storiesOf('VoteButton', module)
               .hex()}
           />
           <VoteButton
-            width={145}
             value={21}
             onPress={() => {}}
             backgroundColor={color('#9768D1')
@@ -89,7 +78,98 @@ storiesOf('VoteButton', module)
               .hex()}
           />
           <VoteButton
-            width={145}
+            value="Infinity"
+            onPress={() => {}}
+            backgroundColor={color('#9768D1')
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .hex()}
+          />
+        </HStack>
+      </>
+    ))
+  )
+  .add(
+    'vertical',
+    createStory(() => (
+      <>
+        <HStack style={{ width: 500 }} wrap hGap={4} vGap={2} justify="center">
+          <VoteButton
+            vertical
+            value={1}
+            onPress={() => {}}
+            backgroundColor="#9768D1"
+          />
+          <VoteButton
+            vertical
+            value={2}
+            onPress={() => {}}
+            backgroundColor={color('#9768D1')
+              .darken(0.1)
+              .hex()}
+          />
+          <VoteButton
+            vertical
+            value={3}
+            onPress={() => {}}
+            backgroundColor={color('#9768D1')
+              .darken(0.1)
+              .darken(0.1)
+              .hex()}
+          />
+          <VoteButton
+            vertical
+            value={5}
+            onPress={() => {}}
+            backgroundColor={color('#9768D1')
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .hex()}
+          />
+          <VoteButton
+            vertical
+            value={8}
+            onPress={() => {}}
+            backgroundColor={color('#9768D1')
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .hex()}
+          />
+          <VoteButton
+            vertical
+            value={13}
+            onPress={() => {}}
+            backgroundColor={color('#9768D1')
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .hex()}
+          />
+          <VoteButton
+            vertical
+            value={21}
+            onPress={() => {}}
+            backgroundColor={color('#9768D1')
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .darken(0.1)
+              .hex()}
+          />
+          <VoteButton
+            vertical
             value="Infinity"
             onPress={() => {}}
             backgroundColor={color('#9768D1')

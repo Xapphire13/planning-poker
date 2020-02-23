@@ -8,23 +8,29 @@ import { muiTheme } from ':web/theme/DefaultTheme';
 
 const CARD_RATIO = 9 / 14;
 const BASE_WIDTH = 140;
+const BASE_WIDTH_VERTICAL = 90;
 
 export type VoteButtonProps = {
   value: Vote;
   onPress: () => void;
   backgroundColor?: string;
   width?: number;
+  vertical?: boolean;
 };
 
 type StyleProps = {
   backgroundColor: string;
   width: number;
+  vertical: boolean;
 };
 
 const useStyles = createUseStyles({
   container: {
     width: ({ width }: StyleProps) => width,
-    height: ({ width }: StyleProps) => Math.round(width * CARD_RATIO),
+    height: ({ width, vertical }: StyleProps) =>
+      vertical
+        ? Math.round(width / CARD_RATIO)
+        : Math.round(width * CARD_RATIO),
     borderRadius: ({ width }: StyleProps) =>
       Math.round((width / BASE_WIDTH) * 5),
     border: 'none',
@@ -54,11 +60,13 @@ export default function VoteButton({
   value,
   onPress,
   backgroundColor,
-  width = BASE_WIDTH
+  vertical = false,
+  width = vertical ? BASE_WIDTH_VERTICAL : BASE_WIDTH
 }: VoteButtonProps) {
   const styles = useStyles({
     backgroundColor: backgroundColor ?? '#FFFFFF',
-    width
+    width,
+    vertical
   } as StyleProps);
   const valueText = value === 'Infinity' ? '∞' : value;
 
