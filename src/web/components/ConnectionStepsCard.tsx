@@ -5,18 +5,24 @@ import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import QRCode from 'qrcode';
+import purple from '@material-ui/core/colors/purple';
 import createStylesFn from ':web/theme/createStylesFn';
+import Theme from ':web/theme/DefaultTheme';
 
 const stylesFn = createStylesFn(({ unit }) => ({
   container: {
     padding: unit
   },
   url: {
+    color: Theme.color.text.default
+  },
+  host: {
     fontWeight: 'lighter'
   },
   sessionId: {
     fontWeight: 'bold',
-    fontSize: '1.2em'
+    fontSize: '1.2em',
+    color: purple['300']
   },
   grow: {
     flexGrow: 1
@@ -24,16 +30,6 @@ const stylesFn = createStylesFn(({ unit }) => ({
   orText: {
     paddingLeft: unit,
     paddingRight: unit
-  },
-  networkSelect: {
-    marginTop: unit,
-    marginBottom: unit / 2
-  },
-  ngrokStatus: {
-    marginBottom: unit / 2
-  },
-  networkSelectLabel: {
-    fontWeight: 'bold'
   }
 }));
 
@@ -68,8 +64,15 @@ export default function ConnectionStepsCard({
     <Card {...css(styles.container)}>
       <Typography>To join, go to:</Typography>
       <Typography align="center">
-        <span {...css(styles.url)}>{url}?sessionId=</span>
-        <span {...css(styles.sessionId)}>{sessionId}</span>
+        <a
+          {...css(styles.url)}
+          href={`${url}?sessionId=${sessionId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span {...css(styles.host)}>{url}?sessionId=</span>
+          <span {...css(styles.sessionId)}>{sessionId}</span>
+        </a>
       </Typography>
       {qrCodeSvg && (
         <>
