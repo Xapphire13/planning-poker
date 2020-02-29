@@ -6,7 +6,7 @@ import color from 'color';
 import { Vote } from ':web/Vote';
 import { muiTheme } from ':web/theme/DefaultTheme';
 
-const CARD_RATIO = 9 / 14;
+export const CARD_RATIO = 9 / 14;
 const BASE_WIDTH = 140;
 const BASE_WIDTH_VERTICAL = 90;
 

@@ -43,6 +43,7 @@
     "@types/react-dom": "^16.9.4",
     "@types/react-with-styles": "^4.0.2",
     "@types/shortid": "0.0.29",
+    "@types/ua-parser-js": "^0.7.33",
     "@types/uuid": "^3.4.6",
     "@typescript-eslint/eslint-plugin": "^2.14.0",
     "@typescript-eslint/parser": "^2.14.0",
@@ -106,6 +107,7 @@
     "react-with-styles-interface-aphrodite": "^6.0.1",
     "shortid": "^2.2.15",
     "systeminformation": "^4.18.3",
+    "ua-parser-js": "^0.7.21",
     "uuid": "^3.3.3"
   }
 }
