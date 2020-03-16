@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { RouteComponentProps } from '@reach/router';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
@@ -7,7 +7,7 @@ import useStyles from 'react-with-styles/lib/hooks/useStyles';
 import HStack from 'pancake-layout/dist/HStack';
 import color from 'color';
 import useMeasure from 'react-use/lib/useMeasure';
-import VoteButton from ':web/components/VoteButton';
+import VoteButton, { CARD_RATIO } from ':web/components/VoteButton';
 import createStylesFn from ':web/theme/createStylesFn';
 import { VoteValues, Vote } from ':web/Vote';
 import {
@@ -18,13 +18,10 @@ import {
 import StorageUtil from ':web/utils/storageUtil';
 import useSessionState from ':web/hooks/useSessionState';
 import Theme from ':web/theme/DefaultTheme';
-import VoteConfirmationDialog, {
-  VoteConfirmationDialogProps
-} from ':web/components/VoteConfirmationDialog';
-import { CARD_RATIO } from ':web/components/PokerCard';
 
 export type VotePageProps = RouteComponentProps;
 
+const BUTTON_COLOR = '#9768D1';
 const NUMBER_OF_CARDS = 8;
 const CARDS_PER_ROW_HORIZONTAL = 2;
 const CARDS_PER_ROW_VERTICAL = Math.ceil(NUMBER_OF_CARDS / 2);
@@ -104,28 +101,6 @@ export default function VotePage({ navigate }: VotePageProps) {
   const sessionId = StorageUtil.local.getItem<string>('sessionId');
   const sessionState = useSessionState(sessionId);
   const showVerticalCards = width > height; // Show vertical cards in landscape windows
-  const [confirmationDialogProps, setConfirmationDialogProps] = useState<
-    VoteConfirmationDialogProps
-  >({
-    open: false,
-    onClose: () =>
-      setConfirmationDialogProps(prev => ({ ...prev, open: false })),
-    onConfirm: async (vote: Vote) => {
-      if (!sessionId) return;
-
-      await castVote({
-        variables: {
-          vote: String(vote),
-          sessionId
-        }
-      });
-
-      navigate?.('/waiting', {
-        replace: true
-      });
-    }
-  });
-
   const buttonWidth =
     width > 0
       ? calculateCardWidth(width, height, showVerticalCards)
@@ -138,35 +113,47 @@ export default function VotePage({ navigate }: VotePageProps) {
   }, [navigate, sessionState]);
 
   const handleVoteButtonPressed = (vote: Vote) => {
-    setConfirmationDialogProps(prev => ({ ...prev, open: true, vote }));
+    if (!sessionId) {
+      return;
+    }
+
+    (async () => {
+      await castVote({
+        variables: {
+          vote: String(vote),
+          sessionId
+        }
+      });
+
+      navigate?.('/waiting', {
+        replace: true
+      });
+    })();
   };
 
   return (
-    <>
-      <Container maxWidth="md" {...css(styles.container)}>
-        <div ref={stackRef} {...css(styles.fillHeight)}>
-          <HStack
-            wrap
-            hGap={4}
-            justify="center"
-            {...css(styles.fillHeight, styles.centerContent)}
-          >
-            {VoteValues.map((val, i) => (
-              <VoteButton
-                key={val}
-                value={val}
-                onPress={() => handleVoteButtonPressed(val)}
-                vertical={showVerticalCards}
-                width={buttonWidth}
-                backgroundColor={color('#9768D1')
-                  .darken(1 - 0.9 ** i) // Each tile 10% darker than the last
-                  .hex()}
-              />
-            ))}
-          </HStack>
-        </div>
-      </Container>
-      <VoteConfirmationDialog {...confirmationDialogProps} />
-    </>
+    <Container maxWidth="md" {...css(styles.container)}>
+      <div ref={stackRef} {...css(styles.fillHeight)}>
+        <HStack
+          wrap
+          hGap={4}
+          justify="center"
+          {...css(styles.fillHeight, styles.centerContent)}
+        >
+          {VoteValues.map((val, i) => (
+            <VoteButton
+              key={val}
+              value={val}
+              onPress={() => handleVoteButtonPressed(val)}
+              vertical={showVerticalCards}
+              width={buttonWidth}
+              backgroundColor={color(BUTTON_COLOR)
+                .darken(1 - 0.9 ** i) // Each tile 10% darker than the last
+                .hex()}
+            />
+          ))}
+        </HStack>
+      </div>
+    </Container>
   );
 }
