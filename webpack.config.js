@@ -66,12 +66,14 @@ const webConfig = merge(baseConfig, {
   },
   plugins: [
     ...baseConfig.plugins,
-    new CopyPlugin([
-      {
-        from: path.join(__dirname, './icon.png'),
-        to: path.join(DIST_DIR, 'web')
-      }
-    ])
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.join(__dirname, './icon.png'),
+          to: path.join(DIST_DIR, 'web')
+        }
+      ]
+    })
   ]
 });
 

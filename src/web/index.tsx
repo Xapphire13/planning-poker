@@ -13,7 +13,7 @@ import { setContext } from 'apollo-link-context';
 import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
 import { onError } from 'apollo-link-error';
-import uuid from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import { StyleSheet } from 'aphrodite';
 import StorageUtils from './utils/storageUtil';
 import User from ':web/User';
@@ -28,7 +28,7 @@ if (!isSsr()) {
   user = StorageUtils.local.getItem<User>('user');
   if (!user) {
     user = {
-      id: uuid(),
+      id: uuidv4(),
       name: ''
     };
   }
