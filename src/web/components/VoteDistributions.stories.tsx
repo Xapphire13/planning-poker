@@ -1,6 +1,6 @@
 import React from 'react';
 import SimpsonsNames from 'simpsons-names';
-import uuid from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import VoteDistributions from ':web/components/VoteDistributions';
 import createStory from ':storybook/CreateStory';
 import User from ':web/User';
@@ -11,7 +11,7 @@ export default {
 
 function generateVoters(number: number) {
   return SimpsonsNames.random(number).map<User>(name => ({
-    id: uuid(),
+    id: uuidv4(),
     name
   }));
 }
