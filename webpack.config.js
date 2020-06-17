@@ -11,6 +11,23 @@ const DIST_DIR = path.resolve(__dirname, './dist');
 const baseConfig = {
   devtool: 'source-map',
   mode: process.env.NODE_ENV || 'development',
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: [
+          { loader: 'babel-loader' },
+          {
+            loader: 'linaria/loader',
+            options: {
+              sourceMap: process.env.NODE_ENV !== 'production'
+            }
+          }
+        ]
+      },
+    ]
+  },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
     alias: {
@@ -28,19 +45,6 @@ const webConfig = merge(baseConfig, {
   target: 'web',
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        exclude: /node_modules/,
-        use: [
-          { loader: 'babel-loader' },
-          {
-            loader: 'linaria/loader',
-            options: {
-              sourceMap: process.env.NODE_ENV !== 'production'
-            }
-          }
-        ]
-      },
       {
         test: /\.css$/,
         use: [
@@ -66,6 +70,9 @@ const webConfig = merge(baseConfig, {
   },
   plugins: [
     ...baseConfig.plugins,
+    new MiniCssExtractPlugin({
+      filename: 'styles.css',
+    }),
     new CopyPlugin({
       patterns: [
         {
@@ -83,9 +90,8 @@ const ssrConfig = merge(baseConfig, {
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        use: 'babel-loader',
-        exclude: /node_modules/
+        test: /\.css$/,
+        use: 'null-loader'
       }
     ]
   },

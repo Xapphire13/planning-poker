@@ -1,26 +1,21 @@
 import React from 'react';
 import Container from '@material-ui/core/Container';
-import { createUseStyles } from 'react-jss';
-import classNames from 'classnames';
+import { css } from 'linaria';
 import Theme from ':web/theme/DefaultTheme';
 
 export type FullScreenLayoutProps = {
-  children: React.ReactNode | React.ReactNodeArray;
+  children: NonNullable<React.ReactNode> | React.ReactNodeArray;
 };
 
-const useStyles = createUseStyles({
-  container: {
-    position: 'relative',
-    height: '100%',
-    padding: Theme.unit
-  }
-});
+const container = css`
+  position: relative;
+  height: 100%;
+  padding: ${Theme.unit}px;
+`;
 
 export default function FullScreenLayout({ children }: FullScreenLayoutProps) {
-  const styles = useStyles();
-
   return (
-    <Container maxWidth="xs" className={classNames(styles.container)}>
+    <Container maxWidth="xs" className={container}>
       {children}
     </Container>
   );
