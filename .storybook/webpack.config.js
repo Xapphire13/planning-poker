@@ -6,7 +6,7 @@ module.exports = ({ config }) => {
     test: /\.(ts|tsx)$/,
     use: [
       {
-        loader: "ts-loader",
+        loader: "babel-loader",
       },
     ],
   }];
