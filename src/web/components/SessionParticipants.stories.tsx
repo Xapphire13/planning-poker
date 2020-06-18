@@ -17,7 +17,7 @@ function generateUser(
     id: shortid(),
     name: SimpsonNames.random(),
     connectionStatus: ConnectionStatus.CONNECTED,
-    ...overrides
+    ...overrides,
   };
 }
 
@@ -31,8 +31,8 @@ storiesOf('SessionParticipants', module).add(
           generateUser({ name: '🐝' }),
           generateUser(),
           generateUser(),
-          generateUser({ connectionStatus: ConnectionStatus.DISCONNECTED })
-        ]
+          generateUser({ connectionStatus: ConnectionStatus.DISCONNECTED }),
+        ],
       }
     ).default as typeof _SessionParticipants;
 

@@ -11,26 +11,26 @@ import Theme from ':web/theme/DefaultTheme';
 
 const stylesFn = createStylesFn(({ unit }) => ({
   container: {
-    padding: unit
+    padding: unit,
   },
   url: {
-    color: Theme.color.text.default
+    color: Theme.color.text.default,
   },
   host: {
-    fontWeight: 'lighter'
+    fontWeight: 'lighter',
   },
   sessionId: {
     fontWeight: 'bold',
     fontSize: '1.2em',
-    color: purple['300']
+    color: purple['300'],
   },
   grow: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   orText: {
     paddingLeft: unit,
-    paddingRight: unit
-  }
+    paddingRight: unit,
+  },
 }));
 
 export type ConnectionStepsCardProps = {
@@ -38,7 +38,7 @@ export type ConnectionStepsCardProps = {
 };
 
 export default function ConnectionStepsCard({
-  sessionId
+  sessionId,
 }: ConnectionStepsCardProps) {
   const { css, styles } = useStyles({ stylesFn });
   const [qrCodeSvg, setQrCodeSvg] = useState<string>();

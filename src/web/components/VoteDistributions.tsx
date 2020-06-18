@@ -13,13 +13,13 @@ export type VoteDistributionsProps = {
 
 const stylesFn = createStylesFn(() => ({
   row: {
-    width: '100%'
-  }
+    width: '100%',
+  },
 }));
 
 export default function VoteDistributions({
   results,
-  users
+  users,
 }: VoteDistributionsProps) {
   const { css, styles } = useStyles({ stylesFn });
 
@@ -37,7 +37,7 @@ export default function VoteDistributions({
 
   const winningVote = (() => {
     let winner = Object.keys(buckets)[0];
-    Object.keys(buckets).forEach(key => {
+    Object.keys(buckets).forEach((key) => {
       if (buckets[key] > buckets[winner]) {
         winner = key;
       }
@@ -45,7 +45,7 @@ export default function VoteDistributions({
 
     const winningCount = buckets[winner];
 
-    return Object.values(buckets).filter(count => count === winningCount)
+    return Object.values(buckets).filter((count) => count === winningCount)
       .length === 1
       ? winner
       : null;
@@ -72,14 +72,16 @@ export default function VoteDistributions({
 
           return b.localeCompare(a);
         })
-        .map(vote => {
+        .map((vote) => {
           return (
             <Grid item key={vote} {...css(styles.row)}>
               <VoteDistributionRow
                 storyPoints={vote}
                 voters={results
-                  .filter(result => result.vote === vote)
-                  .map(result => users.find(user => user.id === result.userId))
+                  .filter((result) => result.vote === vote)
+                  .map((result) =>
+                    users.find((user) => user.id === result.userId)
+                  )
                   .filter(nonNull)}
                 isWinningVote={vote === winningVote}
               />

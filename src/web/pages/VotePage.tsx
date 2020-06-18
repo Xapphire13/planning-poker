@@ -13,7 +13,7 @@ import { VoteValues, Vote } from ':web/Vote';
 import {
   CastVote,
   CastVoteVariables,
-  SessionState
+  SessionState,
 } from ':__generated__/graphql';
 import StorageUtil from ':web/utils/storageUtil';
 import useSessionState from ':web/hooks/useSessionState';
@@ -39,15 +39,15 @@ const stylesFn = createStylesFn(({ unit }) => ({
     marginTop: unit,
     marginBottom: unit,
     position: 'relative',
-    height: `calc(100% - ${2 * unit}px)`
+    height: `calc(100% - ${2 * unit}px)`,
   },
   fillHeight: {
-    height: '100%'
+    height: '100%',
   },
   // TODO, remove once Pancake-Layout supports align content
   centerContent: {
-    alignContent: 'center'
-  }
+    alignContent: 'center',
+  },
 }));
 
 function calculateCardWidth(
@@ -121,12 +121,12 @@ export default function VotePage({ navigate }: VotePageProps) {
       await castVote({
         variables: {
           vote: String(vote),
-          sessionId
-        }
+          sessionId,
+        },
       });
 
       navigate?.('/waiting', {
-        replace: true
+        replace: true,
       });
     })();
   };

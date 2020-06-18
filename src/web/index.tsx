@@ -29,7 +29,7 @@ if (!isSsr()) {
   if (!user) {
     user = {
       id: uuidv4(),
-      name: ''
+      name: '',
     };
   }
   StorageUtils.local.setItem('user', user);
@@ -40,18 +40,18 @@ function createClientLink() {
   const HOST = window.location.host;
 
   const httpLink = new HttpLink({
-    uri: `${window.location.protocol}//${HOST}/graphql`
+    uri: `${window.location.protocol}//${HOST}/graphql`,
   });
 
   const wsLink = new WebSocketLink({
     uri: `${isHttps ? 'wss' : 'ws'}://${HOST}/graphql`,
     options: {
       connectionParams: {
-        userId: user!.id
+        userId: user!.id,
       },
       reconnect: true,
-      reconnectionAttempts: 10
-    }
+      reconnectionAttempts: 10,
+    },
   });
 
   const apolloLink = split(
@@ -69,8 +69,8 @@ function createClientLink() {
   const linkContext = setContext((_, { headers }) => ({
     headers: {
       ...headers,
-      'X-USER-ID': user!.id
-    }
+      'X-USER-ID': user!.id,
+    },
   }));
 
   const onErrorHandler = onError(({ graphQLErrors, networkError }) => {
@@ -94,7 +94,7 @@ function createServerLink(port: number = 4000) {
 
   return createHttpLink({
     uri: `http://localhost:${port}/graphql`,
-    fetch
+    fetch,
   });
 }
 
@@ -110,7 +110,7 @@ export default function Bootstrap({ port }: BootstrapProps) {
 
   const client = new ApolloClient({
     link: isSsr() ? createServerLink(port) : createClientLink(),
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
   });
 
   return (
@@ -119,7 +119,7 @@ export default function Bootstrap({ port }: BootstrapProps) {
         <WithStylesContext.Provider
           value={{
             stylesInterface: AphroditeInterface,
-            stylesTheme: DefaultTheme
+            stylesTheme: DefaultTheme,
           }}
         >
           <App />

@@ -11,7 +11,7 @@ import createStylesFn from ':web/theme/createStylesFn';
 import {
   LeaveSession,
   LeaveSessionVariables,
-  SessionState
+  SessionState,
 } from ':__generated__/graphql';
 import StorageUtil from ':web/utils/storageUtil';
 import useSessionState from ':web/hooks/useSessionState';
@@ -23,16 +23,16 @@ const stylesFn = createStylesFn(() => ({
     textAlign: 'center',
     position: 'relative',
     top: '50%',
-    transform: 'translateY(-50%)'
+    transform: 'translateY(-50%)',
   },
   icon: {
-    fontSize: 100
+    fontSize: 100,
   },
   cancelButton: {
     display: 'block',
     marginLeft: 'auto',
-    marginRight: 'auto'
-  }
+    marginRight: 'auto',
+  },
 }));
 
 const LEAVE_SESSION_MUTATION = gql`
@@ -61,8 +61,8 @@ export default function WaitingPage({ navigate }: WaitingPageProps) {
     if (sessionId) {
       leaveSession({
         variables: {
-          sessionId
-        }
+          sessionId,
+        },
       }).then(() => navigate?.('/'));
     }
   };

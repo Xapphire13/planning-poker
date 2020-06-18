@@ -7,9 +7,9 @@ import User from ':web/User';
 import UserAvatarGroup from './UserAvatarGroup';
 
 function generateUsers(number: number) {
-  return SimpsonsNames.random(number).map<User>(name => ({
+  return SimpsonsNames.random(number).map<User>((name) => ({
     id: shortid(),
-    name
+    name,
   }));
 }
 

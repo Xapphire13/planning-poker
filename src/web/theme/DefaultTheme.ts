@@ -9,16 +9,16 @@ const theme = {
     primary: deepPurple[500],
     background: grey[900],
     text: {
-      default: '#fff'
-    }
-  }
+      default: '#fff',
+    },
+  },
 };
 
 export const muiTheme = createMuiTheme({
   palette: {
     type: 'dark',
-    primary: deepPurple
-  }
+    primary: deepPurple,
+  },
 });
 
 export default theme;

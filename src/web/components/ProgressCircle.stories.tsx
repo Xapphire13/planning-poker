@@ -3,13 +3,13 @@ import ProgressCircle from './ProgressCircle';
 import createStory from ':storybook/CreateStory';
 
 export default {
-  title: 'Progress Circle'
+  title: 'Progress Circle',
 };
 
 export const Default = createStory(() => {
   const [value, setValue] = useState(0);
   useEffect(() => {
-    setInterval(() => setValue(prev => (prev === 10 ? 0 : prev + 1)), 1000);
+    setInterval(() => setValue((prev) => (prev === 10 ? 0 : prev + 1)), 1000);
   }, []);
 
   return (

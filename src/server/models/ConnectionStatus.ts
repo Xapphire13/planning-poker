@@ -1,6 +1,6 @@
 enum ConnectionStatus {
   Disconnected = 'DISCONNECTED',
-  Connected = 'CONNECTED'
+  Connected = 'CONNECTED',
 }
 
 export default ConnectionStatus;

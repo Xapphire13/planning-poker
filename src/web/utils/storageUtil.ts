@@ -7,7 +7,7 @@ function wrapStorage(storage: Storage | undefined) {
 
     setItem<T>(key: string, item: T): void {
       storage?.setItem(key, JSON.stringify(item));
-    }
+    },
   };
 }
 
@@ -17,5 +17,5 @@ export default {
   ),
   session: wrapStorage(
     typeof sessionStorage !== 'undefined' ? sessionStorage : undefined
-  )
+  ),
 };

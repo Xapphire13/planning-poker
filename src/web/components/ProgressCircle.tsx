@@ -15,17 +15,17 @@ export type ProgressCircleProps = {
 const stylesFn = createStylesFn(() => ({
   container: {
     position: 'relative',
-    width: '100%'
+    width: '100%',
   },
   circleContainer: {
     position: 'absolute',
     width: '100%',
-    height: '100%'
+    height: '100%',
   },
   circle: {
     position: 'relative',
     width: '100%',
-    height: '100%'
+    height: '100%',
   },
   lowerCircle: {
     position: 'relative',
@@ -33,14 +33,14 @@ const stylesFn = createStylesFn(() => ({
     left: '0.5%',
     width: '99%',
     height: '99%',
-    color: grey[500]
+    color: grey[500],
   },
   progressText: {
     position: 'relative',
     top: '50%',
     transform: 'translateY(-50%)',
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 }));
 
 export default function ProgressCircle({ value, max }: ProgressCircleProps) {
@@ -51,7 +51,7 @@ export default function ProgressCircle({ value, max }: ProgressCircleProps) {
   const progressText = `${value} / ${max}`;
 
   const computedContainerStyle: CSSProperties = {
-    height: containerWidth
+    height: containerWidth,
   };
 
   return (

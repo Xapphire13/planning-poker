@@ -3,7 +3,7 @@ import createStory from ':storybook/CreateStory';
 import ConnectionStepsCard from './ConnectionStepsCard';
 
 export default {
-  title: 'Connection Steps Card'
+  title: 'Connection Steps Card',
 };
 
 // TODO

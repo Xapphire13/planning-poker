@@ -14,7 +14,7 @@ export default () => {
     sm: currentBreakpoint !== 'xs',
     md: ['md', 'lg', 'xl'].includes(currentBreakpoint),
     lg: ['lg', 'xl'].includes(currentBreakpoint),
-    xl: currentBreakpoint === 'xl'
+    xl: currentBreakpoint === 'xl',
   };
 
   return { currentBreakpoint, breakpoints };

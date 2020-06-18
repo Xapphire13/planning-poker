@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { useEffect, useState } from 'react';
 import gql from 'graphql-tag';
 import { useLazyQuery } from '@apollo/react-hooks';
@@ -9,7 +8,7 @@ import {
   ConnectionStatusChangedVariables,
   PersonDisconnected,
   PersonDisconnectedVariables,
-  SessionUsersWithConnectionStatus_session_users
+  SessionUsersWithConnectionStatus_session_users,
 } from ':__generated__/graphql';
 import nonNull from ':web/utils/nonNull';
 import PERSON_DISCONNECTED_SUBSCRIPTION from ':web/graphql/PersonDisconnectedSubscription';
@@ -42,12 +41,12 @@ export default function useConnectedUsers(sessionId: string | undefined) {
   >([]);
   const [
     triggerQuery,
-    { data: sessionUsersData, subscribeToMore }
+    { data: sessionUsersData, subscribeToMore },
   ] = useLazyQuery<
     SessionUsersWithConnectionStatus,
     SessionUsersWithConnectionStatusVariables
   >(SESSION_USERS_WITH_CONNECTION_STATUS_QUERY, {
-    fetchPolicy: 'cache-and-network'
+    fetchPolicy: 'cache-and-network',
   });
 
   useEffect(() => {
@@ -68,15 +67,15 @@ export default function useConnectedUsers(sessionId: string | undefined) {
       >({
         document: CONNECTION_STATUS_CHANGED_SUBSCRIPTION,
         variables: {
-          sessionId
+          sessionId,
         },
         updateQuery: (prev, { subscriptionData }) => {
           const user = subscriptionData.data.updatedStatus;
 
-          setUsers(currentUsers => {
+          setUsers((currentUsers) => {
             if (user) {
               if (currentUsers.some(({ id }) => id === user.id)) {
-                return currentUsers.map(it => {
+                return currentUsers.map((it) => {
                   if (it.id !== user.id) return it;
 
                   return user;
@@ -89,14 +88,14 @@ export default function useConnectedUsers(sessionId: string | undefined) {
           });
 
           return prev;
-        }
+        },
       });
 
       subscribeToMore<PersonDisconnected, PersonDisconnectedVariables>({
         document: PERSON_DISCONNECTED_SUBSCRIPTION,
         variables: { sessionId },
         updateQuery: (prev, { subscriptionData }) => {
-          setUsers(currentUsers => {
+          setUsers((currentUsers) => {
             const ids =
               subscriptionData.data.users
                 ?.filter(nonNull)
@@ -111,7 +110,7 @@ export default function useConnectedUsers(sessionId: string | undefined) {
           });
 
           return prev;
-        }
+        },
       });
     }
   }, [sessionId, subscribeToMore]);

@@ -19,11 +19,11 @@ const stylesFn = createStylesFn(({ unit }) => ({
     marginTop: unit,
     display: 'block',
     marginLeft: 'auto',
-    marginRight: 'auto'
+    marginRight: 'auto',
   },
   fullHeight: {
-    height: '100%'
-  }
+    height: '100%',
+  },
 }));
 
 const CREATE_SESSION_MUTATION = gql`

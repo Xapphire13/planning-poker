@@ -13,8 +13,8 @@ const stylesFn = createStylesFn(({ color, fontFamily }) => ({
       "url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap')",
     background: color.background,
     color: color.text.default,
-    fontFamily
-  }
+    fontFamily,
+  },
 }));
 
 function Bootstrap({ children }: React.PropsWithChildren<{}>) {
@@ -27,7 +27,7 @@ function Bootstrap({ children }: React.PropsWithChildren<{}>) {
       <WithStylesContext.Provider
         value={{
           stylesInterface: AphroditeInterface,
-          stylesTheme: DefaultTheme
+          stylesTheme: DefaultTheme,
         }}
       >
         {children}

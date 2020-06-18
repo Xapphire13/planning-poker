@@ -12,7 +12,7 @@ import User from ':web/User';
 import {
   JoinSession,
   JoinSessionVariables,
-  SessionState
+  SessionState,
 } from ':__generated__/graphql';
 import AppBarLayout from ':web/layouts/AppBarLayout';
 
@@ -20,14 +20,14 @@ export type WelcomePageProps = RouteComponentProps;
 
 const stylesFn = createStylesFn(({ unit }) => ({
   marginTop: {
-    marginTop: unit
+    marginTop: unit,
   },
   button: {
     marginTop: unit,
     marginLeft: 'auto',
     marginRight: 'auto',
-    display: 'block'
-  }
+    display: 'block',
+  },
 }));
 
 const JOIN_MUTATION = gql`
@@ -90,7 +90,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
 
     StorageUtil.local.setItem<User>('user', {
       id: userId!,
-      name: name!
+      name: name!,
     });
 
     (async () => {
@@ -98,8 +98,8 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
         await joinSession({
           variables: {
             name,
-            sessionId
-          }
+            sessionId,
+          },
         })
       )?.data?.sessionState;
 
@@ -125,7 +125,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
         required
         fullWidth
         value={sessionId ?? ''}
-        onChange={ev => setSessionId(ev.target.value)}
+        onChange={(ev) => setSessionId(ev.target.value)}
         autoFocus
       />
       <TextField
@@ -135,7 +135,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
         required
         fullWidth
         value={name ?? ''}
-        onChange={ev => setName(ev.target.value)}
+        onChange={(ev) => setName(ev.target.value)}
       />
       <Button
         {...css(styles.button)}

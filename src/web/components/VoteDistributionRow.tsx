@@ -17,7 +17,7 @@ export type VoteDistributionRowProps = {
 
 const stylesFn = createStylesFn(({ unit, color }) => ({
   container: {
-    overflowX: 'hidden'
+    overflowX: 'hidden',
   },
   storyPointsContainer: {
     borderTop: `${STORYPOINT_BORDER_WIDTH}px solid #fff`,
@@ -27,7 +27,7 @@ const stylesFn = createStylesFn(({ unit, color }) => ({
     borderBottomRightRadius: unit / 2,
     overflow: 'hidden',
     flexShrink: 0,
-    width: 7 * unit
+    width: 7 * unit,
   },
   storyPointsText: {
     textAlign: 'center',
@@ -35,21 +35,21 @@ const stylesFn = createStylesFn(({ unit, color }) => ({
     padding: `0 ${2 * unit}px`,
     width: `calc(100% - ${4 * unit}px)`,
     top: '50%',
-    transform: 'translateY(-50%)'
+    transform: 'translateY(-50%)',
   },
   winningVoteContainer: {
     backgroundColor: color.primary,
-    color: muiTheme.palette.getContrastText(color.primary)
+    color: muiTheme.palette.getContrastText(color.primary),
   },
   avatarContainer: {
-    paddingLeft: unit
-  }
+    paddingLeft: unit,
+  },
 }));
 
 export default function VoteDistributionRow({
   storyPoints,
   voters,
-  isWinningVote = false
+  isWinningVote = false,
 }: VoteDistributionRowProps) {
   const { css, styles } = useStyles({ stylesFn });
 

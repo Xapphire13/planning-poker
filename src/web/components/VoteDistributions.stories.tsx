@@ -6,20 +6,20 @@ import createStory from ':storybook/CreateStory';
 import User from ':web/User';
 
 export default {
-  title: 'Vote Distributions'
+  title: 'Vote Distributions',
 };
 
 function generateVoters(number: number) {
-  return SimpsonsNames.random(number).map<User>(name => ({
+  return SimpsonsNames.random(number).map<User>((name) => ({
     id: uuidv4(),
-    name
+    name,
   }));
 }
 
 function generateVote(start: number = 1, end?: number) {
   return (user: User) => ({
     userId: user.id,
-    vote: (start + Math.floor((end ?? start + 10) * Math.random())).toString()
+    vote: (start + Math.floor((end ?? start + 10) * Math.random())).toString(),
   });
 }
 

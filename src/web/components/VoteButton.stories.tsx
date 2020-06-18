@@ -23,17 +23,12 @@ storiesOf('VoteButton', module)
           <VoteButton
             value={2}
             onPress={() => {}}
-            backgroundColor={color('#9768D1')
-              .darken(0.1)
-              .hex()}
+            backgroundColor={color('#9768D1').darken(0.1).hex()}
           />
           <VoteButton
             value={3}
             onPress={() => {}}
-            backgroundColor={color('#9768D1')
-              .darken(0.1)
-              .darken(0.1)
-              .hex()}
+            backgroundColor={color('#9768D1').darken(0.1).darken(0.1).hex()}
           />
           <VoteButton
             value={5}
@@ -109,18 +104,13 @@ storiesOf('VoteButton', module)
             vertical
             value={2}
             onPress={() => {}}
-            backgroundColor={color('#9768D1')
-              .darken(0.1)
-              .hex()}
+            backgroundColor={color('#9768D1').darken(0.1).hex()}
           />
           <VoteButton
             vertical
             value={3}
             onPress={() => {}}
-            backgroundColor={color('#9768D1')
-              .darken(0.1)
-              .darken(0.1)
-              .hex()}
+            backgroundColor={color('#9768D1').darken(0.1).darken(0.1).hex()}
           />
           <VoteButton
             vertical

@@ -6,7 +6,7 @@ import {
   SessionStateQuery,
   SessionStateQueryVariables,
   OnSessionStateChanged,
-  OnSessionStateChangedVariables
+  OnSessionStateChangedVariables,
 } from ':__generated__/graphql';
 
 const SESSION_STATE_QUERY = gql`
@@ -27,7 +27,7 @@ export default function useSessionState(sessionId: string | undefined) {
   const [sessionState, setSessionState] = useState<SessionState>();
   const [
     triggerQuery,
-    { data: sessionStateData, subscribeToMore }
+    { data: sessionStateData, subscribeToMore },
   ] = useLazyQuery<SessionStateQuery, SessionStateQueryVariables>(
     SESSION_STATE_QUERY,
     { fetchPolicy: 'no-cache' }
@@ -46,11 +46,11 @@ export default function useSessionState(sessionId: string | undefined) {
         variables: { sessionId },
         updateQuery: (prev, { subscriptionData }) => {
           setSessionState(
-            prevState => subscriptionData?.data?.newState ?? prevState
+            (prevState) => subscriptionData?.data?.newState ?? prevState
           );
 
           return prev;
-        }
+        },
       });
     }
   });
