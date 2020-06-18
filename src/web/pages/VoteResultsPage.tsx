@@ -11,13 +11,12 @@ import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import VStackItem from 'pancake-layout/dist/VStackItem';
 import VStack from 'pancake-layout/dist/VStack';
-import classNames from 'classnames';
 import Divider from '@material-ui/core/Divider';
-import { createUseStyles } from 'react-jss';
+import { css } from 'linaria';
 import VoteDistributions from '../components/VoteDistributions';
 import {
   SessionResults,
-  SessionResultsVariables
+  SessionResultsVariables,
 } from ':__generated__/graphql';
 import nonNull from ':web/utils/nonNull';
 import StorageUtil from ':web/utils/storageUtil';
@@ -27,20 +26,20 @@ import Theme from ':web/theme/DefaultTheme';
 
 export type VoteResultsPageProps = RouteComponentProps;
 
-const useStyles = createUseStyles({
-  container: {
-    height: '100%'
-  },
-  contentContainer: {
-    padding: `${Theme.unit}px 0`,
-    height: '100%'
-  },
-  button: {
-    display: 'block !important',
-    marginLeft: 'auto !important',
-    marginRight: 'auto !important'
-  }
-});
+const container = css`
+  height: 100%;
+`;
+
+const contentContainer = css`
+  padding: ${Theme.unit}px 0;
+  height: 100%;
+`;
+
+const button = css`
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+`;
 
 function averageOfVotes(votes: { vote: string }[]) {
   let total: number | undefined;
@@ -79,7 +78,6 @@ const SESSION_RESULTS_QUERY = gql`
 
 export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
   const sessionId = StorageUtil.session.getItem('sessionId');
-  const styles = useStyles();
   const [showUnanimousNotification, setShowUnanimousNotification] = useState(
     false
   );
@@ -91,14 +89,14 @@ export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
     fetchPolicy: 'no-cache',
     skip: !sessionId,
     variables: {
-      sessionId: sessionId ?? ''
-    }
+      sessionId: sessionId ?? '',
+    },
   });
 
   const results = sessionResultsData?.session?.results?.filter(nonNull);
   const users = sessionResultsData?.session?.users?.filter(nonNull);
   const isUnanimous =
-    results?.every(it => it.vote === results[0].vote) ?? false;
+    results?.every((it) => it.vote === results[0].vote) ?? false;
 
   useEffect(() => {
     setShowUnanimousNotification(isUnanimous);
@@ -111,17 +109,14 @@ export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
   return (
     <>
       <AppBarLayout fullWidth>
-        <VStack
-          justify="space-between"
-          className={classNames(styles.container)}
-        >
+        <VStack justify="space-between" className={container}>
           <VStackItem grow>
             {results && users && (
               <Grid
                 container
                 justify="space-between"
                 direction="column"
-                className={classNames(styles.contentContainer)}
+                className={contentContainer}
               >
                 <Grid item>
                   <Container>
@@ -138,7 +133,7 @@ export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
                     variant="contained"
                     color="primary"
                     onClick={handleNewVote}
-                    className={classNames(styles.button)}
+                    className={button}
                   >
                     New vote
                   </Button>
@@ -166,7 +161,7 @@ export default function VoteResultsPage({ navigate }: VoteResultsPageProps) {
             message="Unanimous vote! 🎉"
             anchorOrigin={{
               horizontal: 'center',
-              vertical: 'bottom'
+              vertical: 'bottom',
             }}
           />
         </>

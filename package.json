@@ -110,7 +110,6 @@
     "react": "^16.13.1",
     "react-confetti": "^5.1.0",
     "react-dom": "^16.13.1",
-    "react-jss": "^10.3.0",
     "react-use": "^15.2.5",
     "react-with-styles": "^4.1.0",
     "react-with-styles-interface-aphrodite": "^6.0.1",

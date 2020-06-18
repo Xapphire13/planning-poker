@@ -4,10 +4,10 @@ import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import { colors, Color } from '@material-ui/core';
 import hashSum from 'hash-sum';
-import { createUseStyles } from 'react-jss';
-import classNames from 'classnames';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import useMeasure from 'react-use/lib/useMeasure';
+import { styled } from 'linaria/react';
+import { css } from 'linaria';
 import Theme, { muiTheme } from ':web/theme/DefaultTheme';
 import User from ':web/User';
 
@@ -16,7 +16,7 @@ const TOTAL_AVATAR_BORDER_SIZE = 4;
 const CONDENSED_AVATAR_WIDTH = AVATAR_SIZE - 4;
 
 function getColorsForName(name: string) {
-  const colorKeys = Object.keys(colors).filter(key => key !== 'common');
+  const colorKeys = Object.keys(colors).filter((key) => key !== 'common');
   const index = Number.parseInt(`0x${hashSum(name)}`, 16) % colorKeys.length;
   const key = colorKeys[index];
   const background = ((colors as any)[key] as Color)[500];
@@ -30,27 +30,28 @@ function getInitials(name: string) {
 
   return parts
     .slice(0, 2)
-    .filter(part => part.length > 0)
-    .map(part => [...part][0].toUpperCase())
+    .filter((part) => part.length > 0)
+    .map((part) => [...part][0].toUpperCase())
     .join('');
 }
 
-const useStyles = createUseStyles({
-  container: {
-    overflowX: 'hidden'
-  },
-  avatarGroup: {
-    paddingLeft: Theme.unit
-  },
-  avatar: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE
-  },
-  overflowAvatar: {
-    backgroundColor: colors.grey[500],
-    color: muiTheme.palette.getContrastText(colors.grey[500])
-  }
-});
+const Container = styled.div`
+  overflow-x: hidden;
+`;
+
+const avatarGroup = css`
+  padding-left: ${Theme.unit}px;
+`;
+
+const avatar = css`
+  width: ${AVATAR_SIZE}px;
+  height: ${AVATAR_SIZE}px;
+`;
+
+const overflowAvatar = css`
+  background-color: ${colors.grey[500]};
+  color: ${muiTheme.palette.getContrastText(colors.grey[500])};
+`;
 
 function calculateMaxNumberOfAvatars(availableWidth: number) {
   if (availableWidth < AVATAR_SIZE + TOTAL_AVATAR_BORDER_SIZE) return 0;
@@ -71,7 +72,6 @@ type UserAvatarGroupProps = {
 };
 
 export default function UserAvatarGroup({ users }: UserAvatarGroupProps) {
-  const styles = useStyles();
   const [containerRef, { width: availableWidth }] = useMeasure();
 
   const maxAvatarsPerRow = calculateMaxNumberOfAvatars(availableWidth);
@@ -83,8 +83,8 @@ export default function UserAvatarGroup({ users }: UserAvatarGroupProps) {
   const hiddenUsers = users.slice(usersToDisplay.length);
 
   return (
-    <div ref={containerRef} className={classNames(styles.container)}>
-      <AvatarGroup className={classNames(styles.avatarGroup)}>
+    <Container ref={(ref) => ref && containerRef(ref)}>
+      <AvatarGroup className={avatarGroup}>
         {usersToDisplay.map(({ id, name, customClassName }) => {
           const { background, foreground } = getColorsForName(name);
 
@@ -92,10 +92,10 @@ export default function UserAvatarGroup({ users }: UserAvatarGroupProps) {
             <Tooltip
               title={<Typography variant="caption">{name}</Typography>}
               key={id}
-              className={classNames(customClassName)}
+              className={customClassName}
               style={{ backgroundColor: background, color: foreground }}
             >
-              <Avatar className={classNames(styles.avatar)}>
+              <Avatar className={avatar}>
                 <Typography>{getInitials(name)}</Typography>
               </Avatar>
             </Tooltip>
@@ -103,7 +103,7 @@ export default function UserAvatarGroup({ users }: UserAvatarGroupProps) {
         })}
         {hiddenUsers.length > 0 && (
           <Tooltip
-            title={hiddenUsers.map(user => (
+            title={hiddenUsers.map((user) => (
               <div>
                 <Typography variant="caption" key={user.id}>
                   {user.name}
@@ -111,14 +111,14 @@ export default function UserAvatarGroup({ users }: UserAvatarGroupProps) {
               </div>
             ))}
             key="hidden-users"
-            className={classNames(styles.overflowAvatar)}
+            className={overflowAvatar}
           >
-            <Avatar className={classNames(styles.avatar)}>
+            <Avatar className={avatar}>
               <Typography>+{hiddenUsers.length}</Typography>
             </Avatar>
           </Tooltip>
         )}
       </AvatarGroup>
-    </div>
+    </Container>
   );
 }

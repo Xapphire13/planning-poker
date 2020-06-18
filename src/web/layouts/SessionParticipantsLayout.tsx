@@ -1,9 +1,8 @@
 import React from 'react';
 import VStack from 'pancake-layout/dist/VStack';
 import Divider from '@material-ui/core/Divider';
-import { createUseStyles } from 'react-jss';
-import classNames from 'classnames';
 import VStackItem from 'pancake-layout/dist/VStackItem';
+import { css } from 'linaria';
 import SessionParticipants from ':web/components/SessionParticipants';
 
 export type SessionParticipantsLayoutProps = {
@@ -11,20 +10,16 @@ export type SessionParticipantsLayoutProps = {
   sessionId: string | undefined;
 };
 
-const useStyles = createUseStyles({
-  container: {
-    height: '100%'
-  }
-});
+const container = css`
+  height: 100%;
+`;
 
 export default function SessionParticipantsLayout({
   children,
-  sessionId
+  sessionId,
 }: SessionParticipantsLayoutProps) {
-  const styles = useStyles();
-
   return (
-    <VStack justify="space-between" className={classNames(styles.container)}>
+    <VStack justify="space-between" className={container}>
       <VStackItem grow>{children}</VStackItem>
       {sessionId && (
         <>

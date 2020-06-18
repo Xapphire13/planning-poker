@@ -8,8 +8,8 @@ import moment from 'moment';
 import { useSubscription, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import VStack from 'pancake-layout/dist/VStack';
-import { createUseStyles } from 'react-jss';
-import classNames from 'classnames';
+import { css } from 'linaria';
+import { styled } from 'linaria/react';
 import ProgressCircle from '../components/ProgressCircle';
 import {
   VoteCastSubscription,
@@ -17,7 +17,7 @@ import {
   StartVoting,
   StartVotingVariables,
   EndRound,
-  EndRoundVariables
+  EndRoundVariables,
 } from ':__generated__/graphql';
 import StorageUtil from ':web/utils/storageUtil';
 import Theme from ':web/theme/DefaultTheme';
@@ -27,29 +27,23 @@ import SessionParticipantsLayout from ':web/layouts/SessionParticipantsLayout';
 
 export type WaitingForVotesPageProps = RouteComponentProps;
 
-const useStyles = createUseStyles({
-  container: {
-    height: '100%',
-    textAlign: 'center'
-  },
-  circleContainer: {
-    margin: `${2 * Theme.unit}px 0`
-  },
-  button: {
-    marginTop: 2 * Theme.unit
-  }
-});
+const container = css`
+  height: 100%;
+  text-align: center;
+`;
+
+const button = css`
+  margin-top: ${2 * Theme.unit}px;
+`;
+
+const CircleContainer = styled.div`
+  margin: ${2 * Theme.unit}px 0;
+`;
 
 function formatTimeRemaining(seconds: number) {
   const duration = moment.duration(seconds, 's');
-  const minutesPart = duration
-    .minutes()
-    .toString()
-    .padStart(2, '0');
-  const secondsPart = duration
-    .seconds()
-    .toString()
-    .padStart(2, '0');
+  const minutesPart = duration.minutes().toString().padStart(2, '0');
+  const secondsPart = duration.seconds().toString().padStart(2, '0');
 
   return `${minutesPart}:${secondsPart}`;
 }
@@ -79,10 +73,9 @@ const END_ROUND_MUTATION = gql`
 `;
 
 export default function WaitingForVotesPage({
-  navigate
+  navigate,
 }: WaitingForVotesPageProps) {
   const sessionId = StorageUtil.session.getItem<string>('sessionId');
-  const styles = useStyles();
   const [timeRemaining, setTimeRemaining] = useState(20);
   const [countdownStarted, setCountdownStarted] = useState(false);
   const [startVoting] = useMutation<StartVoting, StartVotingVariables>(
@@ -98,12 +91,12 @@ export default function WaitingForVotesPage({
   >(VOTE_CAST_SUBSCRIPTION, {
     skip: !sessionId,
     variables: {
-      sessionId: sessionId ?? ''
-    }
+      sessionId: sessionId ?? '',
+    },
   });
   const countdown = useCallback(() => {
     // TODO, stop timeout after unmount
-    setTimeRemaining(prev => {
+    setTimeRemaining((prev) => {
       if (prev > 0) {
         window.setTimeout(countdown, 1000);
 
@@ -174,20 +167,20 @@ export default function WaitingForVotesPage({
     handleEndRound,
     numberOfPeopleInSession,
     numberOfPeopleReady,
-    timeRemaining
+    timeRemaining,
   ]);
 
   return (
     <FullScreenLayout>
       <SessionParticipantsLayout sessionId={sessionId}>
-        <VStack className={classNames(styles.container)} justify="center">
+        <VStack className={container} justify="center">
           <Typography variant="h6">Waiting for votes</Typography>
-          <div className={classNames(styles.circleContainer)}>
+          <CircleContainer>
             <ProgressCircle
               value={numberOfPeopleReady}
               max={numberOfPeopleInSession}
             />
-          </div>
+          </CircleContainer>
           <Grid
             container
             alignItems="center"
@@ -206,7 +199,7 @@ export default function WaitingForVotesPage({
             <Button
               variant="outlined"
               onClick={() => handleEndRound('/host')}
-              className={classNames(styles.button)}
+              className={button}
             >
               Cancel
             </Button>

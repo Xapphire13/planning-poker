@@ -15,39 +15,42 @@ import ListItemText from '@material-ui/core/ListItemText';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
-import { createUseStyles } from 'react-jss';
-import classNames from 'classnames';
+import { css, cx } from 'linaria';
+import { styled } from 'linaria/react';
 import Theme from '../theme/DefaultTheme';
 
 const DRAWER_WIDTH = 240;
 
-const useStyles = createUseStyles({
-  contentContainer: {
-    marginTop: Theme.unit,
-    marginBottom: Theme.unit,
-    height: `calc(100% - ${2 * Theme.unit}px)`,
-    position: 'relative'
-  },
-  closeMenuButton: {
-    position: 'absolute !important',
-    right: 0
-  },
-  drawer: {
-    width: DRAWER_WIDTH,
-    flexShrink: 0
-  },
-  slideContainer: {
-    position: 'relative',
-    height: '100%',
-    overflowX: 'hidden'
-  },
-  slideContainerMenuOpen: {
-    left: DRAWER_WIDTH
-  },
-  fullHeight: {
-    height: '100%'
-  }
-});
+const contentContainer = css`
+  margin-top: ${Theme.unit}px;
+  margin-bottom: ${Theme.unit}px;
+  height: calc(100% - ${2 * Theme.unit}px);
+  position: relative;
+`;
+
+const closeMenuButton = css`
+  position: absolute !important;
+  right: 0;
+`;
+
+const drawer = css`
+  width: ${DRAWER_WIDTH}px;
+  flex-shrink: 0;
+`;
+
+const SlideContainer = styled.div`
+  position: relative;
+  height: 100%;
+  overflow-x: hidden;
+`;
+
+const slideContainerMenuOpen = css`
+  left: ${DRAWER_WIDTH}px;
+`;
+
+const fullHeight = css`
+  height: 100%;
+`;
 
 export type AppBarLayoutProps = {
   children: React.ReactNode | React.ReactNodeArray;
@@ -57,19 +60,13 @@ export type AppBarLayoutProps = {
 
 export default function AppBarLayout({
   children,
-  fullWidth
+  fullWidth,
 }: AppBarLayoutProps) {
-  const styles = useStyles();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className={classNames(styles.slideContainer)}>
-      <VStack
-        className={classNames(
-          styles.fullHeight,
-          drawerOpen && styles.slideContainerMenuOpen
-        )}
-      >
+    <SlideContainer>
+      <VStack className={cx(fullHeight, drawerOpen && slideContainerMenuOpen)}>
         <AppBar position="static">
           <Toolbar variant="dense">
             {!drawerOpen && (
@@ -84,9 +81,9 @@ export default function AppBarLayout({
           <Container
             disableGutters={fullWidth}
             maxWidth={!fullWidth && 'xs'}
-            className={classNames(styles.contentContainer)}
+            className={contentContainer}
           >
-            {children}
+            <>{children}</>
           </Container>
         </VStackItem>
       </VStack>
@@ -95,11 +92,11 @@ export default function AppBarLayout({
         anchor="left"
         variant="persistent"
         open={drawerOpen}
-        PaperProps={{ className: classNames(styles.drawer) }}
+        PaperProps={{ className: drawer }}
       >
         <Toolbar variant="dense">
           <IconButton
-            className={classNames(styles.closeMenuButton)}
+            className={closeMenuButton}
             onClick={() => setDrawerOpen(false)}
           >
             <ChevronLeftIcon />
@@ -123,6 +120,6 @@ export default function AppBarLayout({
           </ListItem>
         </List>
       </Drawer>
-    </div>
+    </SlideContainer>
   );
 }

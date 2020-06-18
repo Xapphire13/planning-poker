@@ -6,7 +6,7 @@ import {
   ApolloServer,
   PubSub,
   IResolvers,
-  AuthenticationError
+  AuthenticationError,
 } from 'apollo-server-express';
 import path from 'path';
 import ReactDomServer from 'react-dom/server';
@@ -14,7 +14,6 @@ import { StyleSheetServer } from 'aphrodite';
 import { ServerLocation } from '@reach/router';
 import { ServerStyleSheets } from '@material-ui/core/styles';
 import { importSchema } from 'graphql-import';
-import { JssProvider, SheetsRegistry } from 'react-jss';
 import webTemplate from './webTemplate';
 import Session from './Session';
 import ConnectionStatus from './models/ConnectionStatus';
@@ -28,14 +27,14 @@ enum SubscriptionTrigger {
   PersonJoined = 'PERSON_JOINED',
   PersonDisconnected = 'PERSON_DISCONNECTED',
   VoteCast = 'VOTE_CAST',
-  ConnectionStatusChanged = 'CONNECTION_STATUS_CHANGED'
+  ConnectionStatusChanged = 'CONNECTION_STATUS_CHANGED',
 }
 
 function getSessionTrigger(sessionId: string, trigger: SubscriptionTrigger) {
   return `${trigger}-${sessionId}`;
 }
 
-process.on('unhandledRejection', err => {
+process.on('unhandledRejection', (err) => {
   console.error(err);
 });
 
@@ -45,7 +44,7 @@ process.on('unhandledRejection', err => {
   const pubsub = new PubSub();
 
   function findSessionForUser(userId: string) {
-    return [...sessions.values()].find(it => it.hasUser(userId));
+    return [...sessions.values()].find((it) => it.hasUser(userId));
   }
 
   const resolvers: IResolvers<any, Context> = {
@@ -63,9 +62,9 @@ process.on('unhandledRejection', err => {
           results: session
             .results()
             .map(([userId, vote]) => ({ userId, vote })),
-          state: session.getStateForUser(userId)
+          state: session.getStateForUser(userId),
         };
-      }
+      },
     },
     Mutation: {
       createSession: () => {
@@ -85,7 +84,7 @@ process.on('unhandledRejection', err => {
           session.join({
             id: userId,
             name,
-            connectionStatus: ConnectionStatus.Connected
+            connectionStatus: ConnectionStatus.Connected,
           })
         ) {
           pubsub.publish(
@@ -102,8 +101,8 @@ process.on('unhandledRejection', err => {
               connectionStatusChanged: {
                 id: userId,
                 name,
-                connectionStatus: ConnectionStatus.Connected
-              }
+                connectionStatus: ConnectionStatus.Connected,
+              },
             }
           );
         }
@@ -128,7 +127,7 @@ process.on('unhandledRejection', err => {
         }
 
         return {
-          success: true
+          success: true,
         };
       },
       vote: (_, { vote, sessionId }, { userId }) => {
@@ -143,14 +142,14 @@ process.on('unhandledRejection', err => {
             getSessionTrigger(sessionId, SubscriptionTrigger.VoteCast),
             {
               voteCast: [...session.results()].map(([id]) =>
-                session.users.find(user => user.id === id)
-              )
+                session.users.find((user) => user.id === id)
+              ),
             }
           );
         }
 
         return {
-          success: true
+          success: true,
         };
       },
       startVoting: (_, { sessionId }) => {
@@ -165,12 +164,12 @@ process.on('unhandledRejection', err => {
         pubsub.publish(
           getSessionTrigger(sessionId, SubscriptionTrigger.SessionStateChanged),
           {
-            sessionStateChanged: session.state
+            sessionStateChanged: session.state,
           }
         );
 
         return {
-          success: true
+          success: true,
         };
       },
       endRound: (_, { sessionId }) => {
@@ -185,14 +184,14 @@ process.on('unhandledRejection', err => {
         pubsub.publish(
           getSessionTrigger(sessionId, SubscriptionTrigger.SessionStateChanged),
           {
-            sessionStateChanged: session.state
+            sessionStateChanged: session.state,
           }
         );
 
         return {
-          success: true
+          success: true,
         };
-      }
+      },
     },
     Subscription: {
       sessionStateChanged: {
@@ -207,7 +206,7 @@ process.on('unhandledRejection', err => {
               SubscriptionTrigger.SessionStateChanged
             )
           );
-        }
+        },
       },
       personJoined: {
         subscribe: (_, { sessionId }) => {
@@ -218,7 +217,7 @@ process.on('unhandledRejection', err => {
           return pubsub.asyncIterator(
             getSessionTrigger(sessionId, SubscriptionTrigger.PersonJoined)
           );
-        }
+        },
       },
       personDisconnected: {
         subscribe: (_, { sessionId }) => {
@@ -229,7 +228,7 @@ process.on('unhandledRejection', err => {
           return pubsub.asyncIterator(
             getSessionTrigger(sessionId, SubscriptionTrigger.PersonDisconnected)
           );
-        }
+        },
       },
       voteCast: {
         subscribe: (_, { sessionId }) => {
@@ -240,7 +239,7 @@ process.on('unhandledRejection', err => {
           return pubsub.asyncIterator(
             getSessionTrigger(sessionId, SubscriptionTrigger.VoteCast)
           );
-        }
+        },
       },
       connectionStatusChanged: {
         subscribe: (_, { sessionId }) => {
@@ -254,9 +253,9 @@ process.on('unhandledRejection', err => {
               SubscriptionTrigger.ConnectionStatusChanged
             )
           );
-        }
-      }
-    }
+        },
+      },
+    },
   };
 
   const expressServer = express();
@@ -268,7 +267,7 @@ process.on('unhandledRejection', err => {
       if (!req) {
         // Happens during subscription connection
         return {
-          userId: ''
+          userId: '',
         };
       }
 
@@ -281,7 +280,7 @@ process.on('unhandledRejection', err => {
       }
 
       return {
-        userId
+        userId,
       };
     },
     subscriptions: {
@@ -305,13 +304,13 @@ process.on('unhandledRejection', err => {
               SubscriptionTrigger.ConnectionStatusChanged
             ),
             {
-              connectionStatusChanged: user
+              connectionStatusChanged: user,
             }
           );
         }
 
         return Promise.resolve({
-          userId
+          userId,
         });
       },
       onDisconnect: (_, ctx) => {
@@ -332,14 +331,14 @@ process.on('unhandledRejection', err => {
                   SubscriptionTrigger.ConnectionStatusChanged
                 ),
                 {
-                  connectionStatusChanged: user
+                  connectionStatusChanged: user,
                 }
               );
             }
           })();
         }
-      }
-    }
+      },
+    },
   });
   const httpServer = createServer(expressServer);
 
@@ -355,18 +354,15 @@ process.on('unhandledRejection', err => {
     }
 
     const muiSheets = new ServerStyleSheets();
-    const jssSheets = new SheetsRegistry();
 
     const { Bootstrap } = (await import(path.join(__dirname, 'ssr'))).default;
 
     const { html, css } = StyleSheetServer.renderStatic(() =>
       ReactDomServer.renderToString(
         muiSheets.collect(
-          <JssProvider registry={jssSheets}>
-            <ServerLocation url={req.originalUrl}>
-              <Bootstrap />
-            </ServerLocation>
-          </JssProvider>
+          <ServerLocation url={req.originalUrl}>
+            <Bootstrap />
+          </ServerLocation>
         )
       )
     );
@@ -374,7 +370,7 @@ process.on('unhandledRejection', err => {
     res.send(
       webTemplate(
         html,
-        [muiSheets.toString(), jssSheets.toString()].join('\n'),
+        muiSheets.toString(),
         css.content,
         css.renderedClassNames,
         '/web.js'
@@ -382,6 +378,6 @@ process.on('unhandledRejection', err => {
     );
   });
 
-  await new Promise(res => httpServer.listen(expressServer.get('port'), res));
+  await new Promise((res) => httpServer.listen(expressServer.get('port'), res));
   console.log(`Ready at http://localhost:${expressServer.get('port')}`);
 })();
