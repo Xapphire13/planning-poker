@@ -84,7 +84,7 @@ export default function UserAvatarGroup({ users }: UserAvatarGroupProps) {
 
   return (
     <Container ref={(ref) => ref && containerRef(ref)}>
-      <AvatarGroup className={avatarGroup}>
+      <AvatarGroup className={avatarGroup} max={users.length}>
         {usersToDisplay.map(({ id, name, customClassName }) => {
           const { background, foreground } = getColorsForName(name);
 
