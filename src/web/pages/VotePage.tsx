@@ -94,7 +94,7 @@ function calculateCardWidth(
   return idealWidth;
 }
 
-export default function VotePage({ navigate }: VotePageProps) {
+export default function VotePage({ navigate, location }: VotePageProps) {
   const [castVote] = useMutation<CastVote, CastVoteVariables>(VOTE_MUTATION);
   const { css, styles } = useStyles({ stylesFn });
   const [stackRef, { width, height }] = useMeasure();
@@ -105,12 +105,13 @@ export default function VotePage({ navigate }: VotePageProps) {
     width > 0
       ? calculateCardWidth(width, height, showVerticalCards)
       : undefined;
+  const changingVote = !!location?.state?.changingVote;
 
   useEffect(() => {
-    if (sessionState === SessionState.WAITING) {
+    if (!changingVote && sessionState === SessionState.WAITING) {
       navigate?.('/waiting');
     }
-  }, [navigate, sessionState]);
+  }, [changingVote, navigate, sessionState]);
 
   const handleVoteButtonPressed = (vote: Vote) => {
     if (!sessionId) {
@@ -126,6 +127,7 @@ export default function VotePage({ navigate }: VotePageProps) {
       });
 
       navigate?.('/waiting', {
+        state: { fromVotePage: true },
         replace: true,
       });
     })();

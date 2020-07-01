@@ -66,19 +66,12 @@ export default class Session {
     return true;
   }
 
-  /** returns `true` if the user hasn't already voted */
   registerVote(userId: string, vote: string) {
     if (!this.userMap.has(userId)) {
       throw new Error('Must join session to vote');
     }
 
-    if (this.voteMap.has(userId)) {
-      return false;
-    }
-
     this.voteMap.set(userId, vote);
-
-    return true;
   }
 
   newRound() {

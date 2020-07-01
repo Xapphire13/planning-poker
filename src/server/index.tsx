@@ -130,23 +130,23 @@ process.on('unhandledRejection', (err) => {
           success: true,
         };
       },
-      vote: (_, { vote, sessionId }, { userId }) => {
+      vote: (_, { sessionId, vote }, { userId }) => {
         const session = sessions.get(sessionId);
 
         if (!session) {
           throw new Error('No such session');
         }
 
-        if (session.registerVote(userId, vote)) {
-          pubsub.publish(
-            getSessionTrigger(sessionId, SubscriptionTrigger.VoteCast),
-            {
-              voteCast: [...session.results()].map(([id]) =>
-                session.users.find((user) => user.id === id)
-              ),
-            }
-          );
-        }
+        session.registerVote(userId, vote);
+
+        pubsub.publish(
+          getSessionTrigger(sessionId, SubscriptionTrigger.VoteCast),
+          {
+            voteCast: [...session.results()].map(([id]) =>
+              session.users.find((user) => user.id === id)
+            ),
+          }
+        );
 
         return {
           success: true,

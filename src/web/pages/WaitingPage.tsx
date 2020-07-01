@@ -18,7 +18,7 @@ import useSessionState from ':web/hooks/useSessionState';
 
 export type WaitingPageProps = RouteComponentProps;
 
-const stylesFn = createStylesFn(() => ({
+const stylesFn = createStylesFn(({ unit }) => ({
   container: {
     textAlign: 'center',
     position: 'relative',
@@ -28,7 +28,10 @@ const stylesFn = createStylesFn(() => ({
   icon: {
     fontSize: 100,
   },
-  cancelButton: {
+  changeVoteButton: {
+    marginBottom: unit,
+  },
+  blockButton: {
     display: 'block',
     marginLeft: 'auto',
     marginRight: 'auto',
@@ -43,19 +46,24 @@ const LEAVE_SESSION_MUTATION = gql`
   }
 `;
 
-export default function WaitingPage({ navigate }: WaitingPageProps) {
+export default function WaitingPage({ navigate, location }: WaitingPageProps) {
   const { css, styles } = useStyles({ stylesFn });
   const sessionId = StorageUtil.local.getItem<string>('sessionId');
   const [leaveSession] = useMutation<LeaveSession, LeaveSessionVariables>(
     LEAVE_SESSION_MUTATION
   );
   const sessionState = useSessionState(sessionId);
+  const fromVotePage = !!location?.state?.fromVotePage;
 
   useEffect(() => {
     if (sessionState === SessionState.VOTING) {
       navigate?.('/vote');
     }
   }, [navigate, sessionState]);
+
+  const handleChangeVotePressed = () => {
+    navigate?.('/vote', { state: { changingVote: true } });
+  };
 
   const handleLeavePressed = () => {
     if (sessionId) {
@@ -71,9 +79,18 @@ export default function WaitingPage({ navigate }: WaitingPageProps) {
     <Container maxWidth="sm" {...css(styles.container)}>
       <Typography>Waiting for vote to start</Typography>
       <HourglassEmpty {...css(styles.icon)} />
+      {fromVotePage && (
+        <Button
+          {...css(styles.blockButton, styles.changeVoteButton)}
+          variant="outlined"
+          onClick={handleChangeVotePressed}
+        >
+          Change Vote
+        </Button>
+      )}
       <Button
         variant="outlined"
-        {...css(styles.cancelButton)}
+        {...css(styles.blockButton)}
         onClick={handleLeavePressed}
       >
         Leave session
