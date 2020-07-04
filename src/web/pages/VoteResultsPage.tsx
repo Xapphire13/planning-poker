@@ -58,7 +58,12 @@ function averageOfVotes(votes: { vote: string }[]) {
     total += numericVote;
   });
 
-  return total != null ? Math.round(total / numericVotes) : undefined;
+  if (total == null) return undefined;
+
+  const average = total / numericVotes;
+  return VoteValues.find(
+    (voteValue) => voteValue === 'Infinity' || voteValue >= average
+  );
 }
 
 const SESSION_RESULTS_QUERY = gql`
