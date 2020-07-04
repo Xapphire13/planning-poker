@@ -23,6 +23,7 @@ import StorageUtil from ':web/utils/storageUtil';
 import AppBarLayout from ':web/layouts/AppBarLayout';
 import SessionParticipants from ':web/components/SessionParticipants';
 import Theme from ':web/theme/DefaultTheme';
+import { VoteValues } from ':web/Vote';
 
 export type VoteResultsPageProps = RouteComponentProps;
 
