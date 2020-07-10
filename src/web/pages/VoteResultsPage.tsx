@@ -23,6 +23,7 @@ import StorageUtil from ':web/utils/storageUtil';
 import AppBarLayout from ':web/layouts/AppBarLayout';
 import SessionParticipants from ':web/components/SessionParticipants';
 import Theme from ':web/theme/DefaultTheme';
+import { VoteValues } from ':web/Vote';
 
 export type VoteResultsPageProps = RouteComponentProps;
 
@@ -58,7 +59,12 @@ function averageOfVotes(votes: { vote: string }[]) {
     total += numericVote;
   });
 
-  return total != null ? Math.round(total / numericVotes) : undefined;
+  if (total == null) return undefined;
+
+  const average = total / numericVotes;
+  return VoteValues.find(
+    (voteValue) => voteValue === 'Infinity' || voteValue >= average
+  );
 }
 
 const SESSION_RESULTS_QUERY = gql`
