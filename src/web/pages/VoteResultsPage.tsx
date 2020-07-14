@@ -61,7 +61,7 @@ function averageOfVotes(votes: { vote: string }[]) {
 
   if (total == null) return undefined;
 
-  const average = total / numericVotes;
+  const average = Math.round(total / numericVotes);
   return VoteValues.find(
     (voteValue) => voteValue === 'Infinity' || voteValue >= average
   );
