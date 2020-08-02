@@ -45,7 +45,7 @@ const LEAVE_SESSION_MUTATION = gql`
 
 export default function WaitingPage({ navigate }: WaitingPageProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const sessionId = StorageUtil.local.getItem<string>('sessionId');
+  const sessionId = StorageUtil.session.getItem<string>('sessionId');
   const [leaveSession] = useMutation<LeaveSession, LeaveSessionVariables>(
     LEAVE_SESSION_MUTATION
   );

@@ -67,11 +67,11 @@ process.on('unhandledRejection', (err) => {
       },
     },
     Mutation: {
-      createSession: () => {
-        const session = new Session();
+      createSession: (_, { timeLimit, sequence, colorHex }) => {
+        const session = new Session({ timeLimit, sequence, colorHex });
         sessions.set(session.sessionId, session);
 
-        return session.sessionId;
+        return session;
       },
       join: (_: any, { name, sessionId }, { userId }) => {
         const session = sessions.get(sessionId);
@@ -107,7 +107,7 @@ process.on('unhandledRejection', (err) => {
           );
         }
 
-        return session.state;
+        return session;
       },
       leave: (_, { sessionId }, { userId }) => {
         const session = sessions.get(sessionId);

@@ -21,4 +21,16 @@ export const muiTheme = createMuiTheme({
   },
 });
 
+export const createThemeWithPrimaryColor = (color: string) => {
+  return createMuiTheme({
+    palette: {
+      type: 'dark',
+      primary: {
+        main: color,
+      },
+      contrastThreshold: 0,
+    },
+  });
+};
+
 export default theme;

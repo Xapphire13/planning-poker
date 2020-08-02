@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import WithStylesContext from 'react-with-styles/lib/WithStylesContext';
 // @ts-ignore
@@ -20,6 +20,7 @@ import User from ':web/User';
 import isSsr from ':web/utils/isSsr';
 import App from './App';
 import DefaultTheme, { muiTheme } from ':web/theme/DefaultTheme';
+import SessionThemeProvider from ':web/theme/SessionThemeProvider';
 
 let user: User | undefined;
 
@@ -115,7 +116,7 @@ export default function Bootstrap({ port }: BootstrapProps) {
 
   return (
     <ApolloProvider client={client}>
-      <ThemeProvider theme={muiTheme}>
+      <SessionThemeProvider>
         <WithStylesContext.Provider
           value={{
             stylesInterface: AphroditeInterface,
@@ -124,7 +125,7 @@ export default function Bootstrap({ port }: BootstrapProps) {
         >
           <App />
         </WithStylesContext.Provider>
-      </ThemeProvider>
+      </SessionThemeProvider>
     </ApolloProvider>
   );
 }

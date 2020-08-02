@@ -1,6 +1,7 @@
 import shortid from 'shortid';
 import User from './models/User';
 import SessionState from './models/SessionState';
+import SessionSettings from './models/SessionSettings';
 
 export default class Session {
   readonly sessionId: string;
@@ -13,8 +14,11 @@ export default class Session {
 
   private _state: SessionState = SessionState.Waiting;
 
-  constructor() {
+  private _settings: SessionSettings;
+
+  constructor(settings: SessionSettings) {
     this.sessionId = shortid();
+    this._settings = settings;
   }
 
   get voteCount() {
@@ -27,6 +31,10 @@ export default class Session {
 
   get state() {
     return this._state;
+  }
+
+  get settings() {
+    return this._settings;
   }
 
   getStateForUser(userId: string) {
@@ -88,6 +96,10 @@ export default class Session {
 
   endRound() {
     this._state = SessionState.Waiting;
+  }
+
+  id() {
+    return this.sessionId;
   }
 
   /**

@@ -24,6 +24,7 @@ import Theme from ':web/theme/DefaultTheme';
 import FullScreenLayout from ':web/layouts/FullScreenLayout';
 import useConnectedUsers from ':web/hooks/useConnectedUsers';
 import SessionParticipantsLayout from ':web/layouts/SessionParticipantsLayout';
+import { DEFAULT_TIME_LIMIT } from ':web/constants';
 
 export type WaitingForVotesPageProps = RouteComponentProps;
 
@@ -76,7 +77,9 @@ export default function WaitingForVotesPage({
   navigate,
 }: WaitingForVotesPageProps) {
   const sessionId = StorageUtil.session.getItem<string>('sessionId');
-  const [timeRemaining, setTimeRemaining] = useState(20);
+  const [timeRemaining, setTimeRemaining] = useState<number>(
+    StorageUtil.session.getItem('sessionTimeLimit') ?? DEFAULT_TIME_LIMIT
+  );
   const [countdownStarted, setCountdownStarted] = useState(false);
   const [startVoting] = useMutation<StartVoting, StartVotingVariables>(
     START_VOTING_MUTATION

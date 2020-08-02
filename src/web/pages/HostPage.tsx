@@ -6,11 +6,12 @@ import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import ConnectionStepsCard from ':web/components/ConnectionStepsCard';
 import createStylesFn from '../theme/createStylesFn';
-import { CreateSession } from ':__generated__/graphql';
+import { CreateSession, CreateSessionVariables } from ':__generated__/graphql';
 import StorageUtil from ':web/utils/storageUtil';
 import useConnectedUsers from ':web/hooks/useConnectedUsers';
 import AppBarLayout from '../layouts/AppBarLayout';
 import SessionParticipantsLayout from ':web/layouts/SessionParticipantsLayout';
+import { FIBONACCI, DEFAULT_TIME_LIMIT, DEFAULT_COLOR } from ':web/constants';
 
 export type HostPageProps = RouteComponentProps;
 
@@ -27,30 +28,56 @@ const stylesFn = createStylesFn(({ unit }) => ({
 }));
 
 const CREATE_SESSION_MUTATION = gql`
-  mutation CreateSession {
-    createSession
+  mutation CreateSession(
+    $timeLimit: Int!
+    $sequence: String!
+    $colorHex: String!
+  ) {
+    createSession(
+      timeLimit: $timeLimit
+      sequence: $sequence
+      colorHex: $colorHex
+    ) {
+      id
+    }
   }
 `;
 
 export default function WelcomePage({ navigate }: HostPageProps) {
   const { css, styles } = useStyles({ stylesFn });
+  const timeLimit: number =
+    StorageUtil.session.getItem('sessionTimeLimit') ?? DEFAULT_TIME_LIMIT;
+  const sequence = StorageUtil.session.getItem('sessionSequence') ?? FIBONACCI;
+  const colorHex = StorageUtil.session.getItem('sessionColor') ?? DEFAULT_COLOR;
   const [sessionId, setSessionId] = useState<string | undefined>(
     StorageUtil.session.getItem('sessionId')
   );
-  const [createSession] = useMutation<CreateSession>(CREATE_SESSION_MUTATION);
+  const [createSession] = useMutation<CreateSession, CreateSessionVariables>(
+    CREATE_SESSION_MUTATION
+  );
   const connectedUsers = useConnectedUsers(sessionId);
 
   useEffect(() => {
     if (!sessionId) {
       (async () => {
-        const result = await createSession();
+        const result = await createSession({
+          variables: {
+            timeLimit,
+            sequence,
+            colorHex,
+          },
+        });
 
-        if (result.data?.createSession) {
-          setSessionId(result.data.createSession);
-          StorageUtil.session.setItem('sessionId', result.data.createSession);
+        if (result.data?.createSession?.id) {
+          setSessionId(result.data.createSession.id);
+          StorageUtil.session.setItem(
+            'sessionId',
+            result.data.createSession.id
+          );
         }
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [createSession, sessionId]);
 
   const handleStartVoteClicked = () => {
