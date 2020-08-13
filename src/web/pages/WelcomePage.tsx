@@ -15,6 +15,7 @@ import {
   SessionState,
 } from ':__generated__/graphql';
 import AppBarLayout from ':web/layouts/AppBarLayout';
+import CreateSessionForm from ':web/components/CreateSessionForm';
 
 export type WelcomePageProps = RouteComponentProps;
 
@@ -32,7 +33,14 @@ const stylesFn = createStylesFn(({ unit }) => ({
 
 const JOIN_MUTATION = gql`
   mutation JoinSession($name: String!, $sessionId: String!) {
-    sessionState: join(name: $name, sessionId: $sessionId)
+    join(name: $name, sessionId: $sessionId) {
+      state
+      settings {
+        timeLimit
+        sequence
+        colorHex
+      }
+    }
   }
 `;
 
@@ -64,6 +72,8 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
     JOIN_MUTATION
   );
 
+  const [isCreatingSession, setIsCreatingSession] = useState(false);
+
   useEffect(() => {
     const user = StorageUtil.local.getItem<User>('user')!;
 
@@ -76,7 +86,7 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const restoredSessionId =
-      searchParams.get('sessionId') || StorageUtil.local.getItem('sessionId');
+      searchParams.get('sessionId') || StorageUtil.session.getItem('sessionId');
 
     if (restoredSessionId) {
       setSessionId(restoredSessionId);
@@ -94,18 +104,30 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
     });
 
     (async () => {
-      const sessionState = (
+      const joinResult = (
         await joinSession({
           variables: {
             name,
             sessionId,
           },
         })
-      )?.data?.sessionState;
+      )?.data?.join;
 
-      StorageUtil.local.setItem('sessionId', sessionId);
+      StorageUtil.session.setItem('sessionId', sessionId);
+      StorageUtil.session.setItem(
+        'sessionTimeLimit',
+        joinResult?.settings?.timeLimit
+      );
+      StorageUtil.session.setItem(
+        'sessionSequence',
+        joinResult?.settings?.sequence
+      );
+      StorageUtil.session.setItem(
+        'sessionColor',
+        joinResult?.settings?.colorHex
+      );
 
-      if (sessionState === SessionState.VOTING) {
+      if (joinResult?.state === SessionState.VOTING) {
         navigate?.('/vote');
       } else {
         navigate?.('/waiting');
@@ -119,41 +141,48 @@ export default function WelcomePage({ navigate }: WelcomePageProps) {
 
   return (
     <AppBarLayout>
-      <TextField
-        id="session-id-input"
-        label="Session ID"
-        required
-        fullWidth
-        value={sessionId ?? ''}
-        onChange={(ev) => setSessionId(ev.target.value)}
-        autoFocus
-      />
-      <TextField
-        id="name-input"
-        label="Name"
-        {...css(styles.marginTop)}
-        required
-        fullWidth
-        value={name ?? ''}
-        onChange={(ev) => setName(ev.target.value)}
-      />
-      <Button
-        {...css(styles.button)}
-        variant="contained"
-        color="primary"
-        disabled={!name || !sessionId || !userId}
-        onClick={handleJoin}
-      >
-        Join
-      </Button>
-      <Button
-        {...css(styles.button)}
-        variant="text"
-        color="secondary"
-        onClick={handleHostSession}
-      >
-        or host new session
-      </Button>
+      {!isCreatingSession && (
+        <>
+          <TextField
+            id="session-id-input"
+            label="Session ID"
+            required
+            fullWidth
+            value={sessionId ?? ''}
+            onChange={(ev) => setSessionId(ev.target.value)}
+            autoFocus
+          />
+          <TextField
+            id="name-input"
+            label="Name"
+            {...css(styles.marginTop)}
+            required
+            fullWidth
+            value={name ?? ''}
+            onChange={(ev) => setName(ev.target.value)}
+          />
+          <Button
+            {...css(styles.button)}
+            variant="contained"
+            color="primary"
+            disabled={!name || !sessionId || !userId}
+            onClick={handleJoin}
+          >
+            Join
+          </Button>
+          <Button
+            {...css(styles.button)}
+            variant="text"
+            color="secondary"
+            onClick={() => setIsCreatingSession(true)}
+          >
+            or host new session
+          </Button>
+        </>
+      )}
+      {isCreatingSession && (
+        <CreateSessionForm handleCreateSession={handleHostSession} />
+      )}
     </AppBarLayout>
   );
 }

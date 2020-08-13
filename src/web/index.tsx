@@ -6,7 +6,6 @@ import AphroditeInterface from 'react-with-styles-interface-aphrodite';
 import ApolloClient from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloProvider } from '@apollo/react-hooks';
-import { ThemeProvider } from '@material-ui/core';
 import { split, from } from 'apollo-link';
 import { HttpLink, createHttpLink } from 'apollo-link-http';
 import { setContext } from 'apollo-link-context';
@@ -19,7 +18,8 @@ import StorageUtils from './utils/storageUtil';
 import User from ':web/User';
 import isSsr from ':web/utils/isSsr';
 import App from './App';
-import DefaultTheme, { muiTheme } from ':web/theme/DefaultTheme';
+import DefaultTheme from ':web/theme/DefaultTheme';
+import SessionThemeProvider from ':web/theme/SessionThemeProvider';
 
 let user: User | undefined;
 
@@ -115,7 +115,7 @@ export default function Bootstrap({ port }: BootstrapProps) {
 
   return (
     <ApolloProvider client={client}>
-      <ThemeProvider theme={muiTheme}>
+      <SessionThemeProvider>
         <WithStylesContext.Provider
           value={{
             stylesInterface: AphroditeInterface,
@@ -124,7 +124,7 @@ export default function Bootstrap({ port }: BootstrapProps) {
         >
           <App />
         </WithStylesContext.Provider>
-      </ThemeProvider>
+      </SessionThemeProvider>
     </ApolloProvider>
   );
 }

@@ -21,7 +21,6 @@ import Theme from ':web/theme/DefaultTheme';
 
 export type VotePageProps = RouteComponentProps;
 
-const BUTTON_COLOR = '#9768D1';
 const NUMBER_OF_CARDS = 8;
 const CARDS_PER_ROW_HORIZONTAL = 2;
 const CARDS_PER_ROW_VERTICAL = Math.ceil(NUMBER_OF_CARDS / 2);
@@ -98,7 +97,8 @@ export default function VotePage({ navigate }: VotePageProps) {
   const [castVote] = useMutation<CastVote, CastVoteVariables>(VOTE_MUTATION);
   const { css, styles } = useStyles({ stylesFn });
   const [stackRef, { width, height }] = useMeasure();
-  const sessionId = StorageUtil.local.getItem<string>('sessionId');
+  const sessionId = StorageUtil.session.getItem<string>('sessionId');
+  const sessionColor = StorageUtil.session.getItem('sessionColor');
   const sessionState = useSessionState(sessionId);
   const showVerticalCards = width > height; // Show vertical cards in landscape windows
   const buttonWidth =
@@ -147,7 +147,7 @@ export default function VotePage({ navigate }: VotePageProps) {
               onPress={() => handleVoteButtonPressed(val)}
               vertical={showVerticalCards}
               width={buttonWidth}
-              backgroundColor={color(BUTTON_COLOR)
+              backgroundColor={color(sessionColor)
                 .darken(1 - 0.9 ** i) // Each tile 10% darker than the last
                 .hex()}
             />

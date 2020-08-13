@@ -18,6 +18,13 @@ type Session {
   users: [User]
   results: [VoteResult]
   state: SessionState
+  settings: SessionSettings
+}
+
+type SessionSettings {
+  timeLimit: Int!
+  sequence: VoteSequenceType!
+  colorHex: String!
 }
 
 enum SessionState {
@@ -30,13 +37,18 @@ enum ConnectionStatus {
   CONNECTED
 }
 
+enum VoteSequenceType {
+  FIBONACCI
+  TSHIRT
+}
+
 type Query {
   session(sessionId: String!): Session
 }
 
 type Mutation {
-  createSession: String
-  join(name: String!, sessionId: String!): SessionState
+  createSession(timeLimit: Int!, sequence: String!, colorHex: String!): Session
+  join(name: String!, sessionId: String!): Session
   leave(sessionId: String!): VoidResult
   vote(vote: String!, sessionId: String!): VoidResult
   startVoting(sessionId: String!): VoidResult
