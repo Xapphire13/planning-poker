@@ -21,7 +21,6 @@ import Theme from ':web/theme/DefaultTheme';
 
 export type VotePageProps = RouteComponentProps;
 
-// const BUTTON_COLOR = '#9768D1';
 const NUMBER_OF_CARDS = 8;
 const CARDS_PER_ROW_HORIZONTAL = 2;
 const CARDS_PER_ROW_VERTICAL = Math.ceil(NUMBER_OF_CARDS / 2);

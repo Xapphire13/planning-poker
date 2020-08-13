@@ -14,11 +14,8 @@ export default class Session {
 
   private _state: SessionState = SessionState.Waiting;
 
-  private _settings: SessionSettings;
-
-  constructor(settings: SessionSettings) {
+  constructor(private _settings: SessionSettings) {
     this.sessionId = shortid();
-    this._settings = settings;
   }
 
   get voteCount() {

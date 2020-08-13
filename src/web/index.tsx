@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import WithStylesContext from 'react-with-styles/lib/WithStylesContext';
 // @ts-ignore
@@ -6,7 +6,6 @@ import AphroditeInterface from 'react-with-styles-interface-aphrodite';
 import ApolloClient from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloProvider } from '@apollo/react-hooks';
-import { ThemeProvider } from '@material-ui/core';
 import { split, from } from 'apollo-link';
 import { HttpLink, createHttpLink } from 'apollo-link-http';
 import { setContext } from 'apollo-link-context';
@@ -19,7 +18,7 @@ import StorageUtils from './utils/storageUtil';
 import User from ':web/User';
 import isSsr from ':web/utils/isSsr';
 import App from './App';
-import DefaultTheme, { muiTheme } from ':web/theme/DefaultTheme';
+import DefaultTheme from ':web/theme/DefaultTheme';
 import SessionThemeProvider from ':web/theme/SessionThemeProvider';
 
 let user: User | undefined;

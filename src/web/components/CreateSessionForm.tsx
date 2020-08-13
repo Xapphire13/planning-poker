@@ -9,14 +9,10 @@ import Select from '@material-ui/core/Select';
 import { ColorResult, SketchPicker } from 'react-color';
 import createStylesFn from ':web/theme/createStylesFn';
 import StorageUtil from ':web/utils/storageUtil';
-import {
-  FIBONACCI,
-  T_SHIRT,
-  DEFAULT_TIME_LIMIT,
-  DEFAULT_COLOR,
-} from ':web/constants';
+import { DEFAULT_TIME_LIMIT, DEFAULT_COLOR } from ':web/constants';
 import { ThemeContext } from ':web/theme/SessionThemeProvider';
 import { createThemeWithPrimaryColor } from ':web/theme/DefaultTheme';
+import { VoteSequenceType } from ':__generated__/graphql';
 
 const stylesFn = createStylesFn(({ unit }) => ({
   marginTop: {
@@ -54,7 +50,10 @@ export default function CreateSessionForm({
   handleCreateSession,
 }: CreateSessionFormProps) {
   const { css, styles } = useStyles({ stylesFn });
-  const [sessionSequence, setSessionSequence] = useState(FIBONACCI);
+  const setTheme = useContext(ThemeContext)!;
+  const [sessionSequence, setSessionSequence] = useState<string>(
+    VoteSequenceType.FIBONACCI
+  );
   const [sessionTimeLimit, setSessionTimeLimit] = useState(DEFAULT_TIME_LIMIT);
   const [sessionColor, setSessionColor] = useState(DEFAULT_COLOR);
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
@@ -79,7 +78,6 @@ export default function CreateSessionForm({
     setSessionTimeLimit(event.target.value as number);
   };
 
-  const setTheme = useContext(ThemeContext)!;
   const handleColorChange = (color: ColorResult) => {
     StorageUtil.session.setItem('sessionColor', color.hex);
     setSessionColor(color.hex);
@@ -102,9 +100,9 @@ export default function CreateSessionForm({
             className="sequence-select-class"
             autoWidth
           >
-            <MenuItem value={FIBONACCI}>Fibonacci</MenuItem>
+            <MenuItem value={VoteSequenceType.FIBONACCI}>Fibonacci</MenuItem>
             {/* TODO: Add support for T-Shirt sequence */}
-            <MenuItem value={T_SHIRT}>T-Shirt</MenuItem>
+            <MenuItem value={VoteSequenceType.TSHIRT}>T-Shirt</MenuItem>
           </Select>
         </FormControl>
         <FormControl variant="filled" {...css(styles.formControl)}>
